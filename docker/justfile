@@ -1,11 +1,44 @@
+
+setup:
+  just create-bitcoin-conf
+  just add-hosts
+  echo 'Now run `docker-compose up` in a permanent tab'
+
+setup-part-2:
+  just miner-create || just miner-load
+  just generate-101
+  just faucet
+  just generate-1
+  just faucet
+
+clean:
+  rm -r data
+
+alias g := generate-1
+
+bitcoin_conf := '''
+regtest=1
+[regtest]
+ txindex=1
+server=1
+rpcuser=mempool
+rpcpassword=mempool
+rpcallowip=0/0
+rpcbind=0.0.0.0
+rpcport=18443
+'''
+
 create-bitcoin-conf:
-  mkdir -p data/bitcoin && echo "regtest=1\n[regtest]\n txindex=1\nserver=1\nrpcuser=mempool\nrpcpassword=mempool\nrpcallowip=0/0\nrpcbind=0.0.0.0\nrpcport=18443\n" > data/bitcoin/bitcoin.conf
+  mkdir -p data/bitcoin && echo "{{bitcoin_conf}}" > data/bitcoin/bitcoin.conf
   echo "mempool:mempool" > data/bitcoin.cookie # needed for electrs
 
 add-hosts:
-  echo "127.0.0.1 mempool.ordim.local" | sudo tee -a /etc/hosts
-  echo "127.0.0.1 ord.ordim.local" | sudo tee -a /etc/hosts
-  echo "127.0.0.1 python.ordim.local" | sudo tee -a /etc/hosts
+  just add-host-once mempool.ordim.local
+  just add-host-once ord.ordim.local
+  just add-host-once live.ordim.local
+
+add-host-once HOST:
+  grep {{HOST}} /etc/hosts || echo "127.0.0.1 {{HOST}}" | sudo tee -a /etc/hosts
 
 # docker-compose up
 
@@ -15,13 +48,13 @@ miner-create:
 miner-load:
   docker-compose exec bitcoin-core bitcoin-cli -regtest loadwallet miner
 
-e: # enter
+enter-bitcoin-core: # enter
  docker-compose exec bitcoin-core bash
 
-generate-100:
-  docker-compose exec bitcoin-core bitcoin-cli -regtest -generate 100
+generate-101:
+  docker-compose exec bitcoin-core bitcoin-cli -regtest -generate 101
 
-g: # generate
+generate-1: # generate
   docker-compose exec bitcoin-core bitcoin-cli -regtest -generate 1
 
 faucet:
