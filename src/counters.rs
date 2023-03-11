@@ -50,9 +50,9 @@ pub fn Counters(cx: Scope) -> impl IntoView {
         cx,
         <Router>
             <header>
-                <h1>"Server-Side Counters"</h1>
-                <p>"Each of these counters stores its data in the same variable on the server."</p>
-                <p>"The value is shared across connections. Try opening this is another browser tab to see what I mean."</p>
+                <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">"Server-Side Counters"</h1>
+                <p class="mt-6 text-xl leading-8 text-gray-700">"Each of these counters stores its data in the same variable on the server."</p>
+                <p class="mt-6 text-xl leading-8 text-gray-700">"The value is shared across connections. Try opening this is another browser tab to see what I mean."</p>
             </header>
             <nav>
                 <ul>
@@ -62,6 +62,8 @@ pub fn Counters(cx: Scope) -> impl IntoView {
                 </ul>
             </nav>
             <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
+            <Stylesheet id="leptos" href="/pkg/counter_isomorphic.css"/>
+
             <main>
                 <Routes>
                     <Route path="" view=|cx| view! {
@@ -111,7 +113,7 @@ pub fn Counter(cx: Scope) -> impl IntoView {
     view! {
         cx,
         <div>
-            <h2>"Simple Counter"</h2>
+            <h2 class="mt-16 text-2xl font-bold tracking-tight text-gray-900">"Simple Counter"</h2>
             <p>"This counter sets the value on the server and automatically reloads the new value."</p>
             <div>
                 <button on:click=move |_| clear.dispatch(())>"Clear"</button>
@@ -153,23 +155,23 @@ pub fn FormCounter(cx: Scope) -> impl IntoView {
     view! {
         cx,
         <div>
-            <h2>"Form Counter"</h2>
-            <p>"This counter uses forms to set the value on the server. When progressively enhanced, it should behave identically to the “Simple Counter.”"</p>
+            <h2 class="mt-16 text-2xl font-bold tracking-tight text-gray-900">"Form Counter"</h2>
+            <p class="mt-6 text-xl leading-8 text-gray-700">"This counter uses forms to set the value on the server. When progressively enhanced, it should behave identically to the “Simple Counter.”"</p>
             <div>
                 // calling a server function is the same as POSTing to its API URL
                 // so we can just do that with a form and button
-                <ActionForm action=clear>
+                <ActionForm class="space-y-8 divide-y divide-gray-200" action=clear>
                     <input type="submit" value="Clear"/>
                 </ActionForm>
                 // We can submit named arguments to the server functions
                 // by including them as input values with the same name
-                <ActionForm action=adjust>
+                <ActionForm class="space-y-8 divide-y divide-gray-200" action=adjust>
                     <input type="hidden" name="delta" value="-1"/>
                     <input type="hidden" name="msg" value="form value down"/>
                     <input type="submit" value="-1"/>
                 </ActionForm>
                 <span>"Value: " {move || value().to_string()} "!"</span>
-                <ActionForm action=adjust>
+                <ActionForm class="space-y-8 divide-y divide-gray-200" action=adjust>
                     <input type="hidden" name="delta" value="1"/>
                     <input type="hidden" name="msg" value="form value up"/>
                     <input type="submit" value="+1"/>
@@ -221,7 +223,7 @@ pub fn MultiuserCounter(cx: Scope) -> impl IntoView {
             <h2>"Multi-User Counter"</h2>
             <p>"This one uses server-sent events (SSE) to live-update when other users make changes."</p>
             <div>
-                <button on:click=move |_| clear.dispatch(())>"Clear"</button>
+                <button class="rounded bg-white py-1 px-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50" type="button" on:click=move |_| clear.dispatch(())>"Clear"</button>
                 <button on:click=move |_| dec.dispatch(())>"-1"</button>
                 <span>"Multiplayer Value: " {move || multiplayer_value.get().unwrap_or_default().to_string()}</span>
                 <button on:click=move |_| inc.dispatch(())>"+1"</button>
