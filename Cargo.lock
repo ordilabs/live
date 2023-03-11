@@ -543,29 +543,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "counter_isomorphic"
-version = "0.1.0"
-dependencies = [
- "actix-files",
- "actix-web",
- "broadcaster",
- "cfg-if 1.0.0",
- "console_error_panic_hook",
- "console_log",
- "futures 0.3.26",
- "gloo-net 0.2.6 (git+https://github.com/rustwasm/gloo)",
- "lazy_static",
- "leptos",
- "leptos_actix",
- "leptos_meta",
- "leptos_router",
- "log",
- "serde",
- "simple_logger",
- "wasm-bindgen",
-]
-
-[[package]]
 name = "cpufeatures"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1449,6 +1426,29 @@ checksum = "ccd746e37177e1711c20dd619a1620f34f5c8b569c53590a72dedd5344d8924a"
 dependencies = [
  "dlv-list",
  "hashbrown",
+]
+
+[[package]]
+name = "ordim_live"
+version = "0.1.0"
+dependencies = [
+ "actix-files",
+ "actix-web",
+ "broadcaster",
+ "cfg-if 1.0.0",
+ "console_error_panic_hook",
+ "console_log",
+ "futures 0.3.26",
+ "gloo-net 0.2.6 (git+https://github.com/rustwasm/gloo)",
+ "lazy_static",
+ "leptos",
+ "leptos_actix",
+ "leptos_meta",
+ "leptos_router",
+ "log",
+ "serde",
+ "simple_logger",
+ "wasm-bindgen",
 ]
 
 [[package]]
