@@ -1,7 +1,7 @@
 
 setup:
   just create-bitcoin-conf
-  just add-hosts
+  just setup-hosts
   echo 'Now run `docker-compose up` in a permanent tab'
 
 setup-part-2:
@@ -13,6 +13,27 @@ setup-part-2:
 
 clean:
   rm -r data
+
+[linux]
+install-tools:
+  sudo apt install -y \
+    imagemagick \
+    webp
+  
+  cargo install --locked \
+    sccache \
+    cargo-leptos \
+
+[macos]
+install-tools:
+  brew install \
+    imagemagick \
+    webp \
+    sccache \
+
+  cargo install --locked \
+    cargo-leptos \
+
 
 alias g := generate-1
 
@@ -30,12 +51,12 @@ rpcport=18443
 
 create-bitcoin-conf:
   mkdir -p data/bitcoin && echo "{{bitcoin_conf}}" > data/bitcoin/bitcoin.conf
-  echo "mempool:mempool" > data/bitcoin.cookie # needed for electrs
+  printf '%s' "mempool:mempool" > data/bitcoin.cookie # needed for electrs
 
-add-hosts:
-  just add-host-once mempool.ordim.local
-  just add-host-once ord.ordim.local
-  just add-host-once live.ordim.local
+setup-hosts:
+  just add-host-once mempool.ol
+  just add-host-once ord.ol
+  just add-host-once live.ol
 
 add-host-once HOST:
   grep {{HOST}} /etc/hosts || echo "127.0.0.1 {{HOST}}" | sudo tee -a /etc/hosts
@@ -64,3 +85,10 @@ faucet:
       amount=10 \
       fee_rate=1.1
 
+punks:
+    @echo Downloading, unpacking punks to tmp/punks
+    mkdir -p /tmp/punks
+    cd /tmp && curl -LO "https://github.com/larvalabs/cryptopunks/raw/master/punks.png"
+    cd /tmp/punks && convert ../punks.png -crop 100x100@ +repage +adjoin punk_%d.png 
+    cd /tmp/punks && ls *.png | xargs -n1 -I{} cwebp -lossless {} -o {}.webp
+    
