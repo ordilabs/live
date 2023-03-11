@@ -51,12 +51,12 @@ rpcport=18443
 
 create-bitcoin-conf:
   mkdir -p data/bitcoin && echo "{{bitcoin_conf}}" > data/bitcoin/bitcoin.conf
-  echo "mempool:mempool" > data/bitcoin.cookie # needed for electrs
+  printf '%s' "mempool:mempool" > data/bitcoin.cookie # needed for electrs
 
 setup-hosts:
-  just add-host-once mempool.ordim.local
-  just add-host-once ord.ordim.local
-  just add-host-once live.ordim.local
+  just add-host-once mempool.ol
+  just add-host-once ord.ol
+  just add-host-once live.ol
 
 add-host-once HOST:
   grep {{HOST}} /etc/hosts || echo "127.0.0.1 {{HOST}}" | sudo tee -a /etc/hosts

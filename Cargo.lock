@@ -1429,7 +1429,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ordim_live"
+name = "ordilabs_live"
 version = "0.1.0"
 dependencies = [
  "actix-files",
