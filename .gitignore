@@ -1,3 +1,4 @@
 /target
 /docker/data
 .leptos.kdl
+node_modules
