@@ -12,6 +12,7 @@ services:
       - 80:80
 
   bitcoin-core:
+    # until https://github.com/ruimarinho/docker-bitcoin-core/pull/133 is merged
     image: getumbrel/bitcoind:v24.0.1
     # set config in data/bitcoin/bitcoin.conf
     volumes:
