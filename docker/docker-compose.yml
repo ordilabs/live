@@ -1,0 +1,114 @@
+version: "3.7"
+
+services:
+
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./data/nginx-proxy/certs:/etc/nginx/certs:ro # not needed if you don't use https
+      - ./devbox.nginx.conf:/etc/nginx/conf.d/devbox.nginx.conf
+    ports:
+      - 80:80
+
+  bitcoin-core:
+    image: getumbrel/bitcoind:v24.0.1
+    # set config in data/bitcoin/bitcoin.conf
+    volumes:
+      - ./data/bitcoin:/data/.bitcoin
+
+  ord:
+    build:
+      dockerfile: ord.Dockerfile
+      args:
+        ORD_ORIGIN: casey
+        # can be "master" "/refs/tags/0.5.1" or a commit hash
+        # https://github.com/casey/ord/commit/a4ee361d27265032d69bd668560a6fbbd8996de4
+        ORD_COMMIT: a4ee361d27265032d69bd668560a6fbbd8996de4
+    environment:
+      # todo: use .env to set devbox domain
+      VIRTUAL_HOST: "ord.ordim.*"
+      RUST_LOG: info
+    volumes:
+      - ./data/ord:/root/.local/share/ord
+      - ./data/bitcoin.cookie:/root/.bitcoin/regtest/.cookie:ro
+    command:
+      - ord
+      - -r
+      - --rpc-url=bitcoin-core:18443
+      - server
+    restart: on-failure
+    stop_grace_period: 15s
+
+  mempool-web:
+    environment:
+      VIRTUAL_HOST: "mempool.ordim.*"
+      VIRTUAL_PORT: "8080"
+      FRONTEND_HTTP_PORT: "8080"
+      BACKEND_MAINNET_HTTP_HOST: "mempool-api"
+    image: mempool/frontend:latest
+    user: "1000:1000"
+    restart: on-failure
+    stop_grace_period: 15s
+    command: "./wait-for mempool-db:3306 --timeout=720 -- nginx -g 'daemon off;'"
+    # ports:
+    #   - 80:8080
+
+  mempool-api:
+    environment:
+      MEMPOOL_BACKEND: "electrum"
+      ELECTRUM_HOST: "electrs"
+      ELECTRUM_PORT: "50002"
+      ELECTRUM_TLS_ENABLED: "false"
+      CORE_RPC_HOST: "bitcoin-core"
+      CORE_RPC_PORT: "18443"
+      CORE_RPC_USERNAME: "mempool"
+      CORE_RPC_PASSWORD: "mempool"
+      DATABASE_ENABLED: "true"
+      DATABASE_HOST: "mempool-db"
+      DATABASE_DATABASE: "mempool"
+      DATABASE_USERNAME: "mempool"
+      DATABASE_PASSWORD: "mempool"
+      STATISTICS_ENABLED: "true"
+    image: mempool/backend:latest
+    user: "1000:1000"
+    restart: on-failure
+    stop_grace_period: 15s
+    command: "./wait-for-it.sh mempool-db:3306 electrs:50002 --timeout=720 --strict -- ./start.sh"
+    volumes:
+      - ./data/backend/cache:/backend/cache
+
+  mempool-db:
+    environment:
+      MYSQL_DATABASE: "mempool"
+      MYSQL_USER: "mempool"
+      MYSQL_PASSWORD: "mempool"
+      MYSQL_ROOT_PASSWORD: "admin"
+    image: mariadb:10.5.8
+    user: "1000:1000"
+    restart: on-failure
+    stop_grace_period: 15s
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+
+  electrs:
+    image: getumbrel/electrs:v0.9.10
+    environment:
+      RUST_LOG: info
+    ports:
+      - "50002:50002"
+    volumes:
+      - ./data/electrs:/data/db
+      - ./data/bitcoin:/data/.bitcoin
+      - ./data/bitcoin.cookie:/data/.cookie:ro
+    command:
+      - --db-dir=/data/db
+      - --network=regtest
+      #- --daemon-dir=/data/.bitcoin
+      - --daemon-rpc-addr=bitcoin-core:18443
+      - --daemon-p2p-addr=bitcoin-core:18444
+      - --electrum-rpc-addr=0.0.0.0:50002
+      - --cookie-file=/data/.cookie
+      - --timestamp
+    restart: on-failure
+    stop_grace_period: 15s

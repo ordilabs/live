@@ -1,0 +1,26 @@
+# until https://github.com/ruimarinho/docker-bitcoin-core/pull/133 is merged
+# build-bitcoin-core-v24:
+#   docker build -t l/bitcoin-core:v24 < bitcoin-core-v24.Dockerfile
+
+create-bitcoin-conf:
+  mkdir -p data/bitcoin && echo "[regtest]\ntxindex=1\nserver=1\nrpcuser=mempool\nrpcpassword=mempool\n" > data/bitcoin/bitcoin.conf
+  echo "mempool:mempool" > data/bitcoin.cookie # needed for electrs
+
+e: # enter
+ docker-compose exec bitcoin-core bash
+
+g: # generate
+  docker-compose exec bitcoin-core bitcoin-cli -regtest -generate 1
+
+faucet:
+  docker-compose exec bitcoin-core bitcoin-cli -regtest \
+    -rpcwallet=miner -named sendtoaddress \
+      address=`docker-compose exec bitcoin-core bitcoin-cli -regtest getnewaddress` \
+      amount=10 \
+      fee_rate=1.1
+
+miner-create:
+  docker-compose exec bitcoin-core bitcoin-cli -regtest createwallet miner
+
+miner-load:
+  docker-compose exec bitcoin-core bitcoin-cli -regtest loadwallet miner
