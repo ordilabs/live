@@ -62,7 +62,7 @@ pub fn Counters(cx: Scope) -> impl IntoView {
                 </ul>
             </nav>
             <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
-            <Stylesheet id="leptos" href="/pkg/counter_isomorphic.css"/>
+            <Stylesheet id="leptos" href="/pkg/ordilabs_live.css"/>
 
             <main>
                 <Routes>
