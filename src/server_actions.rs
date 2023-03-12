@@ -1,8 +1,6 @@
 use actix_web::*;
 use bitcoin::blockdata::script::Instruction;
 use bitcoin::*;
-use hex::*;
-use reqwest::*;
 use serde::*;
 
 //use std::io::Read::read_to_end;
@@ -31,6 +29,7 @@ pub async fn content(path: web::Path<Content>) -> impl Responder {
     let reveal_script = tx.input[0].witness.second_to_last().unwrap().clone();
     let reveal_script = Script::from(reveal_script.to_vec());
     let asm = reveal_script.clone().asm();
+    log::debug!("asm: {}", asm);
 
     let r: Vec<_> = reveal_script
         .instructions()
