@@ -1,4 +1,5 @@
 use cfg_if::cfg_if;
+#[allow(unused)]
 use leptos::*;
 pub mod counters;
 

@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM rust as builder
 
+# todo gfi: install ord from release if available for this arch
 ARG ORD_ORIGIN=casey
 ARG ORD_BRANCH=/refs/tags/0.5.1 # or set master
 
@@ -10,6 +11,32 @@ RUN mkdir -p /build && \
   tar -xzf *.tar.gz --strip-components=1 && \
   cargo install --locked --path .
 
+RUN apt-get update && apt-get install -y \
+  curl \
+  jq \
+  ""
+
+# todo gfi: install just from release if available
+RUN cargo install just
+
+ADD --chmod=755 https://raw.githubusercontent.com/vishnubob/wait-for-it/81b1373f17855a4dc21156cfe1694c31d7d1792e/wait-for-it.sh /usr/bin/wait-for-it.sh
+
+# todo gfi: make this multi-arch
+ADD https://bitcoincore.org/bin/bitcoin-core-24.0.1/bitcoin-24.0.1-aarch64-linux-gnu.tar.gz /
+RUN tar -xvf bitcoin-24.0.1-*.tar.gz && mv bitcoin-*/bin/* /usr/local/bin/
+
+
 FROM debian:stable-slim
 WORKDIR /root
-COPY --from=builder /usr/local/cargo/bin/ord /usr/bin/ord
+# comprehensive list of all binaries/scripts below, for easy reference in /usr/local/bin/
+COPY --from=builder /usr/local/cargo/bin/just /usr/local/bin/
+COPY --from=builder /usr/local/cargo/bin/ord /usr/local/bin/
+COPY --from=builder /usr/local/bin/bitcoin-cli /usr/local/bin/
+COPY --from=builder /usr/local/bin/bitcoind /usr/local/bin/
+COPY --from=builder /usr/bin/jq /usr/local/bin/
+COPY --from=builder /usr/bin/wait-for-it.sh /usr/local/bin/
+
+RUN apt-get update && apt-get install -y \
+  curl \
+  jq \
+  && rm -rf /var/lib/apt/lists/* 
