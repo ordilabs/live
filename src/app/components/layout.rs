@@ -9,7 +9,6 @@ pub fn Header(cx: Scope) -> impl IntoView {
     <div class="flex h-16 justify-between">
       <div class="flex">
         <div class="-ml-2 mr-2 flex items-center md:hidden">
-   //      
         </div>
         <div class="flex flex-shrink-0 items-center">
           <img class="block h-8 w-auto lg:hidden" src="https://tailwindui.com/img/logos/mark.svg?color=rose&shade=500" alt="Your Company"/>
