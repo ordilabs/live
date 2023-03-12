@@ -2,11 +2,16 @@ default:
   just --list
 
 setup-once:
-  sudo just _setup-hosts
   just _install-tools
   just _download-punks
   docker-compose build
-
+  @echo "Almost done: adding *.local domains to your /etc/hosts requires sudo"
+  sudo just _setup-hosts
+  @echo "Setup done.\n"
+  @echo 'To open all relevant *.local domains run `just open`'
+  @echo 'To reset the dev environment run `just down`.'
+  @echo 'To start the dev environment run `just up`.'
+  
 up:  
   docker-compose up
 
@@ -39,12 +44,11 @@ _generate BLOCKS:
   bitcoin-cli -rpcwallet=miner -named generatetoaddress nblocks={{BLOCKS}} address=`cat miner.txt`
 
 [macos]
-open-chrome:
-  open -a "Google Chrome" \
-    http://live.ol \
-    http://ord.ol \
-    http://mempool.ol \
-
+open:
+  open \
+    http://live-ol.local \
+    http://ord-ol.local \
+    http://mempool-ol.local \
 
 [linux]
 _install-tools:
@@ -67,9 +71,9 @@ _install-tools:
     cargo-leptos \
 
 _setup-hosts:
-  just _add-host-once mempool.ol
-  just _add-host-once ord.ol
-  just _add-host-once live.ol
+  just _add-host-once mempool-ol.local
+  just _add-host-once ord-ol.local
+  just _add-host-once live-ol.local
 
 _add-host-once HOST:
   grep {{HOST}} /etc/hosts || echo "127.0.0.1 {{HOST}}" | sudo tee -a /etc/hosts
