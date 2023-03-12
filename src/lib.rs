@@ -1,12 +1,12 @@
 use cfg_if::cfg_if;
 use leptos::*;
-pub mod ordilive;
+pub mod app;
 
 // Needs to be in lib.rs AFAIK because wasm-bindgen needs us to be compiling a lib. I may be wrong.
 cfg_if! {
     if #[cfg(feature = "hydrate")] {
         use wasm_bindgen::prelude::wasm_bindgen;
-        use crate::ordilive::*;
+        use crate::app::*;
 
         #[wasm_bindgen]
         pub fn hydrate() {
@@ -15,7 +15,7 @@ cfg_if! {
             console_error_panic_hook::set_once();
 
             mount_to_body(|cx| {
-                view! { cx,  <Ordilive/> }
+                view! { cx,  <App/> }
             });
         }
     }
