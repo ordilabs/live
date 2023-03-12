@@ -11,6 +11,12 @@ cfg_if! {
         use crate::counters::*;
         use leptos_actix::{generate_route_list, LeptosRoutes};
 
+
+        #[get("/style.css")]
+        async fn css() -> impl Responder {
+            actix_files::NamedFile::open_async("./style/output.css").await
+        }
+
         #[get("/api/events")]
         async fn counter_events() -> impl Responder {
             use futures::StreamExt;
@@ -38,7 +44,8 @@ cfg_if! {
             let conf = get_configuration(None).await.unwrap();
 
             let addr = conf.leptos_options.site_addr.clone();
-            let routes = generate_route_list(|cx| view! { cx, <Counters/> });
+            let routes = generate_route_list(|cx| view! { cx, 
+               <Counters/> });
 
             HttpServer::new(move || {
                 let leptos_options = &conf.leptos_options;
