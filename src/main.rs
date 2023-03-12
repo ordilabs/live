@@ -1,6 +1,6 @@
 use cfg_if::cfg_if;
 use leptos::*;
-mod counters;
+mod ordilive;
 
 // boilerplate to run in different modes
 cfg_if! {
@@ -8,7 +8,7 @@ cfg_if! {
     if #[cfg(feature = "ssr")] {
         use actix_files::{Files};
         use actix_web::*;
-        use crate::counters::*;
+        use crate::ordilive::*;
         use leptos_actix::{generate_route_list, LeptosRoutes};
 
 
@@ -22,7 +22,7 @@ cfg_if! {
             use futures::StreamExt;
 
             let stream =
-                futures::stream::once(async { crate::counters::get_server_count().await.unwrap_or(0) })
+                futures::stream::once(async { crate::ordilive::get_server_count().await.unwrap_or(0) })
                     .chain(COUNT_CHANNEL.clone())
                     .map(|value| {
                         Ok(web::Bytes::from(format!(
@@ -37,7 +37,7 @@ cfg_if! {
         #[actix_web::main]
         async fn main() -> std::io::Result<()> {
 
-            crate::counters::register_server_functions();
+            crate::ordilive::register_server_functions();
 
             // Setting this to None means we'll be using cargo-leptos and its env vars.
             // when not using cargo-leptos None must be replaced with Some("Cargo.toml")
@@ -45,7 +45,7 @@ cfg_if! {
 
             let addr = conf.leptos_options.site_addr.clone();
             let routes = generate_route_list(|cx| view! { cx, 
-               <Counters/> });
+               <Ordilive/> });
 
             HttpServer::new(move || {
                 let leptos_options = &conf.leptos_options;
@@ -54,7 +54,7 @@ cfg_if! {
                 App::new()
                     .service(counter_events)
                     .route("/api/{tail:.*}", leptos_actix::handle_server_fns())
-                    .leptos_routes(leptos_options.to_owned(), routes.to_owned(), |cx| view! { cx, <Counters/> })
+                    .leptos_routes(leptos_options.to_owned(), routes.to_owned(), |cx| view! { cx, <Ordilive/> })
                     .service(Files::new("/", &site_root))
                     //.wrap(middleware::Compress::default())
             })
