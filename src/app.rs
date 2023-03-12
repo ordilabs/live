@@ -58,15 +58,8 @@ pub fn App(cx: Scope) -> impl IntoView {
             <Stylesheet id="leptos" href="/pkg/ordilabs_live.css"/>
 
         <div class="flex h-full">
-       // <!-- Narrow sidebar -->
-        <NavSideBar />
 
-    //     <!--
-    //   Mobile menu
-  
-    //   Off-canvas menu for mobile, show/hide based on off-canvas menu state.
-    // -->
-   <MobileMenu />
+
 
         // <!-- Content area -->
         <div class="flex flex-1 flex-col overflow-hidden">
@@ -80,7 +73,7 @@ pub fn App(cx: Scope) -> impl IntoView {
                             <h1 class="flex-1 text-2xl font-bold text-gray-900">"Stream"</h1>
                             <div class="ml-6 flex items-center rounded-lg bg-gray-100 p-0.5 sm:hidden">
                                 <button type="button"
-                                    class="rounded-md p-1.5 text-gray-400 hover:bg-white hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                                    class="rounded-md p-1.5 text-gray-400 hover:bg-white hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-inset focus:ring-rose-500">
                                     <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd"
                                             d="M2 3.75A.75.75 0 012.75 3h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 3.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.166a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75zm0 4.167a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75a.75.75 0 01-.75-.75z"
@@ -89,7 +82,7 @@ pub fn App(cx: Scope) -> impl IntoView {
                                     <span class="sr-only">"Use list view"</span>
                                 </button>
                                 <button type="button"
-                                    class="ml-0.5 rounded-md bg-white p-1.5 text-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                                    class="ml-0.5 rounded-md bg-white p-1.5 text-gray-400 shadow-sm focus:outline-none focus:ring-2 focus:ring-inset focus:ring-rose-500">
                                     <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd"
                                             d="M4.25 2A2.25 2.25 0 002 4.25v2.5A2.25 2.25 0 004.25 9h2.5A2.25 2.25 0 009 6.75v-2.5A2.25 2.25 0 006.75 2h-2.5zm0 9A2.25 2.25 0 002 13.25v2.5A2.25 2.25 0 004.25 18h2.5A2.25 2.25 0 009 15.75v-2.5A2.25 2.25 0 006.75 11h-2.5zm9-9A2.25 2.25 0 0011 4.25v2.5A2.25 2.25 0 0013.25 9h2.5A2.25 2.25 0 0018 6.75v-2.5A2.25 2.25 0 0015.75 2h-2.5zm0 9A2.25 2.25 0 0011 13.25v2.5A2.25 2.25 0 0013.25 18h2.5A2.25 2.25 0 0018 15.75v-2.5A2.25 2.25 0 0015.75 11h-2.5z"
@@ -127,10 +120,8 @@ pub fn App(cx: Scope) -> impl IntoView {
                         </section>
                     </div>
                 </main>
-
-                // <!-- Details sidebar -->
-                <DetailsSidebar/>
             </div>
+            <Footer />
         </div>
     </div>
         </Router>
