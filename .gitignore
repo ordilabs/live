@@ -1,4 +1,5 @@
 /target
 /docker/data
 .leptos.kdl
-node_modules
+/node_modules
+/style/output.css

@@ -10,12 +10,20 @@ services:
       - ./devbox.nginx.conf:/etc/nginx/conf.d/devbox.nginx.conf
     ports:
       - 80:80
+    depends_on:
+      - bitcoin-core
+      - electrs
+      - mempool-web
+      - mempool-api
+      - mempool-db
+      - ord
 
   bitcoin-core:
     # until https://github.com/ruimarinho/docker-bitcoin-core/pull/133 is merged
     image: getumbrel/bitcoind:v24.0.1
-    # set config in data/bitcoin/bitcoin.conf
+    # set config in bitcoin.conf
     volumes:
+      - ./bitcoin.conf:/data/.bitcoin/bitcoin.conf
       - ./data/bitcoin:/data/.bitcoin
 
   ord:
@@ -28,11 +36,12 @@ services:
         ORD_COMMIT: a4ee361d27265032d69bd668560a6fbbd8996de4
     environment:
       # todo: use .env to set devbox domain
-      VIRTUAL_HOST: "ord.ol"
+      VIRTUAL_HOST: "ord-ol.local"
       RUST_LOG: info
     volumes:
       - ./data/ord:/root/.local/share/ord
-      - ./data/bitcoin.cookie:/root/.bitcoin/regtest/.cookie:ro
+      - ./bitcoin.conf:/root/.bitcoin/bitcoin.conf
+      - ./bitcoin.cookie:/root/.bitcoin/regtest/.cookie:ro
     command:
       - ord
       - -r
@@ -41,9 +50,24 @@ services:
     restart: on-failure
     stop_grace_period: 15s
 
+  fixtures:
+    image: ol-live-ord
+    environment:
+      RUST_LOG: info
+    volumes:
+      - /tmp/punks:/tmp/punks
+      - ./data/fixtures-ord:/root/.local/share/ord
+      - ./bitcoin.cookie:/root/.bitcoin/regtest/.cookie:ro
+      - ./bitcoin.conf:/root/.bitcoin/bitcoin.conf
+      - ./.env:/root/.env
+      - ../justfile:/root/justfile
+    command: "wait-for-it.sh bitcoin-core:18443 mempool-api:8999 --strict --timeout=720 -- just _fixtures"
+    restart: on-failure
+    stop_grace_period: 15s
+
   mempool-web:
     environment:
-      VIRTUAL_HOST: "mempool.ol"
+      VIRTUAL_HOST: "mempool-ol.local"
       VIRTUAL_PORT: "8080"
       FRONTEND_HTTP_PORT: "8080"
       BACKEND_MAINNET_HTTP_HOST: "mempool-api"
@@ -101,7 +125,7 @@ services:
     volumes:
       - ./data/electrs:/data/db
       - ./data/bitcoin:/data/.bitcoin
-      - ./data/bitcoin.cookie:/data/.cookie:ro
+      - ./bitcoin.cookie:/data/.cookie:ro
     command:
       - --db-dir=/data/db
       - --network=regtest
