@@ -5,13 +5,14 @@ mod app;
 
 // boilerplate to run in different modes
 cfg_if! {
+
     // server-only stuff
     if #[cfg(feature = "ssr")] {
         use actix_files::{Files};
         use actix_web::*;
         use crate::app::*;
         use leptos_actix::{generate_route_list, LeptosRoutes};
-
+        mod server_actions;
 
         #[get("/style.css")]
         async fn css() -> impl Responder {
@@ -45,7 +46,7 @@ cfg_if! {
             let conf = get_configuration(None).await.unwrap();
 
             let addr = conf.leptos_options.site_addr.clone();
-            let routes = generate_route_list(|cx| view! { cx, 
+            let routes = generate_route_list(|cx| view! { cx,
                <App/> });
 
             HttpServer::new(move || {
@@ -53,7 +54,8 @@ cfg_if! {
                 let site_root = &leptos_options.site_root;
 
                 App::new()
-                    .service(counter_events)
+                    .service(web::resource("/preview/{inscription_id}").to(server_actions::preview))
+                    .service(web::resource("/content/{inscription_id}").to(server_actions::content))
                     .route("/api/{tail:.*}", leptos_actix::handle_server_fns())
                     .leptos_routes(leptos_options.to_owned(), routes.to_owned(), |cx| view! { cx, <App/> })
                     .service(Files::new("/", &site_root))
