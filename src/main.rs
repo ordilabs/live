@@ -1,4 +1,5 @@
 use cfg_if::cfg_if;
+#[allow(unused)]
 use leptos::*;
 mod counters;
 
@@ -44,7 +45,7 @@ cfg_if! {
             let conf = get_configuration(None).await.unwrap();
 
             let addr = conf.leptos_options.site_addr.clone();
-            let routes = generate_route_list(|cx| view! { cx, 
+            let routes = generate_route_list(|cx| view! { cx,
                <Counters/> });
 
             HttpServer::new(move || {

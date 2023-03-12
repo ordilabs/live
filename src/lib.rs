@@ -1,5 +1,6 @@
 use cfg_if::cfg_if;
-//use leptos::*;
+#[allow(unused)]
+use leptos::*;
 pub mod counters;
 
 // Needs to be in lib.rs AFAIK because wasm-bindgen needs us to be compiling a lib. I may be wrong.

@@ -5,9 +5,9 @@ setup-once:
   sudo just _setup-hosts
   just _install-tools
   just _download-punks
-  just open
+  docker-compose build
 
-up:
+up:  
   docker-compose up
 
 down:
@@ -39,7 +39,7 @@ _generate BLOCKS:
   bitcoin-cli -rpcwallet=miner -named generatetoaddress nblocks={{BLOCKS}} address=`cat miner.txt`
 
 [macos]
-open:
+open-chrome:
   open -a "Google Chrome" \
     http://live.ol \
     http://ord.ol \
