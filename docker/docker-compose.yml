@@ -60,7 +60,7 @@ services:
       - ./bitcoin.cookie:/root/.bitcoin/regtest/.cookie:ro
       - ./bitcoin.conf:/root/.bitcoin/bitcoin.conf
       - ./.env:/root/.env
-      - ./justfile:/root/justfile
+      - ../justfile:/root/justfile
     command: "wait-for-it.sh bitcoin-core:18443 mempool-api:8999 --strict --timeout=720 -- just _fixtures"
     #command: "wait-for-it.sh bitcoin-core:18443 --strict -- tail -f /dev/null"
     restart: on-failure
