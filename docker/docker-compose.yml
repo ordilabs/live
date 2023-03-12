@@ -21,7 +21,7 @@ services:
   bitcoin-core:
     # until https://github.com/ruimarinho/docker-bitcoin-core/pull/133 is merged
     image: getumbrel/bitcoind:v24.0.1
-    # set config in data/bitcoin/bitcoin.conf
+    # set config in bitcoin.conf
     volumes:
       - ./bitcoin.conf:/data/.bitcoin/bitcoin.conf
       - ./data/bitcoin:/data/.bitcoin
@@ -62,7 +62,6 @@ services:
       - ./.env:/root/.env
       - ../justfile:/root/justfile
     command: "wait-for-it.sh bitcoin-core:18443 mempool-api:8999 --strict --timeout=720 -- just _fixtures"
-    #command: "wait-for-it.sh bitcoin-core:18443 --strict -- tail -f /dev/null"
     restart: on-failure
     stop_grace_period: 15s
 
