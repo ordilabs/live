@@ -10,12 +10,20 @@ services:
       - ./devbox.nginx.conf:/etc/nginx/conf.d/devbox.nginx.conf
     ports:
       - 80:80
+    depends_on:
+      - bitcoin-core
+      - electrs
+      - mempool-web
+      - mempool-api
+      - mempool-db
+      - ord
 
   bitcoin-core:
     # until https://github.com/ruimarinho/docker-bitcoin-core/pull/133 is merged
     image: getumbrel/bitcoind:v24.0.1
     # set config in data/bitcoin/bitcoin.conf
     volumes:
+      - ./bitcoin.conf:/data/.bitcoin/bitcoin.conf
       - ./data/bitcoin:/data/.bitcoin
 
   ord:
@@ -32,12 +40,29 @@ services:
       RUST_LOG: info
     volumes:
       - ./data/ord:/root/.local/share/ord
-      - ./data/bitcoin.cookie:/root/.bitcoin/regtest/.cookie:ro
+      - ./bitcoin.conf:/root/.bitcoin/bitcoin.conf
+      - ./bitcoin.cookie:/root/.bitcoin/regtest/.cookie:ro
     command:
       - ord
       - -r
       - --rpc-url=bitcoin-core:18443
       - server
+    restart: on-failure
+    stop_grace_period: 15s
+
+  fixtures:
+    image: ol-live-ord
+    environment:
+      RUST_LOG: info
+    volumes:
+      - /tmp/punks:/tmp/punks
+      - ./data/fixtures-ord:/root/.local/share/ord
+      - ./bitcoin.cookie:/root/.bitcoin/regtest/.cookie:ro
+      - ./bitcoin.conf:/root/.bitcoin/bitcoin.conf
+      - ./.env:/root/.env
+      - ./justfile:/root/justfile
+    command: "wait-for-it.sh bitcoin-core:18443 mempool-api:8999 --strict --timeout=720 -- just _fixtures"
+    #command: "wait-for-it.sh bitcoin-core:18443 --strict -- tail -f /dev/null"
     restart: on-failure
     stop_grace_period: 15s
 
@@ -101,7 +126,7 @@ services:
     volumes:
       - ./data/electrs:/data/db
       - ./data/bitcoin:/data/.bitcoin
-      - ./data/bitcoin.cookie:/data/.cookie:ro
+      - ./bitcoin.cookie:/data/.cookie:ro
     command:
       - --db-dir=/data/db
       - --network=regtest

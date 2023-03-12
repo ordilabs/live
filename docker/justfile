@@ -1,21 +1,53 @@
+default:
+  just --list
 
-setup:
-  just create-bitcoin-conf
-  just setup-hosts
-  echo 'Now run `docker-compose up` in a permanent tab'
+setup-once:
+  sudo just _setup-hosts
+  just _install-tools
+  just _download-punks
+  just open
 
-setup-part-2:
-  just miner-create || just miner-load
-  just generate-101
-  just faucet
-  just generate-1
-  just faucet
+up:
+  docker-compose up
 
-clean:
-  rm -r data
+down:
+  docker-compose down
+  -rm -r data
+
+ORDA := "ord -r --wallet alice --rpc-url bitcoin-core:18443/wallet/alice"
+_fixtures:
+  -[ -f .fixtures ] && sleep infinity
+  -bitcoin-cli -named createwallet wallet_name=miner load_on_startup=true
+  bitcoin-cli -rpcwallet=miner getnewaddress | tee miner.txt && just _generate 101
+  -{{ORDA}} wallet restore "pipe minimum luggage modify solid sail another twenty say pioneer cloud scrub"
+  [ -f alice.txt ] || {{ORDA}} wallet receive | jq -r .address | tee alice.txt
+  bitcoin-cli -rpcwallet=miner -named sendtoaddress fee_rate=1 address=`cat alice.txt` amount=1
+  bitcoin-cli -rpcwallet=miner -named sendtoaddress fee_rate=1 address=`cat alice.txt` amount=2
+  bitcoin-cli -rpcwallet=miner -named sendtoaddress fee_rate=1 address=`cat alice.txt` amount=3
+  bitcoin-cli -rpcwallet=miner -named sendtoaddress fee_rate=1 address=`cat alice.txt` amount=4
+  just _generate 1
+  {{ORDA}} wallet balance
+  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_0.png.webp | shuf | head -n1`
+  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_1.png.webp | shuf | head -n1`
+  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_2.png.webp | shuf | head -n1`
+  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_3.png.webp | shuf | head -n1`
+  just _generate 1 
+  touch .fixtures
+  sleep infinity
+
+_generate BLOCKS:
+  bitcoin-cli -rpcwallet=miner -named generatetoaddress nblocks={{BLOCKS}} address=`cat miner.txt`
+
+[macos]
+open:
+  open -a "Google Chrome" \
+    http://live.ol \
+    http://ord.ol \
+    http://mempool.ol \
+
 
 [linux]
-install-tools:
+_install-tools:
   sudo apt install -y \
     imagemagick \
     webp
@@ -25,7 +57,7 @@ install-tools:
     cargo-leptos \
 
 [macos]
-install-tools:
+_install-tools:
   brew install \
     imagemagick \
     webp \
@@ -34,61 +66,45 @@ install-tools:
   cargo install --locked \
     cargo-leptos \
 
+_setup-hosts:
+  just _add-host-once mempool.ol
+  just _add-host-once ord.ol
+  just _add-host-once live.ol
 
-alias g := generate-1
-
-bitcoin_conf := '''
-regtest=1
-[regtest]
- txindex=1
-server=1
-rpcuser=mempool
-rpcpassword=mempool
-rpcallowip=0/0
-rpcbind=0.0.0.0
-rpcport=18443
-'''
-
-create-bitcoin-conf:
-  mkdir -p data/bitcoin && echo "{{bitcoin_conf}}" > data/bitcoin/bitcoin.conf
-  printf '%s' "mempool:mempool" > data/bitcoin.cookie # needed for electrs
-
-setup-hosts:
-  just add-host-once mempool.ol
-  just add-host-once ord.ol
-  just add-host-once live.ol
-
-add-host-once HOST:
+_add-host-once HOST:
   grep {{HOST}} /etc/hosts || echo "127.0.0.1 {{HOST}}" | sudo tee -a /etc/hosts
 
-# docker-compose up
+alias e := enter
+enter CONTAINER:
+  docker-compose exec {{CONTAINER}} /bin/bash
 
-miner-create:
-  docker-compose exec bitcoin-core bitcoin-cli -regtest createwallet miner
+alias g := generate
+generate NBLOCKS:
+  docker-compose exec fixtures just _generate {{NBLOCKS}}
 
-miner-load:
-  docker-compose exec bitcoin-core bitcoin-cli -regtest loadwallet miner
+alias f := faucet
+faucet ADDRESS AMOUNT:
+  docker-compose exec fixtures just _faucet {{ADDRESS}} {{AMOUNT}}
 
-enter-bitcoin-core: # enter
- docker-compose exec bitcoin-core bash
+_faucet ADDRESS AMOUNT:
+  bitcoin-cli -rpcwallet=miner -named sendtoaddress fee_rate=1 address={{ADDRESS}} amount={{AMOUNT}}
 
-generate-101:
-  docker-compose exec bitcoin-core bitcoin-cli -regtest -generate 101
 
-generate-1: # generate
-  docker-compose exec bitcoin-core bitcoin-cli -regtest -generate 1
+alias p := inscribe-punk-1
+inscribe-punk-1: # generate
+  docker-compose exec fixtures just _inscribe-punk 1
 
-faucet:
-  docker-compose exec bitcoin-core bitcoin-cli -regtest \
-    -rpcwallet=miner -named sendtoaddress \
-      address=`docker-compose exec bitcoin-core bitcoin-cli -regtest getnewaddress` \
-      amount=10 \
-      fee_rate=1.1
+_inscribe-punk PUNK:
+  seq 9999 | shuf | head -n1 | xargs -I{} {{ORDA}} wallet inscribe /tmp/punks/punk_{}.png.webp
+  just _generate 1
 
-punks:
-    @echo Downloading, unpacking punks to tmp/punks
+
+_download-punks:
+    @echo Downloading, unpacking punks to '/tmp/punks/punk_*.webp'
     mkdir -p /tmp/punks
-    cd /tmp && curl -LO "https://github.com/larvalabs/cryptopunks/raw/master/punks.png"
-    cd /tmp/punks && convert ../punks.png -crop 100x100@ +repage +adjoin punk_%d.png 
-    cd /tmp/punks && ls *.png | xargs -n1 -I{} cwebp -lossless {} -o {}.webp
+    cd /tmp && [ -f punks.png ] || curl -LO "https://github.com/larvalabs/cryptopunks/raw/master/punks.png"
+    cd /tmp/punks && [ -f punk_0.png.webp ] || ( \
+      convert ../punks.png -crop 100x100@ +repage +adjoin punk_%d.png && \
+      ls *.png | xargs -n1 -I{} cwebp -lossless {} -o {}.webp && \
+      ls *.png | grep -v webp | xargs rm )
     
