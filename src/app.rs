@@ -53,14 +53,13 @@ pub fn App(cx: Scope) -> impl IntoView {
     provide_meta_context(cx);
     view! {
         cx,
+        <html>
+        <body class="bg-white dark:bg-slate-800">
         <Router> 
             <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
             <Stylesheet id="leptos" href="/pkg/ordilabs_live.css"/>
 
         <div class="flex h-full">
-
-
-
         // <!-- Content area -->
         <div class="flex flex-1 flex-col overflow-hidden">
            <Header />
@@ -70,7 +69,7 @@ pub fn App(cx: Scope) -> impl IntoView {
                 <main class="flex-1 overflow-y-auto">
                     <div class="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
                         <div class="flex">
-                            <h1 class="flex-1 text-2xl font-bold text-gray-900">"Stream"</h1>
+                            <h1 class="flex-1 text-2xl font-bold text-gray-900 dark:text-gray-100">"Stream"</h1>
                             <div class="ml-6 flex items-center rounded-lg bg-gray-100 p-0.5 sm:hidden">
                                 <button type="button"
                                     class="rounded-md p-1.5 text-gray-400 hover:bg-white hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-inset focus:ring-rose-500">
@@ -125,6 +124,8 @@ pub fn App(cx: Scope) -> impl IntoView {
         </div>
     </div>
         </Router>
+        </body>
+        </html>
     }
 }
 
