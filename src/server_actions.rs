@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use super::*;
 use crate::ord::inscription::Inscription;
 use crate::ord::media::Media;
@@ -13,39 +15,103 @@ pub struct Content {
     pub inscription_id: String,
 }
 
+#[derive(Deserialize, Debug)]
+pub struct MempoolRecentEntry {
+    pub txid: String,
+    pub fee: u64,
+    pub vsize: f64,
+    pub value: u64,
+}
+
+const MEMPOOL_API_URL: &str = "http://mempool-ol.local/";
+
+//#[derive(Deserialize)]
+pub type MempoolRecent = Vec<MempoolRecentEntry>;
+
+pub(crate) async fn tick(ordipool: &mut HashMap<String, Option<Inscription>>) {
+    let mpr = recent().await.ok();
+
+    match mpr {
+        Some(mpr) => {
+            for entry in mpr {
+                let txid = entry.txid;
+                if ordipool.contains_key(&txid) {
+                    continue;
+                }
+                let maybe_inscription = mempool_maybe_inscription(&txid).await.unwrap();
+                if maybe_inscription.is_some() {
+                    let ins = format!("{}i0", &txid);
+                    _ = INSCRIPTION_CHANNEL.send(&ins).await;
+                    log!("broadcast {}", &txid);
+                }
+                _ = ordipool.entry(txid.clone()).or_insert(maybe_inscription);
+
+                //dbg!("broadcasting {}", &txid);
+            }
+        }
+        _ => {}
+    }
+
+    log!("tick");
+}
+
+pub async fn recent() -> Result<MempoolRecent, anyhow::Error> {
+    let url = MEMPOOL_API_URL.to_owned() + "/api/mempool/recent";
+    let mpr = reqwest::get(url).await?.json::<MempoolRecent>().await?;
+    Ok(mpr)
+}
+
 pub async fn content(path: web::Path<Content>) -> impl Responder {
-    if &path.inscription_id.len() < &64usize {
-        return HttpResponse::NotFound()
+    let s = path.inscription_id.to_owned();
+    if s.starts_with("punk") {
+        let location = format!("/punks/{}", s);
+
+        return HttpResponse::TemporaryRedirect()
+            .insert_header((header::LOCATION, location))
             .content_type("text/plain")
             .body("body");
     }
 
-    let txid = &path.inscription_id[0..64];
+    if s.len() < 64 {
+        return HttpResponse::NotFound()
+            .content_type("text/plain")
+            .body("body");
+    }
+    //let path_ = path.inscription_id.clone();
+    //let s = path.inscription_id.as_str();
+    dbg!(&s);
+    //log!("{}", s);
+
+    let txid = &s.as_str()[0..64];
 
     // get content from remote server
     // todo gfi: use the /raw api instead of /hex
-    let hex = {
-        reqwest::get(format!("http://mempool-ol.local/api/tx/{}/hex", txid))
-            .await
-            .unwrap()
-            .text()
-            .await
-            .unwrap()
-    };
-    let data = hex::decode(&hex).unwrap();
-    let transaction: Transaction = consensus::deserialize(&data).unwrap();
-    let inscription = Inscription::from_transaction(&transaction).unwrap();
 
-    if inscription.media() != Media::Image {
-        return HttpResponse::Ok()
+    let maybe_inscription = mempool_maybe_inscription(txid).await.unwrap();
+    dbg!(&maybe_inscription);
+
+    match maybe_inscription {
+        Some(inscription) => match inscription.media() {
+            Media::Image => image_response_actix(inscription),
+            _ => HttpResponse::Ok()
+                .content_type("text/plain")
+                .body("Not an image"),
+        },
+        None => HttpResponse::NotFound()
             .content_type("text/plain")
-            .body("Not an image");
+            .body("Not found"),
     }
+}
 
-    match inscription.media() {
-        Media::Image => image_response_actix(inscription),
-        _ => unreachable!("Only images are supported for now"),
-    }
+pub(crate) async fn mempool_maybe_inscription(
+    txid: &str,
+) -> Result<Option<Inscription>, anyhow::Error> {
+    let url = (MEMPOOL_API_URL.to_owned() + "api/tx/{}/hex").replace("{}", txid);
+    let hex = reqwest::get(url).await.unwrap().text().await.unwrap();
+    let data = hex::decode(&hex)?;
+    let transaction: Transaction = consensus::deserialize(&data)?;
+    let maybe_inscription = Inscription::from_transaction(&transaction);
+    Ok(maybe_inscription)
 }
 
 fn image_response_actix(inscription: Inscription) -> HttpResponse {

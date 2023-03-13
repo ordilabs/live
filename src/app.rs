@@ -1,5 +1,5 @@
 use crate::app::components::*;
-use crate::app::pages::*;
+// use crate::app::pages::*;
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
@@ -26,11 +26,16 @@ static COUNT: AtomicI32 = AtomicI32::new(0);
 #[cfg(feature = "ssr")]
 lazy_static::lazy_static! {
     pub static ref COUNT_CHANNEL: BroadcastChannel<i32> = BroadcastChannel::new();
+    pub static ref INSCRIPTION_CHANNEL: BroadcastChannel<String> = BroadcastChannel::new();
 }
 // "/api" is an optional prefix that allows you to locate server functions wherever you'd like on the server
 #[server(GetServerCount, "/api")]
 pub async fn get_server_count() -> Result<i32, ServerFnError> {
     Ok(COUNT.load(Ordering::Relaxed))
+}
+
+pub async fn get_last_inscription() -> Result<String, ServerFnError> {
+    Ok("".to_string())
 }
 
 #[server(AdjustServerCount, "/api")]
@@ -48,21 +53,64 @@ pub async fn clear_server_count() -> Result<i32, ServerFnError> {
     _ = COUNT_CHANNEL.send(&0).await;
     Ok(0)
 }
+
+pub fn setup_interval() {
+    log!("setup_interval");
+    #[cfg(not(feature = "ssr"))]
+    set_interval(|| log!("interval"), std::time::Duration::from_secs(1)).unwrap();
+}
+
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
     provide_meta_context(cx);
+    setup_interval();
+
+    #[cfg(not(feature = "ssr"))]
+    let multiplayer_value = {
+        use futures::StreamExt;
+
+        let mut source = gloo_net::eventsource::futures::EventSource::new("/api/events")
+            .expect("couldn't connect to SSE stream");
+        let s = create_signal_from_stream(
+            cx,
+            source.subscribe("inscription").unwrap().map(|value| {
+                value
+                    .expect("no message event")
+                    .1
+                    .data()
+                    .as_string()
+                    .expect("expected string value")
+            }),
+        );
+
+        on_cleanup(cx, move || source.close());
+        s
+    };
+
+    #[cfg(feature = "ssr")]
+    let (multiplayer_value, _) = create_signal(cx, None::<String>);
+
+    let initial_items = vec![
+        "punk_0.webp".to_string(),
+        "punk_1.webp".to_string(),
+        "punk_2.webp".to_string(),
+        "punk_3.webp".to_string(),
+    ];
+
     view! {
         cx,
         <html>
         <body class="bg-white dark:bg-slate-800">
-        <Router>
-            <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
-            <Stylesheet id="leptos" href="/pkg/ordilabs_live.css"/>
+            <Router>
+                <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
+                <Stylesheet id="leptos" href="/pkg/ordilabs_live.css"/>
 
         <div class="flex h-full">
         // <!-- Content area -->
         <div class="flex flex-1 flex-col overflow-hidden">
            <Header />
+
+           <span>"Multiplayer Value: " {move || multiplayer_value.get().unwrap_or_default().to_string()}</span>
 
             // <!-- Main content -->
             <div class="flex flex-1 items-stretch overflow-hidden">
@@ -95,28 +143,7 @@ pub fn App(cx: Scope) -> impl IntoView {
                         // <!-- Tabs -->
                         <TypeTabs />
                         // <!-- Gallery -->
-                        <section class="mt-8 pb-16" aria-labelledby="gallery-heading">
-                            <h2 id="gallery-heading" class="sr-only">"Recently viewed"</h2>
-                            <ul role="list"
-                                class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-                                <InscriptionGridItem inscription_id=None/>
-                                <InscriptionGridItem inscription_id=None/>
-                                <InscriptionGridItem inscription_id=Some("punks/punk_999.webp".to_string())/>
-
-                                // <!-- More files... -->
-
-                                <Routes>
-                                        <Route path="" view=|cx| view! {
-                                            cx,
-                                            <Stream/>
-                                        }/>
-                                        // <Route path="inscription/:id" view=|cx| view! {
-                                        //     cx,
-                                        //     <Detail id=id/>
-                                        // }/>
-                                    </Routes>
-                            </ul>
-                        </section>
+                        <LiveGrid initial_items multiplayer_value/>
                     </div>
                 </main>
             </div>
