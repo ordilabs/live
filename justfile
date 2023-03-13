@@ -73,10 +73,9 @@ _install-tools:
 
 [macos]
 _install-tools:
-  brew install \
-    imagemagick \
-    webp \
-    sccache \
+  which magick || brew install imagemagick
+  which cwebp || brew install webp
+  which sccache || brew install sccache 
 
   cargo install --locked \
     cargo-leptos \
@@ -87,7 +86,11 @@ _setup-hosts:
   just _add-host-once live-ol.local
 
 _add-host-once HOST:
-  grep {{HOST}} /etc/hosts || echo "127.0.0.1 {{HOST}}" | sudo tee -a /etc/hosts
+  just _add-ip-host-once 127.0.0.1 {{HOST}}
+  just _add-ip-host-once ::1 {{HOST}}
+
+_add-ip-host-once IP HOST:
+  grep "{{IP}} {{HOST}}" /etc/hosts || echo "{{IP}} {{HOST}}" | sudo tee -a /etc/hosts
 
 alias e := enter
 enter CONTAINER:
