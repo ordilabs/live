@@ -123,7 +123,7 @@ _download-punks:
     cd /tmp && [ -f punks.png ] || curl -LO "https://github.com/larvalabs/cryptopunks/raw/master/punks.png"
     cd /tmp/punks && [ -f punk_0.webp ] || ( \
       convert ../punks.png -crop 100x100@ +repage +adjoin punk_%d.png && \
-      seq 0 1 10000 | xargs -n1 -I{} cwebp -lossless punk_{}.png -o punk_{}.webp && \
+      seq 0 1 9999 | xargs -n1 -I{} cwebp -lossless punk_{}.png -o punk_{}.webp && \
       -rm punk_*.png && \
       -rm punk_*.png.webp \
     )
