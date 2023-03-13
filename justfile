@@ -73,10 +73,9 @@ _install-tools:
 
 [macos]
 _install-tools:
-  brew install \
-    imagemagick \
-    webp \
-    sccache \
+  which magick || brew install imagemagick
+  which cwebp || brew install webp
+  which sccache || brew install sccache 
 
   cargo install --locked \
     cargo-leptos \
@@ -87,7 +86,11 @@ _setup-hosts:
   just _add-host-once live-ol.local
 
 _add-host-once HOST:
-  grep {{HOST}} /etc/hosts || echo "127.0.0.1 {{HOST}}" | sudo tee -a /etc/hosts
+  just _add-ip-host-once 127.0.0.1 {{HOST}}
+  just _add-ip-host-once ::1 {{HOST}}
+
+_add-ip-host-once IP HOST:
+  grep "{{IP}} {{HOST}}" /etc/hosts || echo "{{IP}} {{HOST}}" | sudo tee -a /etc/hosts
 
 alias e := enter
 enter CONTAINER:
@@ -118,8 +121,10 @@ _download-punks:
     @echo Downloading, unpacking punks to '/tmp/punks/punk_*.webp'
     mkdir -p /tmp/punks
     cd /tmp && [ -f punks.png ] || curl -LO "https://github.com/larvalabs/cryptopunks/raw/master/punks.png"
-    cd /tmp/punks && [ -f punk_0.png.webp ] || ( \
+    cd /tmp/punks && [ -f punk_0.webp ] || ( \
       convert ../punks.png -crop 100x100@ +repage +adjoin punk_%d.png && \
-      ls *.png | xargs -n1 -I{} cwebp -lossless {} -o {}.webp && \
-      ls *.png | grep -v webp | xargs rm )
+      seq 0 1 10000 | xargs -n1 -I{} cwebp -lossless punk_{}.png -o punk_{}.webp && \
+      -rm punk_*.png && \
+      -rm punk_*.png.webp \
+    )
     

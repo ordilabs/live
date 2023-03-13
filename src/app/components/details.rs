@@ -1,6 +1,6 @@
 use leptos::*;
 
-#[component]    
+#[component]
 pub fn DetailsSidebar(cx: Scope) -> impl IntoView {
     view! {cx,
         <aside class="hidden w-96 overflow-y-auto border-l border-gray-200 bg-white p-8 lg:block">
@@ -45,7 +45,7 @@ pub fn DetailsSidebar(cx: Scope) -> impl IntoView {
                     </div>
                     <div class="flex justify-between py-3 text-sm font-medium">
                         <dt class="text-gray-500">"Inscriber"</dt>
-                
+
                     </div>
                     <div class="flex justify-between py-3 text-sm font-medium">
                         <dd class="whitespace-nowrap text-gray-900">
@@ -55,9 +55,9 @@ pub fn DetailsSidebar(cx: Scope) -> impl IntoView {
             </div>
             <div class="flex gap-x-3">
                 <button type="button"
-                    class="flex-1 rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">"Share"</button>
+                    class="flex-1 rounded-md bg-rose-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600">"Share"</button>
                 <button type="button"
-                    class="flex-1 rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">"Download"</button>
+                    class="flex-1 rounded-md bg-rose-600 py-2 px-3 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600">"Download"</button>
             </div>
         </div>
     </aside>}

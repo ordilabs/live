@@ -58,6 +58,7 @@ cfg_if! {
                     .service(web::resource("/content/{inscription_id}").to(server_actions::content))
                     .route("/api/{tail:.*}", leptos_actix::handle_server_fns())
                     .leptos_routes(leptos_options.to_owned(), routes.to_owned(), |cx| view! { cx, <App/> })
+                    .service(Files::new("/punks/", "/tmp/punks"))
                     .service(Files::new("/", &site_root))
                     //.wrap(middleware::Compress::default())
             })
