@@ -1,5 +1,8 @@
-use actix_web::*;
-use bitcoin::blockdata::script::Instruction;
+use super::*;
+use crate::ord::inscription::Inscription;
+use crate::ord::media::Media;
+
+use actix_web::http::header::{self, HeaderValue};
 use bitcoin::*;
 use serde::*;
 
@@ -11,6 +14,12 @@ pub struct Content {
 }
 
 pub async fn content(path: web::Path<Content>) -> impl Responder {
+    if &path.inscription_id.len() < &64usize {
+        return HttpResponse::NotFound()
+            .content_type("text/plain")
+            .body("body");
+    }
+
     let txid = &path.inscription_id[0..64];
 
     // get content from remote server
@@ -24,25 +33,37 @@ pub async fn content(path: web::Path<Content>) -> impl Responder {
             .unwrap()
     };
     let data = hex::decode(&hex).unwrap();
+    let transaction: Transaction = consensus::deserialize(&data).unwrap();
+    let inscription = Inscription::from_transaction(&transaction).unwrap();
 
-    let tx: Transaction = consensus::deserialize(&data).unwrap();
-    let reveal_script = tx.input[0].witness.second_to_last().unwrap().clone();
-    let reveal_script = Script::from(reveal_script.to_vec());
-    let asm = reveal_script.clone().asm();
-    log::debug!("asm: {}", asm);
+    if inscription.media() != Media::Image {
+        return HttpResponse::Ok()
+            .content_type("text/plain")
+            .body("Not an image");
+    }
 
-    let r: Vec<_> = reveal_script
-        .instructions()
-        .into_iter()
-        .filter_map(|i| match i.unwrap() {
-            Instruction::PushBytes(d) => Some(d.to_owned()),
-            Instruction::Op(_) => None,
-        })
-        .collect();
+    match inscription.media() {
+        Media::Image => image_response_actix(inscription),
+        _ => unreachable!("Only images are supported for now"),
+    }
+}
 
+fn image_response_actix(inscription: Inscription) -> HttpResponse {
     HttpResponse::Ok()
-        .content_type("image/webp")
-        .body(r.last().unwrap().clone())
+        .content_type(inscription.content_type().unwrap())
+        .insert_header((
+            header::CONTENT_SECURITY_POLICY,
+            HeaderValue::from_static("default-src 'unsafe-eval' 'unsafe-inline' data:"),
+        ))
+        .insert_header((
+            header::CACHE_CONTROL,
+            HeaderValue::from_static("max-age=31536000, immutable"),
+        ))
+        .insert_header((
+            header::CONTENT_LENGTH,
+            inscription.content_length().unwrap_or_default(),
+        ))
+        .body(inscription.into_body().unwrap())
 }
 
 pub async fn preview(path: web::Path<Content>) -> impl Responder {

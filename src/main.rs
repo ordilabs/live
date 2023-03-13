@@ -13,6 +13,8 @@ cfg_if! {
         use crate::app::*;
         use leptos_actix::{generate_route_list, LeptosRoutes};
         mod server_actions;
+        mod ord;
+
 
         #[get("/style.css")]
         async fn css() -> impl Responder {
@@ -55,10 +57,11 @@ cfg_if! {
 
                 App::new()
                     .service(web::resource("/preview/{inscription_id}").to(server_actions::preview))
+                    .service(Files::new("/content/", "/tmp/punks"))
                     .service(web::resource("/content/{inscription_id}").to(server_actions::content))
                     .route("/api/{tail:.*}", leptos_actix::handle_server_fns())
                     .leptos_routes(leptos_options.to_owned(), routes.to_owned(), |cx| view! { cx, <App/> })
-                    .service(Files::new("/punks/", "/tmp/punks"))
+
                     .service(Files::new("/", &site_root))
                     //.wrap(middleware::Compress::default())
             })

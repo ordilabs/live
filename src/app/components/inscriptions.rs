@@ -10,7 +10,6 @@ pub fn incr() -> i32 {
         LOCAL_COUNT
     }
 }
-//static cycle: Vec<String> = vec!["punk_0.png".to_string(), "punk_1.png".to_string()];
 
 #[component]
 pub fn InscriptionGridItem(cx: Scope, inscription_id: Option<String>) -> impl IntoView {
@@ -19,7 +18,7 @@ pub fn InscriptionGridItem(cx: Scope, inscription_id: Option<String>) -> impl In
     let (iframe_url, set_iframe_url) = create_signal(cx, initial);
 
     let click = move |_| {
-        set_iframe_url.set(format!("punks/punk_{}.webp", incr()));
+        set_iframe_url.set(format!("/preview/punk_{}.webp", incr()));
     };
 
     log::debug!("hi from component");
