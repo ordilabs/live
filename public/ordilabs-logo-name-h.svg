@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 627 104" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-160.77,-805.419)">
+        <g transform="matrix(0.434068,0,0,0.434068,369.335,477.55)">
+            <g transform="matrix(1,0,0,1,-622.135,253.369)">
+                <g transform="matrix(0.293594,0,0,0.293594,110.704,469.242)">
+                    <path d="M646.792,111.474C813.59,165.119 934.431,321.65 934.431,506.182C934.431,734.961 748.692,920.701 519.912,920.701C291.133,920.701 105.394,734.961 105.394,506.182C105.394,321.927 225.873,165.589 392.283,111.716C395.252,119.181 402.632,124.466 411.269,124.466L442.669,124.466L442.669,334.947C375.609,364.688 331.467,430.95 331.467,504.086C331.467,606.448 416.003,689.714 519.909,689.714C623.814,689.714 708.353,606.448 708.353,504.086C708.353,431.784 664.9,365.804 598.849,335.7L598.849,124.46L627.729,124.46C636.443,124.46 643.886,119.063 646.792,111.474Z" style="fill:rgb(239,68,68);"/>
+                </g>
+                <g transform="matrix(1.98263,0,0,1.98263,-423.062,17.9246)">
+                    <g transform="matrix(144,0,0,144,682.745,356.175)">
+                    </g>
+                    <text x="418.82px" y="356.175px" style="font-family:'Krungthep';font-size:144px;fill:rgb(239,68,68);">RDI</text>
+                </g>
+            </g>
+            <g transform="matrix(1,0,0,1,67.0655,-0.335247)">
+                <g transform="matrix(1.23978,0,0,1.23978,215.66,978.288)">
+                    <g transform="matrix(230.282,0,0,230.282,134.391,0)">
+                    </g>
+                    <text x="0px" y="0px" style="font-family:'Krungthep';font-size:230.282px;fill:rgb(147,197,253);">L</text>
+                </g>
+                <g transform="matrix(1.0493,0,0,1.0493,567.947,979.109)">
+                    <g transform="matrix(272.086,0,0,272.086,181.32,0)">
+                    </g>
+                    <text x="0px" y="0px" style="font-family:'Krungthep';font-size:272.086px;fill:rgb(147,197,253);">B</text>
+                </g>
+                <g transform="matrix(1.0493,0,0,1.0493,637.965,221.307)">
+                    <g transform="matrix(272.086,0,0,272.086,267.426,721.786)">
+                    </g>
+                    <text x="108.638px" y="721.786px" style="font-family:'Krungthep';font-size:272.086px;fill:rgb(147,197,253);">S</text>
+                </g>
+                <g transform="matrix(1.0493,0,0,1.0493,379.876,978.407)">
+                    <g transform="matrix(272.086,0,0,272.086,181.32,0)">
+                    </g>
+                    <text x="0px" y="0px" style="font-family:'Krungthep';font-size:272.086px;fill:rgb(147,197,253);">A</text>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
