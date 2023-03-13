@@ -1,8 +1,8 @@
-use leptos::*;
-use leptos_router::*;
-use leptos_meta::*;
 use crate::app::components::*;
 use crate::app::pages::*;
+use leptos::*;
+use leptos_meta::*;
+use leptos_router::*;
 
 mod components;
 mod pages;
@@ -55,7 +55,7 @@ pub fn App(cx: Scope) -> impl IntoView {
         cx,
         <html>
         <body class="bg-white dark:bg-slate-800">
-        <Router> 
+        <Router>
             <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
             <Stylesheet id="leptos" href="/pkg/ordilabs_live.css"/>
 
@@ -99,8 +99,9 @@ pub fn App(cx: Scope) -> impl IntoView {
                             <h2 id="gallery-heading" class="sr-only">"Recently viewed"</h2>
                             <ul role="list"
                                 class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-                                <InscriptionGridItem />
-                                <InscriptionGridItem /><InscriptionGridItem />
+                                <InscriptionGridItem inscription_id=None/>
+                                <InscriptionGridItem inscription_id=None/>
+                                <InscriptionGridItem inscription_id=Some("punks/punk_999.webp".to_string())/>
 
                                 // <!-- More files... -->
 
@@ -113,7 +114,6 @@ pub fn App(cx: Scope) -> impl IntoView {
                                         //     cx,
                                         //     <Detail id=id/>
                                         // }/>
-       
                                     </Routes>
                             </ul>
                         </section>
@@ -128,10 +128,3 @@ pub fn App(cx: Scope) -> impl IntoView {
         </html>
     }
 }
-
-
-
-
-
-
-

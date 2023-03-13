@@ -45,7 +45,7 @@ cfg_if! {
             let conf = get_configuration(None).await.unwrap();
 
             let addr = conf.leptos_options.site_addr.clone();
-            let routes = generate_route_list(|cx| view! { cx, 
+            let routes = generate_route_list(|cx| view! { cx,
                <App/> });
 
             HttpServer::new(move || {
@@ -56,6 +56,7 @@ cfg_if! {
                     .service(counter_events)
                     .route("/api/{tail:.*}", leptos_actix::handle_server_fns())
                     .leptos_routes(leptos_options.to_owned(), routes.to_owned(), |cx| view! { cx, <App/> })
+                    .service(Files::new("/punks/", "/tmp/punks"))
                     .service(Files::new("/", &site_root))
                     //.wrap(middleware::Compress::default())
             })
