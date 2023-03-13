@@ -121,8 +121,10 @@ _download-punks:
     @echo Downloading, unpacking punks to '/tmp/punks/punk_*.webp'
     mkdir -p /tmp/punks
     cd /tmp && [ -f punks.png ] || curl -LO "https://github.com/larvalabs/cryptopunks/raw/master/punks.png"
-    cd /tmp/punks && [ -f punk_0.png.webp ] || ( \
+    cd /tmp/punks && [ -f punk_0.webp ] || ( \
       convert ../punks.png -crop 100x100@ +repage +adjoin punk_%d.png && \
-      ls *.png | xargs -n1 -I{} cwebp -lossless {} -o {}.webp && \
-      ls *.png | grep -v webp | xargs rm )
+      seq 0 1 10000 | xargs -n1 -I{} cwebp -lossless punk_{}.png -o punk_{}.webp && \
+      -rm punk_*.png && \
+      -rm punk_*.png.webp \
+    )
     
