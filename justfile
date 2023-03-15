@@ -7,6 +7,7 @@ setup-once:
   just _download-punks
   cd docker && docker-compose build
   npm install
+  # todo gfi: dont ask for sudo if all hosts are already present 
   @echo "Almost done: adding *.local domains to your /etc/hosts requires sudo"
   sudo just _setup-hosts
   @echo "Setup done.\n"
