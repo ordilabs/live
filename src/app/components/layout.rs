@@ -189,7 +189,7 @@ pub fn MobileMenu(cx: Scope) -> impl IntoView {
                         <div class="mt-5 h-0 flex-1 overflow-y-auto px-2">
                             <nav class="flex h-full flex-col">
                                 <div class="space-y-1">
-                                    // <!-- Current: "bg-red-800 text-white", Default: "text-red-100 hover:bg-red-800 hover:text-white" -->
+                                    // <!-- Current: "bg-rose-800 text-white", Default: "text-rose-100 hover:bg-rose-800 hover:text-white" -->
 
 
                                     <a href="#"

@@ -43,10 +43,10 @@ _fixtures:
   bitcoin-cli -rpcwallet=miner -named sendtoaddress fee_rate=1 address=`cat alice.txt` amount=4
   just _generate 1
   {{ORDA}} wallet balance
-  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_0.png.webp | shuf | head -n1`
-  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_1.png.webp | shuf | head -n1`
-  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_2.png.webp | shuf | head -n1`
-  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_3.png.webp | shuf | head -n1`
+  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_0.webp | shuf | head -n1`
+  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_1.webp | shuf | head -n1`
+  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_2.webp | shuf | head -n1`
+  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_3.webp | shuf | head -n1`
   just _generate 1 
   touch .fixtures
   sleep infinity
@@ -113,7 +113,7 @@ inscribe-punk-1: # generate
   cd docker && docker-compose exec fixtures just _inscribe-punk 1
 
 _inscribe-punk PUNK:
-  seq 9999 | shuf | head -n1 | xargs -I{} {{ORDA}} wallet inscribe /tmp/punks/punk_{}.png.webp
+  seq 9999 | shuf | head -n1 | xargs -I{} {{ORDA}} wallet inscribe /tmp/punks/punk_{}.webp
   #just _generate 1
 
 
@@ -123,8 +123,7 @@ _download-punks:
     cd /tmp && [ -f punks.png ] || curl -LO "https://github.com/larvalabs/cryptopunks/raw/master/punks.png"
     cd /tmp/punks && [ -f punk_0.webp ] || ( \
       convert ../punks.png -crop 100x100@ +repage +adjoin punk_%d.png && \
-      seq 0 1 9999 | xargs -n1 -I{} cwebp -lossless punk_{}.png -o punk_{}.webp && \
-      -rm punk_*.png && \
-      -rm punk_*.png.webp \
+      seq 0 1 9999 | xargs -n1 -P 10 -I{} cwebp -lossless punk_{}.png -o punk_{}.webp \
     )
+    -cd /tmp/punks && rm punk_*.png*
     
