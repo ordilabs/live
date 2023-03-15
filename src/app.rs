@@ -56,9 +56,9 @@ pub fn App(cx: Scope) -> impl IntoView {
         <html>
         <body class="bg-white dark:bg-slate-800">
         <Router>
-            <Link rel="shortcut icon" type_="image/ico" href="/favicon.ico"/>
+            <Link rel="shortcut icon" href="/favicon.png"/>
             <Stylesheet id="leptos" href="/pkg/ordilabs_live.css"/>
-
+            
         <div class="flex h-full">
         // <!-- Content area -->
         <div class="flex flex-1 flex-col overflow-hidden">
