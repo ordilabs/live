@@ -56,9 +56,14 @@ pub fn App(cx: Scope) -> impl IntoView {
         <html>
         <body class="bg-white dark:bg-slate-800">
         <Router>
-            <Link rel="shortcut icon" href="/favicon.png"/>
-            <Stylesheet id="leptos" href="/pkg/ordilabs_live.css"/>
-            
+        <Meta name="twitter:card" content="summary_large_image"/>
+        <Meta name="twitter:site" content="@nytimes"/>
+        <Meta name="twitter:title" content="Ordinals Live"/>
+        <Meta name="twitter:description" content="Ordinals mempool viewer. View inscriptions before they're inscribed!"/>
+        <Meta name="twitter:image" content="https://live.ordilabs.org/ordilabs-logo-name-white.png"/>
+        <Link rel="shortcut icon" href="/favicon.png"/>
+        <Stylesheet id="leptos" href="/pkg/ordilabs_live.css"/>
+
         <div class="flex h-full">
         // <!-- Content area -->
         <div class="flex flex-1 flex-col overflow-hidden">
