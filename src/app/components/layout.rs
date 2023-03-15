@@ -11,8 +11,8 @@ pub fn Header(cx: Scope) -> impl IntoView {
             <div class="-ml-2 mr-2 flex items-center md:hidden">
             </div>
             <div class="flex flex-shrink-0 items-center">
-              <img class="block h-8 w-auto lg:hidden" src="https://tailwindui.com/img/logos/mark.svg?color=rose&shade=500" alt="Your Company"/>
-              <img class="hidden h-8 w-auto lg:block" src="https://tailwindui.com/img/logos/mark.svg?color=rose&shade=500" alt="Your Company"/>
+              <img class="block h-8 w-auto lg:hidden" src="/ordilabs-logo-name-h.svg" alt="Ordilabs"/>
+              <img class="hidden h-8 w-auto lg:block" src="/ordilabs-logo-name-h.svg" alt="Ordilabs"/>
             </div>
             <div class="hidden md:ml-6 md:flex md:items-center md:space-x-4">
 
@@ -20,7 +20,7 @@ pub fn Header(cx: Scope) -> impl IntoView {
           </div>
           <div class="flex items-center">
             <div class="flex-shrink-0">
-              <button type="button" class="relative inline-flex items-center gap-x-1.5 rounded-md bg-rose-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-500">
+              <button type="button" class="relative inline-flex items-center gap-x-1.5 rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500">
               <svg class="-ml-0.5 h-5 w-5"  fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
             </svg>
@@ -84,7 +84,7 @@ pub fn Footer(cx: Scope) -> impl IntoView {
 pub fn NavSideBar(cx: Scope) -> impl IntoView {
     view! {
         cx,
-              <div class="hidden w-28 overflow-y-auto bg-rose-700 md:block">
+              <div class="hidden w-28 overflow-y-auto bg-red-700 md:block">
                             // <!-- Narrow sidebar -->
 
               <div class="flex w-full flex-col items-center py-6">
@@ -93,11 +93,11 @@ pub fn NavSideBar(cx: Scope) -> impl IntoView {
                           alt="Your Company" />
                   </div>
                   <div class="mt-6 w-full flex-1 space-y-1 px-2">
-            //          <!-- Current: "bg-rose-800 text-white", Default: "text-rose-100 hover:bg-rose-800 hover:text-white" -->
+            //          <!-- Current: "bg-red-800 text-white", Default: "text-red-100 hover:bg-red-800 hover:text-white" -->
 
 
                       <a href="#"
-                          class="bg-rose-800 text-white group flex w-full flex-col items-center rounded-md p-3 text-xs font-medium"
+                          class="bg-red-800 text-white group flex w-full flex-col items-center rounded-md p-3 text-xs font-medium"
                           aria-current="page">
                           <svg class="text-white h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                               stroke="currentColor" aria-hidden="true">
@@ -108,7 +108,7 @@ pub fn NavSideBar(cx: Scope) -> impl IntoView {
                       </a>
 
                       <a href="#"
-                      class="text-rose-100 hover:bg-rose-800 hover:text-white group flex w-full flex-col items-center rounded-md p-3 text-xs font-medium"
+                      class="text-red-100 hover:bg-red-800 hover:text-white group flex w-full flex-col items-center rounded-md p-3 text-xs font-medium"
                       aria-current="page">
                       <svg class="text-white h-6 w-6"  fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -117,7 +117,7 @@ pub fn NavSideBar(cx: Scope) -> impl IntoView {
                   </a>
 
                   <a href="#"
-                  class="text-rose-100 hover:bg-rose-800 hover:text-white group flex w-full flex-col items-center rounded-md p-3 text-xs font-medium"
+                  class="text-red-100 hover:bg-red-800 hover:text-white group flex w-full flex-col items-center rounded-md p-3 text-xs font-medium"
                   aria-current="page">
                   <svg class="text-white h-6 w-6"  fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -160,7 +160,7 @@ pub fn MobileMenu(cx: Scope) -> impl IntoView {
             //     From: "translate-x-0"
             //     To: "-translate-x-full"
             // -->
-                    <div class="relative flex w-full max-w-xs flex-1 flex-col bg-rose-700 pt-5 pb-4">
+                    <div class="relative flex w-full max-w-xs flex-1 flex-col bg-red-700 pt-5 pb-4">
             //             <!--
             //     Close button, show/hide based on off-canvas menu state.
 
@@ -193,9 +193,9 @@ pub fn MobileMenu(cx: Scope) -> impl IntoView {
 
 
                                     <a href="#"
-                                        class="bg-rose-800 text-white group flex items-center rounded-md py-2 px-3 text-sm font-medium"
+                                        class="bg-red-800 text-white group flex items-center rounded-md py-2 px-3 text-sm font-medium"
                                         aria-current="page">
-                                        <svg class="text-rose-300 group-hover:text-white mr-3 h-6 w-6" fill="none"
+                                        <svg class="text-red-300 group-hover:text-white mr-3 h-6 w-6" fill="none"
                                         viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
@@ -204,18 +204,18 @@ pub fn MobileMenu(cx: Scope) -> impl IntoView {
                                     </a>
 
                                     <a href="#"
-                                    class="bg-rose-800 text-white group flex items-center rounded-md py-2 px-3 text-sm font-medium"
+                                    class="bg-red-800 text-white group flex items-center rounded-md py-2 px-3 text-sm font-medium"
                                     aria-current="page">
-                                    <svg class="text-rose-300 group-hover:text-white mr-3 h-6 w-6"  fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <svg class="text-red-300 group-hover:text-white mr-3 h-6 w-6"  fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                       </svg>
 
                                     <span>"Whales"</span>
                                 </a>
                                 <a href="#"
-                                class="bg-rose-800 text-white group flex items-center rounded-md py-2 px-3 text-sm font-medium"
+                                class="bg-red-800 text-white group flex items-center rounded-md py-2 px-3 text-sm font-medium"
                                 aria-current="page">
-                                <svg  class="text-rose-300 group-hover:text-white mr-3 h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <svg  class="text-red-300 group-hover:text-white mr-3 h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                   </svg>
 
@@ -245,7 +245,7 @@ pub fn TypeTabs(cx: Scope) -> impl IntoView {
                                 <label for="tabs" class="sr-only">"Select a tab"</label>
                                 // <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
                                 <select id="tabs" name="tabs"
-                                    class="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:border-rose-500 focus:ring-2 focus:ring-inset focus:ring-rose-600">
+                                    class="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:border-red-500 focus:ring-2 focus:ring-inset focus:ring-red-600">
                                     <option selected>"All"</option>
                                     <option>"Images"</option>
                                     <option>"Names"</option>
@@ -254,15 +254,15 @@ pub fn TypeTabs(cx: Scope) -> impl IntoView {
                             <div class="hidden sm:block">
                                 <div class="flex items-center border-b border-gray-200">
                                     <nav class="-mb-px flex flex-1 space-x-6 xl:space-x-8" aria-label="Tabs">
-                                        // <!-- Current: "border-rose-500 text-rose-600", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
+                                        // <!-- Current: "border-red-500 text-red-600", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
                                         <a href="#" aria-current="page"
-                                            class="border-rose-500 text-rose-600 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">"All"</a>
+                                            class="border-red-500 text-red-600 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">"All"</a>
 
                                         <a href="#"
-                                            class="border-transparent text-gray-500 dark:text-gray-100 hover:border-gray-300 dark:hover:border-rose-500 hover:text-gray-700 dark:hover:text-rose-500 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">"Images"</a>
+                                            class="border-transparent text-gray-500 dark:text-gray-100 hover:border-gray-300 dark:hover:border-red-500 hover:text-gray-700 dark:hover:text-red-500 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">"Images"</a>
 
                                         <a href="#"
-                                            class="border-transparent text-gray-500 dark:text-gray-100 hover:border-gray-300 dark:hover:border-rose-500 hover:text-gray-700 dark:hover:text-rose-500 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">"Names"</a>
+                                            class="border-transparent text-gray-500 dark:text-gray-100 hover:border-gray-300 dark:hover:border-red-500 hover:text-gray-700 dark:hover:text-red-500 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">"Names"</a>
                                     </nav>
                                 </div>
                             </div>
