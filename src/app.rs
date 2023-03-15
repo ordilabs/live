@@ -57,7 +57,7 @@ pub fn App(cx: Scope) -> impl IntoView {
         <body class="bg-white dark:bg-slate-800">
         <Router>
         <Meta name="twitter:card" content="summary_large_image"/>
-        <Meta name="twitter:site" content="@nytimes"/>
+        <Meta name="twitter:site" content="@OrdilabsOrg"/>
         <Meta name="twitter:title" content="Ordinals Live"/>
         <Meta name="twitter:description" content="Ordinals mempool viewer. View inscriptions before they're inscribed!"/>
         <Meta name="twitter:image" content="https://live.ordilabs.org/ordilabs-logo-name-white.png"/>
