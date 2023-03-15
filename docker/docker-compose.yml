@@ -137,3 +137,13 @@ services:
       - --timestamp
     restart: on-failure
     stop_grace_period: 15s
+
+  cftunnel:
+    profiles:
+      - cftunnel
+    image: cloudflare/cloudflared:latest
+    command:
+      - tunnel
+      - --no-autoupdate
+      - --http-host-header=live-ol.tunnel
+      - --url=http://nginx-proxy:80

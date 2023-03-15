@@ -29,6 +29,9 @@ watch-css:
     # todo gfi: combine with watch recipe  
     npm run watch-css
 
+tunnel:
+  cd docker && docker-compose run --rm cftunnel
+
 
 ORDA := "ord -r --wallet alice --rpc-url bitcoin-core:18443/wallet/alice"
 _fixtures:
