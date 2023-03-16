@@ -5,7 +5,7 @@ default:
 setup-once:
   just _install-tools
   just _download-punks
-  cd docker && docker-compose build
+  cd docker && docker compose build
   npm install
   @echo "Almost done: adding *.local domains to your /etc/hosts requires sudo"
   sudo just _setup-hosts
@@ -15,10 +15,10 @@ setup-once:
   @echo 'To start the dev environment run `just up`.'
   
 up:  
-  cd docker && docker-compose up
+  cd docker && docker compose up
 
 down:
-  cd docker &&  docker-compose down
+  cd docker &&  docker compose down
   -rm -r docker/data
 
 watch:
@@ -30,7 +30,7 @@ watch-css:
     npm run watch-css
 
 tunnel:
-  cd docker && docker-compose run --rm cftunnel
+  cd docker && docker compose run --rm cftunnel
 
 
 ORDA := "ord -r --wallet alice --rpc-url bitcoin-core:18443/wallet/alice"
@@ -97,15 +97,15 @@ _add-ip-host-once IP HOST:
 
 alias e := enter
 enter CONTAINER:
-  cd docker && docker-compose exec {{CONTAINER}} /bin/bash
+  cd docker && docker compose exec {{CONTAINER}} /bin/bash
 
 alias g := generate
 generate NBLOCKS:
-  cd docker && docker-compose exec fixtures just _generate {{NBLOCKS}}
+  cd docker && docker compose exec fixtures just _generate {{NBLOCKS}}
 
 alias f := faucet
 faucet ADDRESS AMOUNT:
-  cd docker && docker-compose exec fixtures just _faucet {{ADDRESS}} {{AMOUNT}}
+  cd docker && docker compose exec fixtures just _faucet {{ADDRESS}} {{AMOUNT}}
 
 _faucet ADDRESS AMOUNT:
   bitcoin-cli -rpcwallet=miner -named sendtoaddress fee_rate=1 address={{ADDRESS}} amount={{AMOUNT}}
@@ -113,7 +113,7 @@ _faucet ADDRESS AMOUNT:
 
 alias p := inscribe-punk-1
 inscribe-punk-1: # generate
-  cd docker && docker-compose exec fixtures just _inscribe-punk 1
+  cd docker && docker compose exec fixtures just _inscribe-punk 1
 
 _inscribe-punk PUNK:
   seq 9999 | shuf | head -n1 | xargs -I{} {{ORDA}} wallet inscribe /tmp/punks/punk_{}.webp
