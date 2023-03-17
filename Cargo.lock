@@ -1308,7 +1308,7 @@ dependencies = [
  "leptos_server",
  "server_fn",
  "tracing",
- "typed-builder 0.14.0",
+ "typed-builder",
 ]
 
 [[package]]
@@ -1338,7 +1338,7 @@ dependencies = [
  "regex",
  "serde",
  "thiserror",
- "typed-builder 0.14.0",
+ "typed-builder",
 ]
 
 [[package]]
@@ -1426,14 +1426,14 @@ dependencies = [
 
 [[package]]
 name = "leptos_meta"
-version = "0.2.1"
+version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "910c47dcf20b4cd1862d20dba4f1ff897a056e560ec02a9f17fa45ce8adc5c23"
+checksum = "e0f02344ef17581d9496b9cfdbc971855eaf5a27bf11595db0470a7d5344988e"
 dependencies = [
  "cfg-if 1.0.0",
  "leptos",
  "tracing",
- "typed-builder 0.12.0",
+ "typed-builder",
  "wasm-bindgen",
  "web-sys",
 ]
@@ -2656,17 +2656,6 @@ name = "try-lock"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3528ecfd12c466c6f163363caf2d02a71161dd5e1cc6ae7b34207ea2d42d81ed"
-
-[[package]]
-name = "typed-builder"
-version = "0.12.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6179333b981641242a768f30f371c9baccbfcc03749627000c500ab88bf4528b"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
 
 [[package]]
 name = "typed-builder"
