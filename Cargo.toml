@@ -20,7 +20,7 @@ lazy_static = "1"
 leptos = { version = "0.2.3", default-features = false, features = ["serde"] }
 leptos_actix = { version = "0.2.1", optional = true }
 leptos_meta = { version = "0.2.3", default-features = false }
-leptos_router = { version = "0.2.1", default-features = false }
+leptos_router = { version = "0.2.3", default-features = false }
 log = "0.4"
 simple_logger = "4.0.0"
 gloo-net = { git = "https://github.com/rustwasm/gloo" }
