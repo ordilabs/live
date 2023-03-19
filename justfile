@@ -14,7 +14,7 @@ setup-once:
   #cd docker && docker compose build
   npm install
   @echo "Almost done: adding *.local domains to your /etc/hosts requires sudo"
-  just _setup-hosts
+  sudo just _setup-hosts
   @echo "Setup done.\n"
   @echo 'To open all relevant *.local domains run `just open`'
   @echo 'To reset the dev environment run `just down`.'
@@ -85,7 +85,7 @@ _install-tools:
     cargo-leptos \
   
   # fix for linux, maybe a more elegant solution available?
-  just _add-ip-host-once 172.17.0.1 host.docker.internal
+  sudo just _add-ip-host-once 172.17.0.1 host.docker.internal
 
 [macos]
 _install-tools:
@@ -106,7 +106,7 @@ _add-host-once HOST:
   just _add-ip-host-once ::1 {{HOST}}
 
 _add-ip-host-once IP HOST:
-  grep "{{IP}} {{HOST}}" /etc/hosts || echo "{{IP}} {{HOST}}" | sudo tee -a /etc/hosts
+  grep "{{IP}} {{HOST}}" /etc/hosts || echo "{{IP}} {{HOST}}" | tee -a /etc/hosts
 
 alias e := enter
 enter CONTAINER:
