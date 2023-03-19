@@ -30,11 +30,11 @@ services:
   ord:
     build:
       dockerfile: ord.Dockerfile
-      args:
-        ORD_ORIGIN: casey
-        # can be "master" "/refs/tags/0.5.1" or a commit hash
-        # https://github.com/casey/ord/commit/a4ee361d27265032d69bd668560a6fbbd8996de4
-        ORD_COMMIT: a4ee361d27265032d69bd668560a6fbbd8996de4
+      # args:
+      #   ORD_ORIGIN: casey
+      #   # can be "master" "/refs/tags/0.5.1" or a commit hash
+      #   # https://github.com/casey/ord/commit/a4ee361d27265032d69bd668560a6fbbd8996de4
+      #   ORD_COMMIT: a4ee361d27265032d69bd668560a6fbbd8996de4
     environment:
       # todo: use .env to set devbox domain
       VIRTUAL_HOST: "ord-ol.local"
@@ -52,7 +52,7 @@ services:
     stop_grace_period: 15s
 
   fixtures:
-    image: ol-live-ord
+    dockerfile: ord.Dockerfile
     environment:
       RUST_LOG: info
     volumes:
@@ -65,8 +65,6 @@ services:
     command: "wait-for-it.sh bitcoin-core:18443 mempool-api:8999 --strict --timeout=720 -- just _fixtures"
     restart: on-failure
     stop_grace_period: 15s
-    depends_on:
-      - ord
 
   mempool-web:
     environment:
