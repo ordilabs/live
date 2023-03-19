@@ -19,8 +19,9 @@ RUN apt-get update && apt-get install -y \
 
 # todo gfi: install just from release if available
 RUN cargo install just
-
-ADD --chmod=755 https://raw.githubusercontent.com/vishnubob/wait-for-it/81b1373f17855a4dc21156cfe1694c31d7d1792e/wait-for-it.sh /usr/bin/wait-for-it.sh
+#can be done in one step with ADD --chmod-755 with buildkit
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/81b1373f17855a4dc21156cfe1694c31d7d1792e/wait-for-it.sh /usr/bin/wait-for-it.sh
+RUN chmod +x /usr/bin/wait-for-it.sh
 
 # todo gfi: make this multi-arch
 ADD https://bitcoincore.org/bin/bitcoin-core-24.0.1/bitcoin-24.0.1-aarch64-linux-gnu.tar.gz /

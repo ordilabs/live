@@ -4,6 +4,7 @@ default:
 
 # faster, become the default for crates.io in the 1.70.0
 export CARGO_REGISTRIES_CRATES_IO_PROTOCOL := "sparse"
+export DOCKER_BUILDKIT := "0"
 
 setup-once:
   just _install-tools
