@@ -121,6 +121,7 @@ services:
       RUST_LOG: info
     ports:
       - "50002:50002"
+    user: "0:0"
     volumes:
       - electrs:/data/db:rw
       - bitcoin-core:/data/.bitcoin:ro
