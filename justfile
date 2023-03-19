@@ -71,6 +71,7 @@ open:
 [linux]
 _install-tools:
   sudo apt install -y \
+    build-essential \
     imagemagick \
     webp \
     pkg-config \
