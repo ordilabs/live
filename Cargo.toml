@@ -34,7 +34,20 @@ actix-rt = { version = "2.8.0", optional = true }
 [features]
 default = []
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
-ssr = ["dep:actix-files", "dep:actix-web", "dep:actix-rt", "dep:anyhow", "dep:bitcoin", "dep:hex", "dep:mp4", "dep:reqwest", "leptos/ssr", "leptos_actix", "leptos_meta/ssr", "leptos_router/ssr"]
+ssr = [
+  "dep:actix-files",
+  "dep:actix-web",
+  "dep:actix-rt",
+  "dep:anyhow",
+  "dep:bitcoin",
+  "dep:hex",
+  "dep:mp4",
+  "dep:reqwest",
+  "leptos/ssr",
+  "leptos_actix",
+  "leptos_meta/ssr",
+  "leptos_router/ssr",
+]
 stable = ["leptos/stable", "leptos_router/stable"]
 
 [package.metadata.cargo-all-features]
@@ -55,7 +68,7 @@ style-file = "style/output.css"
 # [Optional] Files in the asset-dir will be copied to the site-root directory
 assets-dir = "public"
 # The IP and port (ex: 127.0.0.1:3000) where the server serves the content. Use it in your server setup.
-site-addr = "127.0.0.1:3000"
+site-addr = "0.0.0.0:3000"
 # The port to use for automatic reload monitoring
 reload-port = 3001
 # [Optional] Command to use when running end2end tests. It will run in the end2end dir.

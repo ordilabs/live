@@ -11,7 +11,7 @@ setup-once:
   just _download-punks
   rustup override set nightly
   rustup target add wasm32-unknown-unknown
-  cd docker && docker compose build
+  #cd docker && docker compose build
   npm install
   @echo "Almost done: adding *.local domains to your /etc/hosts requires sudo"
   sudo just _setup-hosts
@@ -35,6 +35,9 @@ watch-css:
     npm run watch-css
 
 tunnel:
+  cd docker && docker compose run --rm cftunnel 2>&1 | grep "|"
+
+_tunnel:
   cd docker && docker compose run --rm cftunnel
 
 
@@ -80,6 +83,9 @@ _install-tools:
 
   cargo install --locked \
     cargo-leptos \
+  
+  # fix for linux, maybe a more elegant solution available?
+  just _add-ip-host-once 172.17.0.1 host.docker.internal
 
 [macos]
 _install-tools:
