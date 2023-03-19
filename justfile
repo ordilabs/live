@@ -14,7 +14,7 @@ setup-once:
   #cd docker && docker compose build
   npm install
   @echo "Almost done: adding *.local domains to your /etc/hosts requires sudo"
-  sudo just _setup-hosts
+  just _setup-hosts
   @echo "Setup done.\n"
   @echo 'To open all relevant *.local domains run `just open`'
   @echo 'To reset the dev environment run `just down`.'
