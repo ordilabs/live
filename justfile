@@ -73,6 +73,7 @@ _install-tools:
     imagemagick \
     webp \
     pkg-config \
+    libssl-dev \
 
   cargo install --locked \
     cargo-leptos \
