@@ -52,7 +52,8 @@ services:
     stop_grace_period: 15s
 
   fixtures:
-    dockerfile: ord.Dockerfile
+    build:
+      dockerfile: ord.Dockerfile
     environment:
       RUST_LOG: info
     volumes:
