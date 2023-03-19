@@ -2,6 +2,9 @@
 default:
   just --list
 
+# faster, become the default for crates.io in the 1.70.0
+export CARGO_REGISTRIES_CRATES_IO_PROTOCOL := "sparse"
+
 setup-once:
   just _install-tools
   just _download-punks
@@ -68,8 +71,9 @@ open:
 _install-tools:
   sudo apt install -y \
     imagemagick \
-    webp
-  
+    webp \
+    pkg-config \
+
   cargo install --locked \
     cargo-leptos \
 
@@ -128,4 +132,3 @@ _download-punks:
       seq 0 1 9999 | xargs -n1 -P 10 -I{} cwebp -lossless punk_{}.png -o punk_{}.webp \
     )
     -cd /tmp/punks && rm punk_*.png*
-    
