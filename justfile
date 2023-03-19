@@ -22,8 +22,7 @@ up:
   cd docker && docker compose up
 
 down:
-  cd docker &&  docker compose down
-  -rm -r docker/data
+  cd docker &&  docker compose down -v
 
 watch:
     npm run build-css
