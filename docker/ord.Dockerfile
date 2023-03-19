@@ -5,6 +5,7 @@ FROM rust as builder
 ARG ORD_ORIGIN=casey
 ARG ORD_BRANCH=/refs/tags/0.5.1 # or set master
 
+ENV CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 RUN mkdir -p /build && \
   cd /build && \
   curl -LO https://github.com/$ORD_ORIGIN/ord/archive/$ORD_BRANCH.tar.gz && \

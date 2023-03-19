@@ -71,7 +71,6 @@ _install-tools:
     webp
   
   cargo install --locked \
-    sccache \
     cargo-leptos \
 
 [macos]
