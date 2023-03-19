@@ -9,6 +9,8 @@ export DOCKER_BUILDKIT := "0"
 setup-once:
   just _install-tools
   just _download-punks
+  rustup override set nightly
+  rustup target add wasm32-unknown-unknown
   cd docker && docker compose build
   npm install
   @echo "Almost done: adding *.local domains to your /etc/hosts requires sudo"
