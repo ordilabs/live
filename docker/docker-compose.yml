@@ -65,6 +65,8 @@ services:
     command: "wait-for-it.sh bitcoin-core:18443 mempool-api:8999 --strict --timeout=720 -- just _fixtures"
     restart: on-failure
     stop_grace_period: 15s
+    depends_on:
+      - ord
 
   mempool-web:
     environment:
