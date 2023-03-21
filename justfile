@@ -85,7 +85,7 @@ _install-tools:
     cargo-leptos \
   
   # fix for linux, maybe a more elegant solution available?
-  sudo just _add-ip-host-once 172.17.0.1 host.docker.internal
+  sudo just _add-ip-host-once 0.0.0.0 host.docker.internal
 
 [macos]
 _install-tools:
