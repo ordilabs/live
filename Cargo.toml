@@ -22,7 +22,7 @@ leptos_actix = { version = "0.2.3", optional = true }
 leptos_meta = { version = "0.2.3", default-features = false }
 leptos_router = { version = "0.2.3", default-features = false }
 log = "0.4"
-simple_logger = "4.0.0"
+simple_logger = "4.1.0"
 gloo-net = { git = "https://github.com/rustwasm/gloo" }
 wasm-bindgen = "0.2"
 bitcoin = { version = "0.29", optional = true }
