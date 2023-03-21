@@ -8,8 +8,6 @@ We use Docker to containerize all microservices and you `just` need to run a few
 
 ### prerequisites
 
-#### all
-
 - [Rust ^1.68](https://rustup.rs/)
 - [nodejs ^18.15](https://nodejs.org/en)
 - [just](https://just.systems/man/en/)
@@ -22,7 +20,7 @@ We use Docker to containerize all microservices and you `just` need to run a few
 | [homebrew](https://brew.sh/)                |        |         |
 | [XCode](https://developer.apple.com/xcode/) |        |         |
 
-### first setup
+### first setup / after branch/PR checkout sometimes
 
 ```bash
 git clone https://github.com/ordilabs/live live--ordilabs
@@ -53,14 +51,14 @@ just open
 Once up and running you can perform dev tasks
 
 ```bash
-# create temporary tunnel to expose your .local on the internet
-just tunnel
-
 # mine 1 block
 just generate 1
 
 # inscribe a punk
 just punk-1
+
+# create temporary tunnel to expose your .local on the internet
+just tunnel
 ```
 
 see more commands with `just -l`
