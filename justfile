@@ -19,12 +19,20 @@ setup-once:
   @echo 'To open all relevant *.local domains run `just open`'
   @echo 'To reset the dev environment run `just down`.'
   @echo 'To start the dev environment run `just up`.'
-  
+
+[macos]
 up:  
   cd docker && docker compose up
 
+[linux]
+up:
+  # if someone has a better solution, be my guest
+  sed 's/GATEWAY_IPV4/'` ip addr show eth0 | grep inet | awk '{print $2}' | cut -d/ -f1 | head -n1`'/g' \
+    docker/docker-compose.monkey-patch-linux.yml | tee -a tmp/docker-compose.linux.yml
+  cd docker && docker compose -f docker-compose.yml -f docker-compose.linux.yml -f ../tmp/docker-compose.linux.yml up 
+
 down:
-  cd docker &&  docker compose down -v
+  cd docker && docker compose down -v
 
 watch:
     npm run build-css
@@ -84,8 +92,6 @@ _install-tools:
   cargo install --locked \
     cargo-leptos \
   
-  # fix for linux, maybe a more elegant solution available?
-  sudo just _add-ip-host-once 0.0.0.0 host.docker.internal
 
 [macos]
 _install-tools:
@@ -106,7 +112,7 @@ _add-host-once HOST:
   just _add-ip-host-once ::1 {{HOST}}
 
 _add-ip-host-once IP HOST:
-  grep "{{IP}} {{HOST}}" /etc/hosts || echo "{{IP}} {{HOST}}" | tee -a /etc/hosts
+  grep "{{IP}} {{HOST}}" /etc/hosts || echo "{{IP}} {{HOST}}" | sudo tee -a /etc/hosts
 
 alias e := enter
 enter CONTAINER:
