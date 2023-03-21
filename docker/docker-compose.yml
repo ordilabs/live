@@ -5,8 +5,8 @@ services:
   nginx-proxy:
     image: nginxproxy/nginx-proxy
     volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./data/nginx-proxy/certs:/etc/nginx/certs:ro # not needed if you don't use https
+      - ${DOCKER_SOCK:-/var/run/docker.sock}:/tmp/docker.sock:ro
+      - nginx-proxy-certs:/etc/nginx/certs:ro # not needed if you don't use https
       - ./devbox.nginx.conf:/etc/nginx/conf.d/devbox.nginx.conf
     ports:
       - 80:80
@@ -22,25 +22,26 @@ services:
     # until https://github.com/ruimarinho/docker-bitcoin-core/pull/133 is merged
     image: getumbrel/bitcoind:v24.0.1
     # set config in bitcoin.conf
+    user: "1000:1000"
     volumes:
-      - ./bitcoin.conf:/data/.bitcoin/bitcoin.conf
-      - ./data/bitcoin:/data/.bitcoin
+      - bitcoin-core:/data/.bitcoin:rw
+      - ./bitcoin.conf:/data/.bitcoin/bitcoin.conf:ro
 
   ord:
     build:
       dockerfile: ord.Dockerfile
-      args:
-        ORD_ORIGIN: casey
-        # can be "master" "/refs/tags/0.5.1" or a commit hash
-        # https://github.com/casey/ord/commit/a4ee361d27265032d69bd668560a6fbbd8996de4
-        ORD_COMMIT: a4ee361d27265032d69bd668560a6fbbd8996de4
+      # args:
+      #   ORD_ORIGIN: casey
+      #   # can be "master" "/refs/tags/0.5.1" or a commit hash
+      #   # https://github.com/casey/ord/commit/a4ee361d27265032d69bd668560a6fbbd8996de4
+      #   ORD_COMMIT: a4ee361d27265032d69bd668560a6fbbd8996de4
     environment:
       # todo: use .env to set devbox domain
       VIRTUAL_HOST: "ord-ol.local"
       RUST_LOG: info
     volumes:
-      - ./data/ord:/root/.local/share/ord
-      - ./bitcoin.conf:/root/.bitcoin/bitcoin.conf
+      - ord:/root/.local/share/ord:rw
+      - ./bitcoin.conf:/root/.bitcoin/bitcoin.conf:ro
       - ./bitcoin.cookie:/root/.bitcoin/regtest/.cookie:ro
     command:
       - ord
@@ -51,12 +52,13 @@ services:
     stop_grace_period: 15s
 
   fixtures:
-    image: ol-live-ord
+    build:
+      dockerfile: ord.Dockerfile
     environment:
       RUST_LOG: info
     volumes:
-      - /tmp/punks:/tmp/punks
-      - ./data/fixtures-ord:/root/.local/share/ord
+      - /tmp/punks:/tmp/punks:ro
+      - fixtures-ord:/root/.local/share/ord:rw
       - ./bitcoin.cookie:/root/.bitcoin/regtest/.cookie:ro
       - ./bitcoin.conf:/root/.bitcoin/bitcoin.conf
       - ./.env:/root/.env
@@ -96,12 +98,11 @@ services:
       DATABASE_PASSWORD: "mempool"
       STATISTICS_ENABLED: "true"
     image: mempool/backend:latest
-    user: "1000:1000"
     restart: on-failure
     stop_grace_period: 15s
     command: "./wait-for-it.sh mempool-db:3306 electrs:50002 --timeout=720 --strict -- ./start.sh"
     volumes:
-      - ./data/backend/cache:/backend/cache
+      - mempool-api:/backend/cache:rw
 
   mempool-db:
     environment:
@@ -110,11 +111,10 @@ services:
       MYSQL_PASSWORD: "mempool"
       MYSQL_ROOT_PASSWORD: "admin"
     image: mariadb:10.5.8
-    user: "1000:1000"
     restart: on-failure
     stop_grace_period: 15s
     volumes:
-      - ./data/mysql:/var/lib/mysql
+      - mempool-db:/var/lib/mysql:rw
 
   electrs:
     image: getumbrel/electrs:v0.9.10
@@ -122,9 +122,10 @@ services:
       RUST_LOG: info
     ports:
       - "50002:50002"
+    user: "0:0"
     volumes:
-      - ./data/electrs:/data/db
-      - ./data/bitcoin:/data/.bitcoin
+      - electrs:/data/db:rw
+      - bitcoin-core:/data/.bitcoin:ro
       - ./bitcoin.cookie:/data/.cookie:ro
     command:
       - --db-dir=/data/db
@@ -147,3 +148,12 @@ services:
       - --no-autoupdate
       - --http-host-header=live-ol.tunnel
       - --url=http://nginx-proxy:80
+
+volumes:
+  nginx-proxy-certs: # dummy 
+  ord:
+  mempool-api:
+  mempool-db:
+  bitcoin-core:
+  electrs:
+  fixtures-ord:

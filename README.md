@@ -4,16 +4,23 @@ Ordinals mempool viewer. View inscriptions before they're inscribed!
 
 ## Setup
 
-### macos Prerequisites
+We use Docker to containerize all microservices and you `just` need to run a few recipies (see below) to get your devbox `up` and running. When your systems prerequisites are already met, usually in under 15 minutes.
 
-1. [XCode](https://developer.apple.com/support/xcode/)
-2. [Homebrew](https://brew.sh/)
-3. [Docker](https://docker.com/)
-4. [Rust](https://rustup.rs/)
-5. [Just](https://just.systems/)
-`brew install just`
+### prerequisites
 
-### first setup
+- [Rust ^1.68](https://rustup.rs/)
+- [nodejs ^18.15](https://nodejs.org/en)
+- [just](https://just.systems/man/en/)
+- git
+- fast internet, decent cpu
+
+| macos                                       | linux  | windows |
+| ------------------------------------------- | ------ | ------- |
+| [Docker for Mac](https://www.docker.com/)   | Docker | TODO    |
+| [homebrew](https://brew.sh/)                |        |         |
+| [XCode](https://developer.apple.com/xcode/) |        |         |
+
+### first setup / after branch/PR checkout sometimes
 
 ```bash
 git clone https://github.com/ordilabs/live live--ordilabs
@@ -44,14 +51,14 @@ just open
 Once up and running you can perform dev tasks
 
 ```bash
-# create temporary tunnel to expose your .local on the internet
-just tunnel
-
 # mine 1 block
 just generate 1
 
 # inscribe a punk
 just punk-1
+
+# create temporary tunnel to expose your .local on the internet
+just tunnel
 ```
 
 see more commands with `just -l`

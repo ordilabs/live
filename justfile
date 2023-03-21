@@ -2,10 +2,16 @@
 default:
   just --list
 
+# faster, become the default for crates.io in the 1.70.0
+export CARGO_REGISTRIES_CRATES_IO_PROTOCOL := "sparse"
+export DOCKER_BUILDKIT := "0"
+
 setup-once:
   just _install-tools
   just _download-punks
-  cd docker && docker compose build
+  rustup override set nightly
+  rustup target add wasm32-unknown-unknown
+  #cd docker && docker compose build
   npm install
   @echo "Almost done: adding *.local domains to your /etc/hosts requires sudo"
   sudo just _setup-hosts
@@ -13,13 +19,20 @@ setup-once:
   @echo 'To open all relevant *.local domains run `just open`'
   @echo 'To reset the dev environment run `just down`.'
   @echo 'To start the dev environment run `just up`.'
-  
+
+[macos]
 up:  
   cd docker && docker compose up
 
+[linux]
+up:
+  # if someone has a better solution, be my guest
+  sed 's/GATEWAY_IPV4/'` ip addr show eth0 | grep inet | awk '{print $2}' | cut -d/ -f1 | head -n1`'/g' \
+    docker/docker-compose.monkey-patch-linux.yml | tee tmp/docker-compose.linux.yml
+  cd docker && docker compose -f docker-compose.yml -f ../tmp/docker-compose.linux.yml up 
+
 down:
-  cd docker &&  docker compose down
-  -rm -r docker/data
+  cd docker && docker compose down -v
 
 watch:
     npm run build-css
@@ -30,6 +43,9 @@ watch-css:
     npm run watch-css
 
 tunnel:
+  cd docker && docker compose run --rm cftunnel 2>&1 | grep "|"
+
+_tunnel:
   cd docker && docker compose run --rm cftunnel
 
 
@@ -67,12 +83,15 @@ open:
 [linux]
 _install-tools:
   sudo apt install -y \
+    build-essential \
     imagemagick \
-    webp
-  
+    webp \
+    pkg-config \
+    libssl-dev \
+
   cargo install --locked \
-    sccache \
     cargo-leptos \
+  
 
 [macos]
 _install-tools:
@@ -129,4 +148,3 @@ _download-punks:
       seq 0 1 9999 | xargs -n1 -P 10 -I{} cwebp -lossless punk_{}.png -o punk_{}.webp \
     )
     -cd /tmp/punks && rm punk_*.png*
-    
