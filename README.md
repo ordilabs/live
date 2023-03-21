@@ -4,14 +4,23 @@ Ordinals mempool viewer. View inscriptions before they're inscribed!
 
 ## Setup
 
-### macos Prerequisites
+We use Docker to containerize all microservices and you `just` need to run a few recipies (see below) to get your devbox `up` and running. When your systems prerquisites are already met, usually in under 15 minutes.
 
-1. [XCode](https://developer.apple.com/support/xcode/)
-2. [Homebrew](https://brew.sh/)
-3. [Docker](https://docker.com/)
-4. [Rust](https://rustup.rs/)
-5. [Just](https://just.systems/)
-`brew install just`
+### prerequisites
+
+#### all
+
+- [Rust ^1.68](https://rustup.rs/)
+- [nodejs ^18.15](https://nodejs.org/en)
+- [just](https://just.systems/man/en/)
+- git
+- fast internet, decent cpu
+
+| macos                                       | linux  | windows |
+| ------------------------------------------- | ------ | ------- |
+| [Docker for Mac](https://www.docker.com/)   | Docker | TODO    |
+| [homebrew](https://brew.sh/)                |        |         |
+| [XCode](https://developer.apple.com/xcode/) |        |         |
 
 ### first setup
 
