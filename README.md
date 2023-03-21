@@ -4,7 +4,7 @@ Ordinals mempool viewer. View inscriptions before they're inscribed!
 
 ## Setup
 
-We use Docker to containerize all microservices and you `just` need to run a few recipies (see below) to get your devbox `up` and running. When your systems prerquisites are already met, usually in under 15 minutes.
+We use Docker to containerize all microservices and you `just` need to run a few recipies (see below) to get your devbox `up` and running. When your systems prerequisites are already met, usually in under 15 minutes.
 
 ### prerequisites
 
