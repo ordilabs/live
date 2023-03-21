@@ -18,6 +18,7 @@ pub fn register_server_functions() {
     _ = GetServerCount::register();
     _ = AdjustServerCount::register();
     _ = ClearServerCount::register();
+    _ = GetLastInscription::register();
 }
 
 #[cfg(feature = "ssr")]
@@ -34,6 +35,7 @@ pub async fn get_server_count() -> Result<i32, ServerFnError> {
     Ok(COUNT.load(Ordering::Relaxed))
 }
 
+#[server(GetLastInscription, "/api")]
 pub async fn get_last_inscription() -> Result<String, ServerFnError> {
     Ok("".to_string())
 }
@@ -54,16 +56,13 @@ pub async fn clear_server_count() -> Result<i32, ServerFnError> {
     Ok(0)
 }
 
-pub fn setup_interval() {
-    log!("setup_interval");
-    #[cfg(not(feature = "ssr"))]
-    set_interval(|| log!("interval"), std::time::Duration::from_secs(1)).unwrap();
-}
-
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
     provide_meta_context(cx);
-    setup_interval();
+
+    // setup_interval() only on client
+    // #[cfg(not(feature = "ssr"))]
+    // set_interval(|| log!("interval"), std::time::Duration::from_secs(1)).unwrap();
 
     #[cfg(not(feature = "ssr"))]
     let multiplayer_value = {

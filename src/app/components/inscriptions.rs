@@ -29,7 +29,7 @@ pub fn InscriptionGridItem(cx: Scope, inscription_id: Option<String>) -> impl In
             <div
                 class="ring-2 ring-red-500 ring-offset-2 aspect-w-10 aspect-h-10 group block w-full overflow-hidden rounded-lg bg-gray-100">
                 // <!-- Current: "", Default: "group-hover:opacity-75" -->
-                <iframe sandbox="allow-scripts" scrolling="no" loading="lazy" class="pointer-events-none object-cover" src={iframe_url}></iframe>
+                <iframe src=iframe_url sandbox="allow-scripts" scrolling="no" loading="lazy" class="pointer-events-none object-cover"></iframe>
 
                 <button type="button" class="absolute inset-0 focus:outline-none">
                     <span class="sr-only">"View details for ordinal"</span>

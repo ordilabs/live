@@ -1,5 +1,4 @@
 use cfg_if::cfg_if;
-use leptos::*;
 mod app;
 
 // boilerplate to run in different modes
@@ -7,6 +6,7 @@ cfg_if! {
 
     // server-only stuff
     if #[cfg(feature = "ssr")] {
+        use leptos::*;
         use actix_files::{Files};
         use actix_web::*;
         use crate::app::*;
@@ -46,7 +46,7 @@ cfg_if! {
 
             // Setting this to None means we'll be using cargo-leptos and its env vars.
             // when not using cargo-leptos None must be replaced with Some("Cargo.toml")
-            let conf = get_configuration(None).await.unwrap();
+            let conf = leptos::get_configuration(None).await.unwrap();
 
             let addr = conf.leptos_options.site_addr.clone();
             let routes = generate_route_list(|cx| view! { cx,
