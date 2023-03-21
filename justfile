@@ -28,8 +28,8 @@ up:
 up:
   # if someone has a better solution, be my guest
   sed 's/GATEWAY_IPV4/'` ip addr show eth0 | grep inet | awk '{print $2}' | cut -d/ -f1 | head -n1`'/g' \
-    docker/docker-compose.monkey-patch-linux.yml | tee -a tmp/docker-compose.linux.yml
-  cd docker && docker compose -f docker-compose.yml -f docker-compose.linux.yml -f ../tmp/docker-compose.linux.yml up 
+    docker/docker-compose.monkey-patch-linux.yml | tee tmp/docker-compose.linux.yml
+  cd docker && docker compose -f docker-compose.yml -f ../tmp/docker-compose.linux.yml up 
 
 down:
   cd docker && docker compose down -v
