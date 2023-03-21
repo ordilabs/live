@@ -140,11 +140,11 @@ _inscribe-punk PUNK:
 
 
 _download-punks:
-    @echo Downloading, unpacking punks to '/tmp/punks/punk_*.webp'
-    mkdir -p /tmp/punks
-    cd /tmp && [ -f punks.png ] || curl -LO "https://github.com/larvalabs/cryptopunks/raw/master/punks.png"
-    cd /tmp/punks && [ -f punk_0.webp ] || ( \
+    @echo Downloading, unpacking punks to 'tmp/punks/punk_*.webp'
+    mkdir -p tmp/punks
+    cd tmp && [ -f punks.png ] || curl -LO "https://github.com/larvalabs/cryptopunks/raw/master/punks.png"
+    cd tmp/punks && [ -f punk_0.webp ] || ( \
       convert ../punks.png -crop 100x100@ +repage +adjoin punk_%d.png && \
       seq 0 1 9999 | xargs -n1 -P 10 -I{} cwebp -lossless punk_{}.png -o punk_{}.webp \
     )
-    -cd /tmp/punks && rm punk_*.png*
+    -cd tmp/punks && rm punk_*.png*

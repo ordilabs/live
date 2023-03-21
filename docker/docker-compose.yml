@@ -57,7 +57,7 @@ services:
     environment:
       RUST_LOG: info
     volumes:
-      - /tmp/punks:/tmp/punks:ro
+      - ../tmp/punks:/tmp/punks:ro
       - fixtures-ord:/root/.local/share/ord:rw
       - ./bitcoin.cookie:/root/.bitcoin/regtest/.cookie:ro
       - ./bitcoin.conf:/root/.bitcoin/bitcoin.conf
