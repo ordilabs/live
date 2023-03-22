@@ -114,7 +114,7 @@ pub fn App(cx: Scope) -> impl IntoView {
                 <main class="flex-1 overflow-y-auto">
                     <div class="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
                         <div class="flex">
-                            <h1 class="flex-1 text-2xl font-bold text-gray-900 dark:text-gray-100">"Unconfirmed inscriptions"</h1>
+                            <h1 class="flex-1 text-2xl font-bold text-gray-900 dark:text-gray-100">"Live unconfirmed inscriptions"</h1>
                             <div class="ml-6 flex items-center rounded-lg bg-gray-100 p-0.5 sm:hidden">
                                 <button type="button"
                                     class="rounded-md p-1.5 text-gray-400 hover:bg-white hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-500">
