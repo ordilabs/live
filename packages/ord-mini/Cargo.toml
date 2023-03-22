@@ -1,0 +1,12 @@
+[package]
+name = "ord-mini"
+version = "0.5.1"
+edition = "2021"
+license = "CC0-1.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bitcoin = "0.29.2"
+anyhow = "1.0.70"
+mp4 = "0.13.0"

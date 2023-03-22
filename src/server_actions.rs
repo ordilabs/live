@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
 use super::*;
-use crate::ord::inscription::Inscription;
-use crate::ord::media::Media;
+extern crate ord_mini;
 
+use ord_mini::{Inscription, Media};
 use actix_web::http::header::{self, HeaderValue};
 use bitcoin::*;
 use serde::*;

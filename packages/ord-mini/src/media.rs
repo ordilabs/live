@@ -1,5 +1,6 @@
 use core::str::FromStr;
 pub use std::path::Path;
+extern crate mp4;
 
 use {
     mp4::{MediaType, Mp4Reader, TrackType},
@@ -9,7 +10,7 @@ use {
 use anyhow::{anyhow, Error};
 
 #[derive(Debug, PartialEq, Copy, Clone)]
-pub(crate) enum Media {
+pub enum Media {
     Audio,
     Iframe,
     Image,
