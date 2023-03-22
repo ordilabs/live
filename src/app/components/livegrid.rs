@@ -92,9 +92,9 @@ pub fn InscriptionItem(
     view! {
       cx,
       <li class="relative">
-          // <!-- Current: "ring-2 ring-rose-500 ring-offset-2", Default: "focus-within:ring-2 focus-within:ring-rose-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100" -->
+          // <!-- Current: "ring-2 ring-red-500 ring-offset-2", Default: "focus-within:ring-2 focus-within:ring-red-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100" -->
           <div
-              class="ring-2 ring-rose-500 ring-offset-2 aspect-w-10 aspect-h-10 group block w-full overflow-hidden rounded-lg bg-gray-100">
+              class="ring-2 ring-red-500 ring-offset-2 aspect-w-10 aspect-h-10 group block w-full overflow-hidden rounded-lg bg-gray-100">
               // <!-- Current: "", Default: "group-hover:opacity-75" -->
               <iframe src=iframe_url sandbox="allow-scripts" scrolling="no" loading="lazy" class="pointer-events-none object-cover"></iframe>
 
