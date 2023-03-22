@@ -2,6 +2,8 @@ use cfg_if::cfg_if;
 #[allow(unused)]
 use leptos::*;
 pub mod app;
+#[cfg(feature = "ssr")]
+pub mod backend;
 
 // Needs to be in lib.rs AFAIK because wasm-bindgen needs us to be compiling a lib. I may be wrong.
 cfg_if! {

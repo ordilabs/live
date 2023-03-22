@@ -12,7 +12,11 @@ cfg_if! {
         use crate::app::*;
         use leptos_actix::{generate_route_list, LeptosRoutes};
         mod server_actions;
-        mod ord;
+        mod backend;
+        use backend::Backend;
+        extern crate ord_mini;
+        use ord_mini::Inscription;
+        use std::collections::HashMap;
 
 
         #[get("/style.css")]
@@ -52,10 +56,10 @@ cfg_if! {
             let routes = generate_route_list(|cx| view! { cx,
                <App/> });
 
-            // gfi make this accept multiple inscriptions per transaction
+            let mut ordipool:  HashMap<String, Option<Inscription>> = HashMap::new();
+            let backend = backend::Space::new();
 
             actix_rt::spawn(async move {
-                let mut ordipool = std::collections::HashMap::new();
                 //let mut runs = 100u32;
                 let mut interval = actix_rt::time::interval(std::time::Duration::from_millis(500));
                 loop {
@@ -64,7 +68,7 @@ cfg_if! {
                     //runs += 1;
                     //let punk = format!("punk_{}.webp", &runs);
                     //INSCRIPTION_CHANNEL.send(&punk).await.unwrap();
-                    server_actions::tick(&mut ordipool).await;
+                    server_actions::tick_space(&backend, &mut ordipool).await;
                     // do something
                 }
             });
