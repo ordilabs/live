@@ -57,7 +57,10 @@ cfg_if! {
                <App/> });
 
             let mut ordipool:  HashMap<String, Option<Inscription>> = HashMap::new();
-            let backend = backend::Space::new();
+            let backend = std::env::var("BACKEND").unwrap_or("space".to_string()).to_lowercase();
+            //let backend_str = backend.as_str();
+            let backend_space = backend::Space::new();
+            let backend_bitcoin_core = backend::BitcoinCore::new();
 
             actix_rt::spawn(async move {
                 //let mut runs = 100u32;
@@ -68,7 +71,14 @@ cfg_if! {
                     //runs += 1;
                     //let punk = format!("punk_{}.webp", &runs);
                     //INSCRIPTION_CHANNEL.send(&punk).await.unwrap();
-                    server_actions::tick_space(&backend, &mut ordipool).await;
+                    if backend == "space" {
+                        server_actions::tick_space(&backend_space, &mut ordipool).await;
+                    } else if backend == "bitcoin_core" {
+                        server_actions::tick_bitcoin_core(&backend_bitcoin_core, &mut ordipool).await;
+                    } else {
+                        panic!("Unknown backend");
+                    }
+                    //server_actions::tick(&backend, &mut ordipool).await;
                     // do something
                 }
             });

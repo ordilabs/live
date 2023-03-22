@@ -6,7 +6,7 @@ extern crate ord_mini;
 use ord_mini::{Inscription, Media};
 
 use actix_web::http::header::{self, HeaderValue};
-use backend::{Backend, Space};
+use backend::{Backend, BitcoinCore, Space};
 use serde::*;
 
 //use std::io::Read::read_to_end;
@@ -24,8 +24,10 @@ pub(crate) async fn tick_space(
 ) {
     let mpr = backend.recent().await.ok();
 
+    let mut mpr_len = 0;
     match mpr {
         Some(mpr) => {
+            mpr_len = mpr.len();
             for entry in mpr {
                 let txid = entry.txid;
                 if ordipool.contains_key(&txid) {
@@ -45,7 +47,39 @@ pub(crate) async fn tick_space(
         _ => {}
     }
 
-    log!("tick");
+    log!("tick space, {}", &mpr_len);
+}
+
+pub(crate) async fn tick_bitcoin_core(
+    backend: &BitcoinCore,
+    ordipool: &mut HashMap<String, Option<Inscription>>,
+) {
+    let mpr = backend.recent().await.ok();
+
+    let mut mpr_len = 0;
+    match mpr {
+        Some(mpr) => {
+            mpr_len = mpr.len();
+            for entry in mpr {
+                let txid = entry.txid;
+                if ordipool.contains_key(&txid) {
+                    continue;
+                }
+                let maybe_inscription = backend.maybe_inscription(&txid).await.unwrap();
+                if maybe_inscription.is_some() {
+                    let ins = format!("{}i0", &txid);
+                    _ = INSCRIPTION_CHANNEL.send(&ins).await;
+                    log!("broadcast {}", &txid);
+                }
+                _ = ordipool.entry(txid.clone()).or_insert(maybe_inscription);
+
+                //dbg!("broadcasting {}", &txid);
+            }
+        }
+        _ => {}
+    }
+
+    log!("tick: bitcoin_core, {}", &mpr_len);
 }
 
 pub async fn content(path: web::Path<Content>) -> impl Responder {

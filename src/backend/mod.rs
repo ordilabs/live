@@ -9,6 +9,10 @@ pub use ord_mini::{Inscription, Media};
 use serde::Deserialize;
 pub mod space;
 pub use space::Space;
+pub mod bitcoin_core;
+pub use bitcoin_core::BitcoinCore;
+
+use anyhow::Result;
 
 #[derive(Deserialize, Debug)]
 pub struct MempoolRecentEntry {
@@ -25,7 +29,7 @@ pub trait Backend {
     fn new() -> Self;
     async fn get_latest_inscriptions(&self) -> Vec<Inscription>;
 
-    async fn recent(&self) -> Result<MempoolRecent, anyhow::Error>;
+    async fn recent(&self) -> Result<MempoolRecent>;
 
-    async fn maybe_inscription(&self, txid: &str) -> Result<Option<Inscription>, anyhow::Error>;
+    async fn maybe_inscription(&self, txid: &str) -> Result<Option<Inscription>>;
 }

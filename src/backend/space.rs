@@ -36,13 +36,13 @@ impl Backend for Space {
         inscriptions
     }
 
-    async fn recent(&self) -> Result<MempoolRecent, anyhow::Error> {
+    async fn recent(&self) -> Result<MempoolRecent> {
         let url = self.root.clone() + "/api/mempool/recent";
         let mpr = reqwest::get(url).await?.json::<MempoolRecent>().await?;
         Ok(mpr)
     }
 
-    async fn maybe_inscription(&self, txid: &str) -> Result<Option<Inscription>, anyhow::Error> {
+    async fn maybe_inscription(&self, txid: &str) -> Result<Option<Inscription>> {
         let url = self.root.to_owned() + &"/api/tx/{}/hex".replace("{}", &txid);
 
         let hex = reqwest::get(url).await.unwrap().text().await.unwrap();
