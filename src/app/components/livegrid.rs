@@ -92,7 +92,7 @@ pub fn InscriptionItem(
           // <!-- Current: "ring-2 ring-red-500 ring-offset-2", Default: "focus-within:ring-2 focus-within:ring-red-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100" -->
           <a href=preview_url target=preview_url title="Click to view the unconfirmed inscription.">
           <div
-              class="ring-2 ring-red-500 ring-offset-2 aspect-w-10 aspect-h-10 group block w-full overflow-hidden rounded-lg bg-gray-100">
+              class="ring-2 ring-red-500 aspect-w-10 aspect-h-10 group block w-full overflow-hidden rounded-lg bg-gray-100">
               // <!-- Current: "", Default: "group-hover:opacity-75" -->
               <iframe src=preview_url sandbox="allow-scripts" scrolling="no" loading="lazy" class="pointer-events-none object-cover"></iframe>
 
