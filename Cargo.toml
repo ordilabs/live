@@ -31,8 +31,6 @@ log = "0.4"
 ord-mini = { version = "0.5.1", path = "packages/ord-mini", optional = true }
 reqwest = { version = "0.11.15", optional = true, features = ["json"] }
 serde = { version = "1", features = ["derive"] }
-simple_logger = "4.1.0"
-tracing = { version = "0.1.37", optional = true }
 wasm-bindgen = "0.2"
 
 [features]
@@ -48,7 +46,6 @@ ssr = [
   "dep:hex",
   "dep:ord-mini",
   "dep:reqwest",
-  "dep:tracing",
   "leptos_actix",
   "leptos_meta/ssr",
   "leptos_router/ssr",
