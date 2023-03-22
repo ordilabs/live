@@ -4,7 +4,7 @@ Ordinals mempool viewer. View inscriptions before they're inscribed!
 
 ## Setup
 
-We use Docker to containerize all microservices and you `just` need to run a few recipies (see below) to get your devbox `up` and running. When your systems prerequisites are already met, usually in under 15 minutes.
+We use Docker to containerize all micro-services and you `just` need to run a few recipes (see below) to get your devbox `up` and running. When your systems prerequisites are already met, usually in under 15 minutes.
 
 ### prerequisites
 
@@ -30,11 +30,11 @@ just setup-once
 
 ### dev environment
 
-Run each command in a seperate terminal
+Run each command in a separate terminal
 
 ```bash
 # start up dev environment
-just up 
+just up
 
 # reset
 ## just down
@@ -42,7 +42,7 @@ just up
 # watch code for changes, recompile, refresh frontend
 just watch
 
-# open all .local domains in a brwoser
+# open all .local domains in a browser
 just open
 ```
 
@@ -52,10 +52,10 @@ Once up and running you can perform dev tasks
 
 ```bash
 # mine 1 block
-just generate 1
+just g 1
 
 # inscribe a punk
-just punk-1
+just p
 
 # create temporary tunnel to expose your .local on the internet
 just tunnel
