@@ -29,9 +29,6 @@ pub fn Header(cx: Scope) -> impl IntoView {
               </button>
             </div>
             <div class="hidden md:ml-4 md:flex md:flex-shrink-0 md:items-center">
-
-
-            //   <!-- Profile dropdown -->
               <div class="relative ml-3">
 
               </div>
@@ -78,39 +75,5 @@ pub fn Footer(cx: Scope) -> impl IntoView {
       </footer>
 
 
-    }
-}
-
-#[component]
-pub fn TypeTabs(cx: Scope) -> impl IntoView {
-    view! {
-        cx,
-        <div class="mt-3 sm:mt-2">
-                            <div class="sm:hidden">
-                                <label for="tabs" class="sr-only">"Select a tab"</label>
-                                // <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
-                                <select id="tabs" name="tabs"
-                                    class="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:border-red-500 focus:ring-2 focus:ring-inset focus:ring-red-600">
-                                    <option selected>"All"</option>
-                                    <option>"Images"</option>
-                                    <option>"Names"</option>
-                                </select>
-                            </div>
-                            <div class="hidden sm:block">
-                                <div class="flex items-center border-b border-gray-200">
-                                    <nav class="-mb-px flex flex-1 space-x-6 xl:space-x-8" aria-label="Tabs">
-                                        // <!-- Current: "border-red-500 text-red-600", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
-                                        <a href="#" aria-current="page"
-                                            class="border-red-500 text-red-600 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">"All"</a>
-
-                                        <a href="#"
-                                            class="border-transparent text-gray-500 dark:text-gray-100 hover:border-gray-300 dark:hover:border-red-500 hover:text-gray-700 dark:hover:text-red-500 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">"Images"</a>
-
-                                        <a href="#"
-                                            class="border-transparent text-gray-500 dark:text-gray-100 hover:border-gray-300 dark:hover:border-red-500 hover:text-gray-700 dark:hover:text-red-500 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">"Names"</a>
-                                    </nav>
-                                </div>
-                            </div>
-                        </div>
     }
 }
