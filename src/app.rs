@@ -113,7 +113,7 @@ pub fn App(cx: Scope) -> impl IntoView {
         <div class="flex flex-1 flex-col overflow-hidden">
            <Header />
 
-           <span>"Multiplayer Value: " {move || multiplayer_value.get().unwrap_or_default().to_string()}</span>
+           <span style="display: none">"Multiplayer Value: " {move || multiplayer_value.get().unwrap_or_default().to_string()}</span>
 
             // <!-- Main content -->
             <div class="flex flex-1 items-stretch overflow-hidden">

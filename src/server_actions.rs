@@ -57,6 +57,9 @@ pub(crate) async fn tick_bitcoin_core(
     let mpr = backend.recent().await.ok();
 
     let mut mpr_len = 0;
+    let mut mpr_ins = 0;
+    let mut mpr_img = 0;
+
     match mpr {
         Some(mpr) => {
             mpr_len = mpr.len();
@@ -66,12 +69,24 @@ pub(crate) async fn tick_bitcoin_core(
                     continue;
                 }
                 let maybe_inscription = backend.maybe_inscription(&txid).await.unwrap();
-                if maybe_inscription.is_some() {
-                    let ins = format!("{}i0", &txid);
-                    _ = INSCRIPTION_CHANNEL.send(&ins).await;
-                    log!("broadcast {}", &txid);
-                }
-                _ = ordipool.entry(txid.clone()).or_insert(maybe_inscription);
+                let maybe_inscription = match maybe_inscription {
+                    Some(ins) => {
+                        mpr_ins += 1;
+
+                        if ins.media() != Media::Image {
+                            break;
+                        }
+                        mpr_img += 1;
+
+                        let inscription_id = format!("{}i0", &txid);
+                        _ = INSCRIPTION_CHANNEL.send(&inscription_id).await;
+                        log!("broadcast {}", &inscription_id);
+                        Some(ins)
+                    }
+                    None => None,
+                };
+                ordipool.entry(txid.clone()).or_insert(maybe_inscription);
+                //_ = ordipool.entry(txid.clone()).or_insert(maybe_inscription);
 
                 //dbg!("broadcasting {}", &txid);
             }
@@ -79,11 +94,17 @@ pub(crate) async fn tick_bitcoin_core(
         _ => {}
     }
 
-    log!("tick: bitcoin_core, {}", &mpr_len);
+    log!(
+        "tick: bitcoin_core, {}, {}, {}",
+        &mpr_len,
+        &mpr_ins,
+        &mpr_img
+    );
 }
 
 pub async fn content(path: web::Path<Content>) -> impl Responder {
     let s = path.inscription_id.to_owned();
+    dbg!(&path.inscription_id);
     if s.starts_with("punk") {
         let location = format!("/punks/{}", s);
 
@@ -98,19 +119,21 @@ pub async fn content(path: web::Path<Content>) -> impl Responder {
             .content_type("text/plain")
             .body("body");
     }
+
+    //dbg!(path.inscription_id.as_str());
     //let path_ = path.inscription_id.clone();
     //let s = path.inscription_id.as_str();
-    dbg!(&s);
+    //dbg!(&s);
     //log!("{}", s);
 
     let txid = &s.as_str()[0..64];
-    let backend = Space::new();
+    let backend = BitcoinCore::new();
+    dbg!("content for: {}", txid);
 
     // get content from remote server
     // todo gfi: use the /raw api instead of /hex
 
     let maybe_inscription = backend.maybe_inscription(txid).await.unwrap();
-    dbg!(&maybe_inscription);
 
     match maybe_inscription {
         Some(inscription) => match inscription.media() {

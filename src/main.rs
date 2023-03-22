@@ -50,14 +50,15 @@ cfg_if! {
 
             // Setting this to None means we'll be using cargo-leptos and its env vars.
             // when not using cargo-leptos None must be replaced with Some("Cargo.toml")
-            let conf = leptos::get_configuration(None).await.unwrap();
+
+            let conf = leptos::get_configuration(Some("Cargo.toml")).await.unwrap();
 
             let addr = conf.leptos_options.site_addr.clone();
             let routes = generate_route_list(|cx| view! { cx,
                <App/> });
 
             let mut ordipool:  HashMap<String, Option<Inscription>> = HashMap::new();
-            let backend = std::env::var("BACKEND").unwrap_or("space".to_string()).to_lowercase();
+            let backend = std::env::var("BACKEND").unwrap_or("bitcoin_core".to_string()).to_lowercase();
             //let backend_str = backend.as_str();
             let backend_space = backend::Space::new();
             let backend_bitcoin_core = backend::BitcoinCore::new();
