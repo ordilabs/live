@@ -23,10 +23,10 @@ futures = "0.3"
 gloo-net = { git = "https://github.com/rustwasm/gloo" }
 hex = { version = "0.4.3", optional = true }
 lazy_static = "1"
-leptos = { version = "0.2.3", default-features = false, features = ["serde"] }
-leptos_actix = { version = "0.2.3", optional = true }
-leptos_meta = { version = "0.2.3", default-features = false }
-leptos_router = { version = "0.2.3", default-features = false }
+leptos = { version = "0.2.4", default-features = false, features = ["serde"] }
+leptos_actix = { version = "0.2.4", optional = true }
+leptos_meta = { version = "0.2.4", default-features = false }
+leptos_router = { version = "0.2.4", default-features = false }
 log = "0.4"
 ord-mini = { version = "0.5.1", path = "packages/ord-mini", optional = true }
 reqwest = { version = "0.11.15", optional = true, features = ["json"] }
