@@ -1,11 +1,12 @@
 use std::collections::HashMap;
 
 use super::*;
-use crate::ord::inscription::Inscription;
-use crate::ord::media::Media;
+extern crate ord_mini;
+
+use ord_mini::{Inscription, Media};
 
 use actix_web::http::header::{self, HeaderValue};
-use bitcoin::*;
+use backend::{Backend, BitcoinCore, Space};
 use serde::*;
 
 //use std::io::Read::read_to_end;
@@ -15,30 +16,24 @@ pub struct Content {
     pub inscription_id: String,
 }
 
-#[derive(Deserialize, Debug)]
-pub struct MempoolRecentEntry {
-    pub txid: String,
-    pub fee: u64,
-    pub vsize: f64,
-    pub value: u64,
-}
-
-const MEMPOOL_API_URL: &str = "http://mempool-ol.local/";
-
 //#[derive(Deserialize)]
-pub type MempoolRecent = Vec<MempoolRecentEntry>;
 
-pub(crate) async fn tick(ordipool: &mut HashMap<String, Option<Inscription>>) {
-    let mpr = recent().await.ok();
+pub(crate) async fn tick_space(
+    backend: &Space,
+    ordipool: &mut HashMap<String, Option<Inscription>>,
+) {
+    let mpr = backend.recent().await.ok();
 
+    let mut mpr_len = 0;
     match mpr {
         Some(mpr) => {
+            mpr_len = mpr.len();
             for entry in mpr {
                 let txid = entry.txid;
                 if ordipool.contains_key(&txid) {
                     continue;
                 }
-                let maybe_inscription = mempool_maybe_inscription(&txid).await.unwrap();
+                let maybe_inscription = backend.maybe_inscription(&txid).await.unwrap();
                 if maybe_inscription.is_some() {
                     let ins = format!("{}i0", &txid);
                     _ = INSCRIPTION_CHANNEL.send(&ins).await;
@@ -52,17 +47,64 @@ pub(crate) async fn tick(ordipool: &mut HashMap<String, Option<Inscription>>) {
         _ => {}
     }
 
-    log!("tick");
+    log!("tick space, {}", &mpr_len);
 }
 
-pub async fn recent() -> Result<MempoolRecent, anyhow::Error> {
-    let url = MEMPOOL_API_URL.to_owned() + "/api/mempool/recent";
-    let mpr = reqwest::get(url).await?.json::<MempoolRecent>().await?;
-    Ok(mpr)
+pub(crate) async fn tick_bitcoin_core(
+    backend: &BitcoinCore,
+    ordipool: &mut HashMap<String, Option<Inscription>>,
+) {
+    let mpr = backend.recent().await.ok();
+
+    let mut mpr_len = 0;
+    let mut mpr_ins = 0;
+    let mut mpr_img = 0;
+
+    match mpr {
+        Some(mpr) => {
+            mpr_len = mpr.len();
+            for entry in mpr {
+                let txid = entry.txid;
+                if ordipool.contains_key(&txid) {
+                    continue;
+                }
+                let maybe_inscription = backend.maybe_inscription(&txid).await.unwrap();
+                let maybe_inscription = match maybe_inscription {
+                    Some(ins) => {
+                        mpr_ins += 1;
+
+                        if ins.media() != Media::Image {
+                            break;
+                        }
+                        mpr_img += 1;
+
+                        let inscription_id = format!("{}i0", &txid);
+                        _ = INSCRIPTION_CHANNEL.send(&inscription_id).await;
+                        log!("broadcast {}", &inscription_id);
+                        Some(ins)
+                    }
+                    None => None,
+                };
+                ordipool.entry(txid.clone()).or_insert(maybe_inscription);
+                //_ = ordipool.entry(txid.clone()).or_insert(maybe_inscription);
+
+                //dbg!("broadcasting {}", &txid);
+            }
+        }
+        _ => {}
+    }
+
+    log!(
+        "tick: bitcoin_core, {}, {}, {}",
+        &mpr_len,
+        &mpr_ins,
+        &mpr_img
+    );
 }
 
 pub async fn content(path: web::Path<Content>) -> impl Responder {
     let s = path.inscription_id.to_owned();
+    dbg!(&path.inscription_id);
     if s.starts_with("punk") {
         let location = format!("/punks/{}", s);
 
@@ -77,18 +119,21 @@ pub async fn content(path: web::Path<Content>) -> impl Responder {
             .content_type("text/plain")
             .body("body");
     }
+
+    //dbg!(path.inscription_id.as_str());
     //let path_ = path.inscription_id.clone();
     //let s = path.inscription_id.as_str();
-    dbg!(&s);
+    //dbg!(&s);
     //log!("{}", s);
 
     let txid = &s.as_str()[0..64];
+    let backend = BitcoinCore::new();
+    dbg!("content for: {}", txid);
 
     // get content from remote server
     // todo gfi: use the /raw api instead of /hex
 
-    let maybe_inscription = mempool_maybe_inscription(txid).await.unwrap();
-    dbg!(&maybe_inscription);
+    let maybe_inscription = backend.maybe_inscription(txid).await.unwrap();
 
     match maybe_inscription {
         Some(inscription) => match inscription.media() {
@@ -101,17 +146,6 @@ pub async fn content(path: web::Path<Content>) -> impl Responder {
             .content_type("text/plain")
             .body("Not found"),
     }
-}
-
-pub(crate) async fn mempool_maybe_inscription(
-    txid: &str,
-) -> Result<Option<Inscription>, anyhow::Error> {
-    let url = (MEMPOOL_API_URL.to_owned() + "api/tx/{}/hex").replace("{}", txid);
-    let hex = reqwest::get(url).await.unwrap().text().await.unwrap();
-    let data = hex::decode(&hex)?;
-    let transaction: Transaction = consensus::deserialize(&data)?;
-    let maybe_inscription = Inscription::from_transaction(&transaction);
-    Ok(maybe_inscription)
 }
 
 fn image_response_actix(inscription: Inscription) -> HttpResponse {
