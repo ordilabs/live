@@ -12,7 +12,11 @@ cfg_if! {
         use crate::app::*;
         use leptos_actix::{generate_route_list, LeptosRoutes};
         mod server_actions;
-        mod ord;
+        mod backend;
+        use backend::Backend;
+        extern crate ord_mini;
+        use ord_mini::Inscription;
+        use std::collections::HashMap;
 
 
         #[get("/style.css")]
@@ -46,16 +50,20 @@ cfg_if! {
 
             // Setting this to None means we'll be using cargo-leptos and its env vars.
             // when not using cargo-leptos None must be replaced with Some("Cargo.toml")
-            let conf = leptos::get_configuration(None).await.unwrap();
+
+            let conf = leptos::get_configuration(Some("Cargo.toml")).await.unwrap();
 
             let addr = conf.leptos_options.site_addr.clone();
             let routes = generate_route_list(|cx| view! { cx,
                <App/> });
 
-            // gfi make this accept multiple inscriptions per transaction
+            let mut ordipool:  HashMap<String, Option<Inscription>> = HashMap::new();
+            let backend = std::env::var("BACKEND").unwrap_or("bitcoin_core".to_string()).to_lowercase();
+            //let backend_str = backend.as_str();
+            let backend_space = backend::Space::new();
+            let backend_bitcoin_core = backend::BitcoinCore::new();
 
             actix_rt::spawn(async move {
-                let mut ordipool = std::collections::HashMap::new();
                 //let mut runs = 100u32;
                 let mut interval = actix_rt::time::interval(std::time::Duration::from_millis(500));
                 loop {
@@ -64,7 +72,14 @@ cfg_if! {
                     //runs += 1;
                     //let punk = format!("punk_{}.webp", &runs);
                     //INSCRIPTION_CHANNEL.send(&punk).await.unwrap();
-                    server_actions::tick(&mut ordipool).await;
+                    if backend == "space" {
+                        server_actions::tick_space(&backend_space, &mut ordipool).await;
+                    } else if backend == "bitcoin_core" {
+                        server_actions::tick_bitcoin_core(&backend_bitcoin_core, &mut ordipool).await;
+                    } else {
+                        panic!("Unknown backend");
+                    }
+                    //server_actions::tick(&backend, &mut ordipool).await;
                     // do something
                 }
             });

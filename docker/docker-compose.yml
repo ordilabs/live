@@ -23,6 +23,8 @@ services:
     image: getumbrel/bitcoind:v24.0.1
     # set config in bitcoin.conf
     user: "1000:1000"
+    ports:
+      - "18443:18443"
     volumes:
       - bitcoin-core:/data/.bitcoin:rw
       - ./bitcoin.conf:/data/.bitcoin/bitcoin.conf:ro

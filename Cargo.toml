@@ -7,47 +7,52 @@ edition = "2021"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-reqwest = { version = "0.11.15", optional = true, features = ["json"] }
 actix-files = { version = "0.6", optional = true }
-actix-web = { version = "4", optional = true, features = ["macros"] }
-broadcaster = "1"
-console_log = "1.0"
-console_error_panic_hook = "0.1"
-serde = { version = "1", features = ["derive"] }
-futures = "0.3"
-cfg-if = "1"
-lazy_static = "1"
-leptos = { version = "0.2.3", default-features = false, features = ["serde"] }
-leptos_actix = { version = "0.2.3", optional = true }
-leptos_meta = { version = "0.2.3", default-features = false }
-leptos_router = { version = "0.2.3", default-features = false }
-log = "0.4"
-simple_logger = "4.1.0"
-gloo-net = { git = "https://github.com/rustwasm/gloo" }
-wasm-bindgen = "0.2"
-bitcoin = { version = "0.29", optional = true }
-hex = { version = "*", optional = true }
-mp4 = { version = "0.13.0", optional = true }
-anyhow = { version = "1.0.70", optional = true }
 actix-rt = { version = "2.8.0", optional = true }
+actix-web = { version = "4", optional = true, features = ["macros"] }
+anyhow = { version = "1.0.70", optional = true }
+async-trait = { version = "0.1.67", optional = true }
+bitcoin = { version = "0.29.2", optional = true }
+bitcoincore-rpc = { version = "0.16.0", optional = true }
+bitcoincore-rpc-json = { version = "0.16.0", optional = true }
+broadcaster = "1"
+cfg-if = "1"
+console_error_panic_hook = "0.1"
+console_log = "1.0"
+futures = "0.3"
+gloo-net = { git = "https://github.com/rustwasm/gloo" }
+hex = { version = "0.4.3", optional = true }
+lazy_static = "1"
+leptos = { version = "0.2.4", default-features = false, features = ["serde"] }
+leptos_actix = { version = "0.2.4", optional = true }
+leptos_meta = { version = "0.2.4", default-features = false }
+leptos_router = { version = "0.2.4", default-features = false }
+log = "0.4"
+ord-mini = { version = "0.5.1", path = "packages/ord-mini", optional = true }
+reqwest = { version = "0.11.15", optional = true, features = ["json"] }
+serde = { version = "1", features = ["derive"] }
+wasm-bindgen = "0.2"
 
 [features]
-default = []
-hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
 ssr = [
   "dep:actix-files",
-  "dep:actix-web",
   "dep:actix-rt",
+  "dep:actix-web",
   "dep:anyhow",
+  "dep:async-trait",
   "dep:bitcoin",
+  "dep:bitcoincore-rpc-json",
+  "dep:bitcoincore-rpc",
   "dep:hex",
-  "dep:mp4",
+  "dep:ord-mini",
   "dep:reqwest",
-  "leptos/ssr",
   "leptos_actix",
   "leptos_meta/ssr",
   "leptos_router/ssr",
+  "leptos/ssr",
 ]
+default = []
+hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
 stable = ["leptos/stable", "leptos_router/stable"]
 
 [package.metadata.cargo-all-features]
