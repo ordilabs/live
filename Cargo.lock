@@ -1840,6 +1840,7 @@ dependencies = [
  "leptos_router",
  "log",
  "ord-mini",
+ "rand",
  "reqwest",
  "serde",
  "wasm-bindgen",

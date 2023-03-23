@@ -30,12 +30,14 @@ leptos_meta = { version = "0.2.4", default-features = false }
 leptos_router = { version = "0.2.4", default-features = false }
 log = "0.4"
 ord-mini = { version = "0.5.1", path = "packages/ord-mini", optional = true }
+rand = { version = "0.8.5", optional = true }
 reqwest = { version = "0.11.15", optional = true, features = ["json"] }
 serde = { version = "1", features = ["derive"] }
 wasm-bindgen = "0.2"
 
 [features]
 ssr = [
+  "dep:rand",
   "dep:actix-files",
   "dep:actix-rt",
   "dep:actix-web",
