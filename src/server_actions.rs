@@ -2,6 +2,8 @@ use std::collections::HashMap;
 
 use super::*;
 extern crate ord_mini;
+extern crate rand;
+use rand::seq::IteratorRandom;
 
 use ord_mini::{Inscription, Media};
 
@@ -59,6 +61,7 @@ pub(crate) async fn tick_bitcoin_core(
     let mut mpr_len = 0;
     let mut mpr_ins = 0;
     let mut mpr_img = 0;
+    let mut broadcast = 0;
 
     match mpr {
         Some(mpr) => {
@@ -77,7 +80,7 @@ pub(crate) async fn tick_bitcoin_core(
                             break;
                         }
                         mpr_img += 1;
-
+                        broadcast += 1;
                         let inscription_id = format!("{}i0", &txid);
                         _ = INSCRIPTION_CHANNEL.send(&inscription_id).await;
                         log!("broadcast {}", &inscription_id);
@@ -92,6 +95,19 @@ pub(crate) async fn tick_bitcoin_core(
             }
         }
         _ => {}
+    }
+
+    if broadcast == 0 {
+        let chosen = ordipool
+            .iter()
+            .filter(|entry: &(&String, &Option<Inscription>)| entry.1.is_some())
+            .choose(&mut rand::thread_rng());
+        if chosen.is_some() {
+            let txid = chosen.unwrap().0;
+            let ins = format!("{}i0", &txid);
+            _ = INSCRIPTION_CHANNEL.send(&ins).await;
+            log!("re-broadcast {}", &txid);
+        }
     }
 
     log!(

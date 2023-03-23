@@ -77,7 +77,7 @@ cfg_if! {
 
             actix_rt::spawn(async move {
                 //let mut runs = 100u32;
-                let mut interval = actix_rt::time::interval(std::time::Duration::from_millis(500));
+                let mut interval = actix_rt::time::interval(std::time::Duration::from_millis(3142));
                 loop {
                     interval.tick().await;
                     //log!("tick2");
