@@ -17,6 +17,7 @@ cfg_if! {
         extern crate ord_mini;
         use ord_mini::Inscription;
         use std::collections::HashMap;
+        extern crate dotenv;
 
 
         #[get("/style.css")]
@@ -45,6 +46,7 @@ cfg_if! {
 
         #[actix_web::main]
         async fn main() -> std::io::Result<()> {
+            dotenv::dotenv().ok();
 
             crate::app::register_server_functions();
 
@@ -62,6 +64,16 @@ cfg_if! {
             //let backend_str = backend.as_str();
             let backend_space = backend::Space::new();
             let backend_bitcoin_core = backend::BitcoinCore::new();
+
+            // todo print more relevant config stuff
+            dbg!(&backend_bitcoin_core);
+            if std::env::var("RUST_BACKTRACE").is_ok() {
+                let mut buffer = String::new();
+                let stdin = std::io::stdin(); // We get `Stdin` here.
+                println!("Press enter to start with config above. Crtl+C to abort.");
+                stdin.read_line(&mut buffer)?;
+            }
+
 
             actix_rt::spawn(async move {
                 //let mut runs = 100u32;
