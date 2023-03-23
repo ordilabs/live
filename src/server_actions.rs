@@ -1,6 +1,5 @@
-use std::collections::HashMap;
-
 use super::*;
+use std::collections::HashMap;
 extern crate ord_mini;
 extern crate rand;
 use rand::seq::IteratorRandom;
@@ -71,24 +70,29 @@ pub(crate) async fn tick_bitcoin_core(
                 if ordipool.contains_key(&txid) {
                     continue;
                 }
-                let maybe_inscription = backend.maybe_inscription(&txid).await.unwrap();
-                let maybe_inscription = match maybe_inscription {
-                    Some(ins) => {
-                        mpr_ins += 1;
 
-                        if ins.media() != Media::Image {
-                            break;
-                        }
-                        mpr_img += 1;
-                        broadcast += 1;
-                        let inscription_id = format!("{}i0", &txid);
-                        _ = INSCRIPTION_CHANNEL.send(&inscription_id).await;
-                        log!("broadcast {}", &inscription_id);
-                        Some(ins)
-                    }
-                    None => None,
-                };
-                ordipool.entry(txid.clone()).or_insert(maybe_inscription);
+                let maybe_inscription = backend.maybe_inscription(&txid).await.unwrap();
+
+                if maybe_inscription.is_none() {
+                    ordipool.entry(txid.clone()).or_insert(None);
+                    continue;
+                }
+
+                mpr_ins += 1;
+                let ins = maybe_inscription.unwrap();
+
+                if ins.media() != Media::Image {
+                    ordipool.entry(txid.clone()).or_insert(None);
+                    continue;
+                }
+
+                mpr_img += 1;
+                broadcast += 1;
+                let inscription_id = format!("{}i0", &txid);
+                //_ = INSCRIPTION_CHANNEL.send(&inscription_id).await;
+                log!("broadcast {}", &inscription_id);
+
+                ordipool.entry(txid.clone()).or_insert(Some(ins));
                 //_ = ordipool.entry(txid.clone()).or_insert(maybe_inscription);
 
                 //dbg!("broadcasting {}", &txid);
