@@ -1,3 +1,4 @@
 **/target/
 /node_modules
 /style/output.css
+/.env
