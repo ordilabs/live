@@ -60,15 +60,17 @@ pub(crate) async fn tick_bitcoin_core(
     let mut mpr_len = 0;
     let mut mpr_ins = 0;
     let mut mpr_img = 0;
-    let mut broadcast = 0;
-
+    let mut broadcast = vec![];
     match mpr {
         Some(mpr) => {
             mpr_len = mpr.len();
-            for entry in mpr {
+            for (n, entry) in mpr.into_iter().enumerate() {
                 let txid = entry.txid;
                 if ordipool.contains_key(&txid) {
                     continue;
+                }
+                if n % 100 == 1 {
+                    println!("processing {}/{}", n, mpr_len);
                 }
 
                 let maybe_inscription = backend.maybe_inscription(&txid).await.unwrap();
@@ -87,10 +89,11 @@ pub(crate) async fn tick_bitcoin_core(
                 }
 
                 mpr_img += 1;
-                broadcast += 1;
+
                 let inscription_id = format!("{}i0", &txid);
                 //_ = INSCRIPTION_CHANNEL.send(&inscription_id).await;
-                log!("broadcast {}", &inscription_id);
+                broadcast.push(inscription_id);
+                //log!("broadcast {}", );
 
                 ordipool.entry(txid.clone()).or_insert(Some(ins));
                 //_ = ordipool.entry(txid.clone()).or_insert(maybe_inscription);
@@ -101,16 +104,24 @@ pub(crate) async fn tick_bitcoin_core(
         _ => {}
     }
 
-    if broadcast == 0 {
+    if broadcast.len() > 4 {
+        broadcast.resize(4, String::new());
+    }
+
+    if broadcast.len() == 0 {
         let chosen = ordipool
             .iter()
             .filter(|entry: &(&String, &Option<Inscription>)| entry.1.is_some())
             .choose(&mut rand::thread_rng());
         if chosen.is_some() {
             let txid = chosen.unwrap().0;
+
+            log!("re-broadcast {}", &txid);
+        }
+    } else {
+        for txid in broadcast {
             let ins = format!("{}i0", &txid);
             _ = INSCRIPTION_CHANNEL.send(&ins).await;
-            log!("re-broadcast {}", &txid);
         }
     }
 
