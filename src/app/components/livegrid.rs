@@ -54,10 +54,7 @@ pub fn LiveGrid(
                             <InscriptionItem id value set_value/>
                         }
                     }
-                />
-
-            // <!-- More files... -->
-
+            />
         </ul>
     </section> }
 }
@@ -88,24 +85,24 @@ pub fn InscriptionItem(
     set_value: WriteSignal<String>,
 ) -> impl IntoView {
     let _ = set_value;
-    let iframe_url = move || format!("/preview/{}", value.get());
+    let preview_url = move || format!("/preview/{}", value.get());
     view! {
       cx,
       <li class="relative">
-          // <!-- Current: "ring-2 ring-rose-500 ring-offset-2", Default: "focus-within:ring-2 focus-within:ring-rose-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100" -->
+          // <!-- Current: "ring-2 ring-red-500 ring-offset-2", Default: "focus-within:ring-2 focus-within:ring-red-500 focus-within:ring-offset-2 focus-within:ring-offset-gray-100" -->
+          <a href=preview_url target=preview_url title="Click to view the unconfirmed inscription.">
           <div
-              class="ring-2 ring-rose-500 ring-offset-2 aspect-w-10 aspect-h-10 group block w-full overflow-hidden rounded-lg bg-gray-100">
+              class="ring-2 ring-red-500 aspect-w-10 aspect-h-10 group block w-full overflow-hidden rounded-lg bg-gray-100">
               // <!-- Current: "", Default: "group-hover:opacity-75" -->
-              <iframe src=iframe_url sandbox="allow-scripts" scrolling="no" loading="lazy" class="pointer-events-none object-cover"></iframe>
+              <iframe src=preview_url sandbox="allow-scripts" scrolling="no" loading="lazy" class="pointer-events-none object-cover"></iframe>
 
               <button type="button" class="absolute inset-0 focus:outline-none">
                   <span class="sr-only">"View details for ordinal"</span>
               </button>
           </div>
-          <p
-              class="pointer-events-none mt-2 block truncate text-sm font-medium text-gray-900">
-              "JPEG"{id}</p>
-          <p class="pointer-events-none block text-sm font-medium text-gray-500">"3.9 MB"</p>
+          // <p class="mt-2 block truncate text-sm font-medium text-gray-900"><a href=preview_url target="_blank">"View transaction"</a></p>
+          // <p class="pointer-events-none block text-sm font-medium text-gray-500 text-ellipsis">"Tx:" {move || value.get()}</p>
+          </a>
       </li>
     }
 }

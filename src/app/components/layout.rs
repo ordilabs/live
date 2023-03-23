@@ -29,9 +29,6 @@ pub fn Header(cx: Scope) -> impl IntoView {
               </button>
             </div>
             <div class="hidden md:ml-4 md:flex md:flex-shrink-0 md:items-center">
-
-
-            //   <!-- Profile dropdown -->
               <div class="relative ml-3">
 
               </div>
@@ -55,7 +52,7 @@ pub fn Footer(cx: Scope) -> impl IntoView {
           <div class="flex justify-center space-x-6 md:order-2">
 
 
-            <a href="#" class="text-gray-400 hover:text-gray-500 dark:text-gray-100">
+            <a href="https://twitter.com/OrdiLabs_org" class="text-gray-400 hover:text-gray-500 dark:text-gray-100">
               <span class="sr-only">"Twitter"</span>
               <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
@@ -72,200 +69,11 @@ pub fn Footer(cx: Scope) -> impl IntoView {
 
           </div>
           <div class="mt-8 md:order-1 md:mt-0">
-            <p class="text-center text-xs leading-5 text-gray-500 dark:text-gray-100">"&copy; 2023 Ordilabs."</p>
+            <p class="text-center text-xs leading-5 text-gray-500 dark:text-gray-100"></p>
           </div>
         </div>
       </footer>
 
 
-    }
-}
-#[component]
-pub fn NavSideBar(cx: Scope) -> impl IntoView {
-    view! {
-        cx,
-              <div class="hidden w-28 overflow-y-auto bg-red-700 md:block">
-                            // <!-- Narrow sidebar -->
-
-              <div class="flex w-full flex-col items-center py-6">
-                  <div class="flex flex-shrink-0 items-center">
-                      <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=white"
-                          alt="Your Company" />
-                  </div>
-                  <div class="mt-6 w-full flex-1 space-y-1 px-2">
-            //          <!-- Current: "bg-red-800 text-white", Default: "text-red-100 hover:bg-red-800 hover:text-white" -->
-
-
-                      <a href="#"
-                          class="bg-red-800 text-white group flex w-full flex-col items-center rounded-md p-3 text-xs font-medium"
-                          aria-current="page">
-                          <svg class="text-white h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                              stroke="currentColor" aria-hidden="true">
-                              <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-                          </svg>
-                          <span class="mt-2">"Stream"</span>
-                      </a>
-
-                      <a href="#"
-                      class="text-red-100 hover:bg-red-800 hover:text-white group flex w-full flex-col items-center rounded-md p-3 text-xs font-medium"
-                      aria-current="page">
-                      <svg class="text-white h-6 w-6"  fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                      <span class="mt-2">"Whales"</span>
-                  </a>
-
-                  <a href="#"
-                  class="text-red-100 hover:bg-red-800 hover:text-white group flex w-full flex-col items-center rounded-md p-3 text-xs font-medium"
-                  aria-current="page">
-                  <svg class="text-white h-6 w-6"  fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-
-                  <span class="mt-2">"Plebs"</span>
-              </a>
-
-
-                  </div>
-              </div>
-          </div>
-    }
-}
-
-#[component]
-pub fn MobileMenu(cx: Scope) -> impl IntoView {
-    view! {cx,
-        <div class="relative z-40 md:hidden" role="dialog" aria-modal="true">
-        //         <!--
-        //     Off-canvas menu backdrop, show/hide based on off-canvas menu state.
-
-        //     Entering: "transition-opacity ease-linear duration-300"
-        //       From: "opacity-0"
-        //       To: "opacity-100"
-        //     Leaving: "transition-opacity ease-linear duration-300"
-        //       From: "opacity-100"
-        //       To: "opacity-0"
-        //   -->
-               <div class="fixed inset-0 bg-gray-600 bg-opacity-75"></div>
-
-                <div class="fixed inset-0 z-40 flex">
-            //         <!--
-            //   Off-canvas menu, show/hide based on off-canvas menu state.
-
-            //   Entering: "transition ease-in-out duration-300 transform"
-            //     From: "-translate-x-full"
-            //     To: "translate-x-0"
-            //   Leaving: "transition ease-in-out duration-300 transform"
-            //     From: "translate-x-0"
-            //     To: "-translate-x-full"
-            // -->
-                    <div class="relative flex w-full max-w-xs flex-1 flex-col bg-red-700 pt-5 pb-4">
-            //             <!--
-            //     Close button, show/hide based on off-canvas menu state.
-
-            //     Entering: "ease-in-out duration-300"
-            //       From: "opacity-0"
-            //       To: "opacity-100"
-            //     Leaving: "ease-in-out duration-300"
-            //       From: "opacity-100"
-            //       To: "opacity-0"
-            //   -->
-                        <div class="absolute top-1 right-0 -mr-14 p-1">
-                            <button type="button"
-                                class="flex h-12 w-12 items-center justify-center rounded-full focus:outline-none focus:ring-2 focus:ring-white">
-                                <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                    stroke="currentColor" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                                <span class="sr-only">"Close sidebar"</span>
-                            </button>
-                        </div>
-
-                        <div class="flex flex-shrink-0 items-center px-4">
-                            <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=white"
-                                alt="Your Company" />
-                        </div>
-                        <div class="mt-5 h-0 flex-1 overflow-y-auto px-2">
-                            <nav class="flex h-full flex-col">
-                                <div class="space-y-1">
-                                    // <!-- Current: "bg-rose-800 text-white", Default: "text-rose-100 hover:bg-rose-800 hover:text-white" -->
-
-
-                                    <a href="#"
-                                        class="bg-red-800 text-white group flex items-center rounded-md py-2 px-3 text-sm font-medium"
-                                        aria-current="page">
-                                        <svg class="text-red-300 group-hover:text-white mr-3 h-6 w-6" fill="none"
-                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-                                    </svg>
-                                        <span>"Stream"</span>
-                                    </a>
-
-                                    <a href="#"
-                                    class="bg-red-800 text-white group flex items-center rounded-md py-2 px-3 text-sm font-medium"
-                                    aria-current="page">
-                                    <svg class="text-red-300 group-hover:text-white mr-3 h-6 w-6"  fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                      </svg>
-
-                                    <span>"Whales"</span>
-                                </a>
-                                <a href="#"
-                                class="bg-red-800 text-white group flex items-center rounded-md py-2 px-3 text-sm font-medium"
-                                aria-current="page">
-                                <svg  class="text-red-300 group-hover:text-white mr-3 h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                  </svg>
-
-                                <span>"Plebs"</span>
-                            </a>
-
-
-                                </div>
-                            </nav>
-                        </div>
-                    </div>
-
-                    <div class="w-14 flex-shrink-0" aria-hidden="true">
-                        // <!-- Dummy element to force sidebar to shrink to fit close icon -->
-                    </div>
-                </div>
-            </div>
-    }
-}
-
-#[component]
-pub fn TypeTabs(cx: Scope) -> impl IntoView {
-    view! {
-        cx,
-        <div class="mt-3 sm:mt-2">
-                            <div class="sm:hidden">
-                                <label for="tabs" class="sr-only">"Select a tab"</label>
-                                // <!-- Use an "onChange" listener to redirect the user to the selected tab URL. -->
-                                <select id="tabs" name="tabs"
-                                    class="block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:border-red-500 focus:ring-2 focus:ring-inset focus:ring-red-600">
-                                    <option selected>"All"</option>
-                                    <option>"Images"</option>
-                                    <option>"Names"</option>
-                                </select>
-                            </div>
-                            <div class="hidden sm:block">
-                                <div class="flex items-center border-b border-gray-200">
-                                    <nav class="-mb-px flex flex-1 space-x-6 xl:space-x-8" aria-label="Tabs">
-                                        // <!-- Current: "border-red-500 text-red-600", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
-                                        <a href="#" aria-current="page"
-                                            class="border-red-500 text-red-600 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">"All"</a>
-
-                                        <a href="#"
-                                            class="border-transparent text-gray-500 dark:text-gray-100 hover:border-gray-300 dark:hover:border-red-500 hover:text-gray-700 dark:hover:text-red-500 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">"Images"</a>
-
-                                        <a href="#"
-                                            class="border-transparent text-gray-500 dark:text-gray-100 hover:border-gray-300 dark:hover:border-red-500 hover:text-gray-700 dark:hover:text-red-500 whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">"Names"</a>
-                                    </nav>
-                                </div>
-                            </div>
-                        </div>
     }
 }

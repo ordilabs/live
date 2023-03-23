@@ -5,7 +5,6 @@ use leptos_meta::*;
 use leptos_router::*;
 
 mod components;
-mod pages;
 
 #[cfg(feature = "ssr")]
 use std::sync::atomic::{AtomicI32, Ordering};
@@ -101,7 +100,7 @@ pub fn App(cx: Scope) -> impl IntoView {
         <Body class="bg-white dark:bg-slate-800" />
         <Router>
         <Meta name="twitter:card" content="summary_large_image"/>
-        <Meta name="twitter:site" content="@OrdilabsOrg"/>
+        <Meta name="twitter:site" content="@Ordilabs_org"/>
         <Meta name="twitter:title" content="Ordinals Live"/>
         <Meta name="twitter:description" content="Ordinals mempool viewer. View inscriptions before they're inscribed!"/>
         <Meta name="twitter:image" content="https://live.ordilabs.org/ordilabs-logo-name-white.png"/>
@@ -109,18 +108,13 @@ pub fn App(cx: Scope) -> impl IntoView {
         <Stylesheet id="leptos" href="/pkg/ordilabs_live.css"/>
 
         <div class="flex h-full">
-        // <!-- Content area -->
         <div class="flex flex-1 flex-col overflow-hidden">
            <Header />
-
-           <span style="display: none">"Multiplayer Value: " {move || multiplayer_value.get().unwrap_or_default().to_string()}</span>
-
-            // <!-- Main content -->
             <div class="flex flex-1 items-stretch overflow-hidden">
                 <main class="flex-1 overflow-y-auto">
                     <div class="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
                         <div class="flex">
-                            <h1 class="flex-1 text-2xl font-bold text-gray-900 dark:text-gray-100">"Stream"</h1>
+                            <h1 class="flex-1 text-2xl font-bold text-gray-900 dark:text-gray-100">"Live unconfirmed inscriptions"</h1>
                             <div class="ml-6 flex items-center rounded-lg bg-gray-100 p-0.5 sm:hidden">
                                 <button type="button"
                                     class="rounded-md p-1.5 text-gray-400 hover:bg-white hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-500">
@@ -142,10 +136,6 @@ pub fn App(cx: Scope) -> impl IntoView {
                                 </button>
                             </div>
                         </div>
-
-                        // <!-- Tabs -->
-                        <TypeTabs />
-                        // <!-- Gallery -->
                         <LiveGrid initial_items multiplayer_value/>
                     </div>
                 </main>
