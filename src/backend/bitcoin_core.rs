@@ -27,7 +27,7 @@ impl Backend for BitcoinCore {
 
         let auth = match var("CORE_USER").ok() {
             None => {
-                let fallback = "~/.bitcoin/.cookie".to_owned();
+                let fallback = "docker/bitcoin.cookie".to_owned();
                 let core_cookie = var("CORE_COOKIE").unwrap_or(fallback);
                 let home = var("HOME").expect("HOME to be set");
                 let path = core_cookie.replace("~", &home);
