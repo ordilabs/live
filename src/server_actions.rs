@@ -115,7 +115,8 @@ pub(crate) async fn tick_bitcoin_core(
             .choose(&mut rand::thread_rng());
         if chosen.is_some() {
             let txid = chosen.unwrap().0;
-
+            let ins = format!("{}i0", &txid);
+            _ = INSCRIPTION_CHANNEL.send(&ins).await;
             log!("re-broadcast {}", &txid);
         }
     } else {
