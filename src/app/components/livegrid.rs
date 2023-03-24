@@ -85,6 +85,7 @@ pub fn InscriptionItem(
     set_value: WriteSignal<String>,
 ) -> impl IntoView {
     let _ = set_value;
+    let _ = id;
     let preview_url = move || format!("/preview/{}", value.get());
     view! {
       cx,

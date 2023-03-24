@@ -3,7 +3,7 @@ extern crate bitcoin;
 extern crate bitcoincore_rpc;
 extern crate bitcoincore_rpc_json;
 
-use std::{mem::replace, path::PathBuf};
+use std::{env::var, path::PathBuf, str::FromStr};
 
 use super::*;
 use anyhow::Result;
@@ -23,27 +23,28 @@ pub struct BitcoinCore {
 #[async_trait]
 impl Backend for BitcoinCore {
     fn new() -> Self {
-        let root = std::env::var("CORE_URL").unwrap_or("127.0.0.1:18443".to_owned());
+        let core_url = var("CORE_URL").unwrap_or("127.0.0.1:18443".to_owned());
 
-        let core_user = std::env::var("CORE_USER").unwrap_or("mempool".to_owned());
-        let core_pass = std::env::var("CORE_PASS").unwrap_or("mempool".to_owned());
+        let auth = match var("CORE_USER").ok() {
+            None => {
+                let fallback = "docker/bitcoin.cookie".to_owned();
+                let core_cookie = var("CORE_COOKIE").unwrap_or(fallback);
+                let home = var("HOME").expect("HOME to be set");
+                let path = core_cookie.replace("~", &home);
+                let path = PathBuf::from_str(&path).expect("a valid path");
 
-        let core_cookie = std::env::var("CORE_COOKIE").unwrap_or("~/.bitcoin/.cookie".to_owned());
-        let home = std::env::var("HOME").expect("HOME to be set");
-        let core_cookie = core_cookie.replace("~", &home);
-
-        let auth = match core_cookie != "" {
-            true => {
-                let path = PathBuf::from(core_cookie);
                 bitcoincore_rpc::Auth::CookieFile(path)
             }
-            false => bitcoincore_rpc::Auth::UserPass(core_user.clone(), core_pass.clone()),
+            Some(core_user) => {
+                let core_pass = var("CORE_PASS").unwrap();
+                bitcoincore_rpc::Auth::UserPass(core_user, core_pass)
+            }
         };
-        //let cookie = std::env::var("CORE_COOKIE").unwrap_or("".to_owned());
 
-        //  = bitcoincore_rpc::Auth::UserPass(core_user.clone(), core_pass.clone());
-
-        BitcoinCore { root, auth }
+        BitcoinCore {
+            root: core_url,
+            auth,
+        }
     }
 
     async fn get_latest_inscriptions(&self) -> Vec<Inscription> {

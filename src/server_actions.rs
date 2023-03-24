@@ -1,7 +1,8 @@
-use std::collections::HashMap;
-
 use super::*;
+use std::collections::HashMap;
 extern crate ord_mini;
+extern crate rand;
+use rand::seq::IteratorRandom;
 
 use ord_mini::{Inscription, Media};
 
@@ -59,39 +60,74 @@ pub(crate) async fn tick_bitcoin_core(
     let mut mpr_len = 0;
     let mut mpr_ins = 0;
     let mut mpr_img = 0;
-
+    let mut broadcast = vec![];
     match mpr {
         Some(mpr) => {
             mpr_len = mpr.len();
-            for entry in mpr {
+            for (n, entry) in mpr.into_iter().enumerate() {
                 let txid = entry.txid;
                 if ordipool.contains_key(&txid) {
                     continue;
                 }
-                let maybe_inscription = backend.maybe_inscription(&txid).await.unwrap();
-                let maybe_inscription = match maybe_inscription {
-                    Some(ins) => {
-                        mpr_ins += 1;
+                if n % 100 == 1 {
+                    println!("processing {}/{}", n, mpr_len);
+                }
 
-                        if ins.media() != Media::Image {
-                            break;
-                        }
-                        mpr_img += 1;
+                let maybe_inscription = backend.maybe_inscription(&txid).await;
+                let maybe_inscription = maybe_inscription.unwrap_or_else(|e| {
+                    log::warn!("{}", e);
+                    None
+                });
 
-                        let inscription_id = format!("{}i0", &txid);
-                        _ = INSCRIPTION_CHANNEL.send(&inscription_id).await;
-                        log!("broadcast {}", &inscription_id);
-                        Some(ins)
-                    }
-                    None => None,
-                };
-                ordipool.entry(txid.clone()).or_insert(maybe_inscription);
+                if maybe_inscription.is_none() {
+                    ordipool.entry(txid.clone()).or_insert(None);
+                    continue;
+                }
+
+                mpr_ins += 1;
+                let ins = maybe_inscription.unwrap();
+
+                if ins.media() != Media::Image {
+                    ordipool.entry(txid.clone()).or_insert(None);
+                    continue;
+                }
+
+                mpr_img += 1;
+
+                let inscription_id = format!("{}i0", &txid);
+                //_ = INSCRIPTION_CHANNEL.send(&inscription_id).await;
+                broadcast.push(inscription_id);
+                //log!("broadcast {}", );
+
+                ordipool.entry(txid.clone()).or_insert(Some(ins));
                 //_ = ordipool.entry(txid.clone()).or_insert(maybe_inscription);
 
                 //dbg!("broadcasting {}", &txid);
             }
         }
         _ => {}
+    }
+
+    if broadcast.len() > 4 {
+        broadcast.resize(4, String::new());
+    }
+
+    if broadcast.len() == 0 {
+        let chosen = ordipool
+            .iter()
+            .filter(|entry: &(&String, &Option<Inscription>)| entry.1.is_some())
+            .choose(&mut rand::thread_rng());
+        if chosen.is_some() {
+            let txid = chosen.unwrap().0;
+            let ins = format!("{}i0", &txid);
+            _ = INSCRIPTION_CHANNEL.send(&ins).await;
+            log!("re-broadcast {}", &txid);
+        }
+    } else {
+        for txid in broadcast {
+            let ins = format!("{}i0", &txid);
+            _ = INSCRIPTION_CHANNEL.send(&ins).await;
+        }
     }
 
     log!(
