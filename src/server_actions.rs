@@ -73,7 +73,11 @@ pub(crate) async fn tick_bitcoin_core(
                     println!("processing {}/{}", n, mpr_len);
                 }
 
-                let maybe_inscription = backend.maybe_inscription(&txid).await.unwrap();
+                let maybe_inscription = backend.maybe_inscription(&txid).await;
+                let maybe_inscription = maybe_inscription.unwrap_or_else(|e| {
+                    log::warn!("{}", e);
+                    None
+                });
 
                 if maybe_inscription.is_none() {
                     ordipool.entry(txid.clone()).or_insert(None);
