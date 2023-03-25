@@ -151,6 +151,17 @@ services:
       - --http-host-header=live-ol.tunnel
       - --url=http://nginx-proxy:80
 
+  leptos:
+    profiles:
+      - leptos
+    build:
+      dockerfile: leptos.Dockerfile
+    volumes:
+      - ../.git/:/mnt/.git:ro
+      - leptos-target:/mnt/target:rw
+    working_dir: /app
+    command: sleep infinity
+
 volumes:
   nginx-proxy-certs: # dummy 
   ord:
@@ -159,3 +170,4 @@ volumes:
   bitcoin-core:
   electrs:
   fixtures-ord:
+  leptos-target:
