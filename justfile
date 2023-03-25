@@ -35,12 +35,24 @@ down:
   cd docker && docker compose down -v
 
 watch:
-    npm run build-css
-    cargo leptos watch
+  echo "watch-tailwindcss \n watch-leptos" | \
+    xargs -I CMD -P2 just CMD
 
-watch-css:
-    # todo gfi: combine with watch recipe  
-    npm run watch-css
+watch-tailwindcss:
+  npx tailwindcss \
+    -i ./src/style/input.css \
+    -o ./target/style/output.css \
+    --watch
+
+watch-leptos:
+  cargo leptos watch
+
+build-r:
+  npx tailwindcss \
+    -i ./src/style/input.css \
+    -o ./target/style/output.css \
+    --minify
+  cargo leptos build --release
 
 tunnel:
   cd docker && docker compose run --rm cftunnel 2>&1 | grep "|"
