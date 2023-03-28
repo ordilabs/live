@@ -30,13 +30,27 @@ cfg_if! {
             use futures::StreamExt;
 
             let stream =
-                futures::stream::once(async { crate::app::get_last_inscription().await.unwrap_or("".to_string()) })
-                    .chain(INSCRIPTION_CHANNEL.clone())
-                    .map(|value| {
-                        let value = value.as_str();
-                        Ok(web::Bytes::from(format!(
-                            "event: inscription\ndata: {value}\n\n"
-                        ))) as Result<web::Bytes>
+                futures::stream::once(async { LiveEvent::MempoolInfo("".to_string()) })
+                    .chain(EVENT_CHANNEL.clone())
+                    .map(|event| {
+                        let string = match event {
+                            LiveEvent::NewInscription(value) |
+                            LiveEvent::RandomInscription(value) => {
+                                let value = value.as_str();
+                                format!(
+                                    "event: inscription\ndata: {value}\n\n"
+                                )
+                            }
+
+                            LiveEvent::MempoolInfo(value) => {
+                                let value = value.as_str();
+                                format!(
+                                    "event: info\ndata: {value}\n\n"
+                                )
+                            }
+                        };
+
+                        Ok(web::Bytes::from(string)) as Result<web::Bytes>
                     });
             HttpResponse::Ok()
                 .insert_header(("Content-Type", "text/event-stream"))

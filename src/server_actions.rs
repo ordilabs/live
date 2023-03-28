@@ -36,9 +36,8 @@ pub(crate) async fn tick_space(
                 }
                 let maybe_inscription = backend.maybe_inscription(&txid).await.unwrap();
                 if maybe_inscription.is_some() {
-                    let ins = format!("{}i0", &txid);
-                    _ = INSCRIPTION_CHANNEL.send(&ins).await;
-                    log!("broadcast {}", &txid);
+                    let event = LiveEvent::RandomInscription(format!("{}i0", &txid));
+                    _ = EVENT_CHANNEL.send(&event).await;
                 }
                 _ = ordipool.entry(txid.clone()).or_insert(maybe_inscription);
 
@@ -56,85 +55,105 @@ pub(crate) async fn tick_bitcoin_core(
     ordipool: &mut HashMap<String, Option<Inscription>>,
 ) {
     let mpr = backend.recent().await.ok();
+    let mpr = mpr.unwrap_or_default();
 
-    let mut mpr_len = 0;
-    let mut mpr_ins = 0;
-    let mut mpr_img = 0;
+    let mpr_len = mpr.len();
     let mut broadcast = vec![];
-    match mpr {
-        Some(mpr) => {
-            mpr_len = mpr.len();
-            for (n, entry) in mpr.into_iter().enumerate() {
-                let txid = entry.txid;
-                if ordipool.contains_key(&txid) {
-                    continue;
-                }
-                if n % 100 == 1 {
-                    println!("processing {}/{}", n, mpr_len);
-                }
 
-                let maybe_inscription = backend.maybe_inscription(&txid).await;
-                let maybe_inscription = maybe_inscription.unwrap_or_else(|e| {
-                    log::warn!("{}", e);
-                    None
-                });
+    // remove all non-mempool txs
+    let txid: Vec<_> = mpr.iter().map(|entry| &entry.txid).collect();
+    ordipool.retain(|key, _| txid.contains(&key));
 
-                if maybe_inscription.is_none() {
-                    ordipool.entry(txid.clone()).or_insert(None);
-                    continue;
-                }
+    let mut backend_query_count = 0;
 
-                mpr_ins += 1;
-                let ins = maybe_inscription.unwrap();
-
-                if ins.media() != Media::Image {
-                    ordipool.entry(txid.clone()).or_insert(None);
-                    continue;
-                }
-
-                mpr_img += 1;
-
-                let inscription_id = format!("{}i0", &txid);
-                //_ = INSCRIPTION_CHANNEL.send(&inscription_id).await;
-                broadcast.push(inscription_id);
-                //log!("broadcast {}", );
-
-                ordipool.entry(txid.clone()).or_insert(Some(ins));
-                //_ = ordipool.entry(txid.clone()).or_insert(maybe_inscription);
-
-                //dbg!("broadcasting {}", &txid);
-            }
+    for (_n, entry) in mpr.into_iter().enumerate() {
+        let txid = entry.txid;
+        if ordipool.contains_key(&txid) {
+            continue;
         }
-        _ => {}
+
+        let maybe_inscription = backend.maybe_inscription(&txid).await;
+        backend_query_count += 1;
+
+        let maybe_inscription = maybe_inscription.unwrap_or_else(|e| {
+            log::warn!("{}", e);
+            None
+        });
+
+        ordipool.insert(txid.clone(), maybe_inscription.clone());
+
+        if maybe_inscription.is_none() {
+            continue;
+        }
+
+        let inscription = maybe_inscription.unwrap();
+        // only broadcast images for now
+        if inscription.media() != Media::Image {
+            continue;
+        }
+
+        let inscription_id = format!("{}i0", &txid);
+        broadcast.push(inscription_id);
+
+        // on startup, don't process too many per tick
+        if backend_query_count > 1000 {
+            println!("processed {}/{}", ordipool.len(), mpr_len);
+            break;
+        }
     }
 
+    // count the inscriptions and bytes, group by media type
+    let mut media_counts: HashMap<Media, usize> = HashMap::new();
+    let mut media_bytes: HashMap<Media, usize> = HashMap::new();
+
+    for inscription in ordipool.values().flatten() {
+        let media = inscription.media();
+        let bytes = inscription.content_length().unwrap_or_default();
+        *media_counts.entry(media).or_insert(0) += 1;
+        *media_bytes.entry(media).or_insert(0) += bytes;
+    }
+
+    let mut mempool_info: Vec<_> = media_counts
+        .iter()
+        .map(|(key, count)| {
+            let bytes = media_bytes.get(key).unwrap_or(&0).to_owned();
+            format!("{:?}: {} ({:.1} KiB)", key, count, bytes as f64 / 1024.)
+        })
+        .collect();
+    mempool_info.sort();
+    let event = LiveEvent::MempoolInfo(mempool_info.join(" | "));
+    _ = EVENT_CHANNEL.send(&event).await;
+
+    dbg!(media_counts);
     if broadcast.len() > 4 {
         broadcast.resize(4, String::new());
     }
 
-    if broadcast.len() == 0 {
+    // no new inscription, show something random
+    if &broadcast.len() == &0 {
         let chosen = ordipool
             .iter()
-            .filter(|entry: &(&String, &Option<Inscription>)| entry.1.is_some())
+            .filter(|entry: &(&String, &Option<Inscription>)| {
+                entry.1.is_some() && entry.1.clone().unwrap().media() == Media::Image
+            })
             .choose(&mut rand::thread_rng());
         if chosen.is_some() {
             let txid = chosen.unwrap().0;
-            let ins = format!("{}i0", &txid);
-            _ = INSCRIPTION_CHANNEL.send(&ins).await;
-            log!("re-broadcast {}", &txid);
+            let event = LiveEvent::RandomInscription(format!("{}i0", &txid));
+            _ = EVENT_CHANNEL.send(&event).await;
         }
     } else {
-        for txid in broadcast {
-            let ins = format!("{}i0", &txid);
-            _ = INSCRIPTION_CHANNEL.send(&ins).await;
+        for txid in &broadcast {
+            let event = LiveEvent::NewInscription(format!("{}i0", &txid));
+            _ = EVENT_CHANNEL.send(&event).await;
         }
     }
 
     log!(
         "tick: bitcoin_core, {}, {}, {}",
         &mpr_len,
-        &mpr_ins,
-        &mpr_img
+        &broadcast.len(),
+        &ordipool.len()
     );
 }
 

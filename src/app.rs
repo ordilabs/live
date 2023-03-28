@@ -24,9 +24,18 @@ pub fn register_server_functions() {
 static COUNT: AtomicI32 = AtomicI32::new(0);
 
 #[cfg(feature = "ssr")]
+#[derive(Clone)]
+pub enum LiveEvent {
+    NewInscription(String),
+    RandomInscription(String),
+    MempoolInfo(String),
+}
+
+#[cfg(feature = "ssr")]
 lazy_static::lazy_static! {
-    pub static ref COUNT_CHANNEL: BroadcastChannel<i32> = BroadcastChannel::new();
+   pub static ref COUNT_CHANNEL: BroadcastChannel<i32> = BroadcastChannel::new();
     pub static ref INSCRIPTION_CHANNEL: BroadcastChannel<String> = BroadcastChannel::new();
+    pub static ref EVENT_CHANNEL: BroadcastChannel<LiveEvent> = BroadcastChannel::new();
 }
 // "/api" is an optional prefix that allows you to locate server functions wherever you'd like on the server
 #[server(GetServerCount, "/api")]
@@ -85,8 +94,33 @@ pub fn App(cx: Scope) -> impl IntoView {
         s
     };
 
+    #[cfg(not(feature = "ssr"))]
+    let info_value = {
+        use futures::StreamExt;
+
+        let mut source = gloo_net::eventsource::futures::EventSource::new("/api/events")
+            .expect("couldn't connect to SSE stream");
+        let s = create_signal_from_stream(
+            cx,
+            source.subscribe("info").unwrap().map(|value| {
+                value
+                    .expect("no message event")
+                    .1
+                    .data()
+                    .as_string()
+                    .expect("expected string value")
+            }),
+        );
+
+        on_cleanup(cx, move || source.close());
+        s
+    };
+
     #[cfg(feature = "ssr")]
     let (multiplayer_value, _) = create_signal(cx, None::<String>);
+
+    #[cfg(feature = "ssr")]
+    let (info_value, _) = create_signal(cx, None::<String>);
 
     let initial_items = vec![
         "punk_0.webp".to_string(),
@@ -114,8 +148,12 @@ pub fn App(cx: Scope) -> impl IntoView {
                 <main class="flex-1 overflow-y-auto">
                     <div class="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
                         <div class="flex">
-                            <h1 class="flex-1 text-2xl font-bold text-gray-900 dark:text-gray-100">"Live unconfirmed inscriptions"</h1>
+                            <h1 class="flex-1 text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                "Live unconfirmed inscriptions"
+                            </h1>
+
                         </div>
+                        <div class="text-xs text-gray-900 dark:text-gray-100">{info_value}</div>
                         <LiveGrid initial_items multiplayer_value/>
                     </div>
                 </main>
