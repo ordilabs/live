@@ -20,7 +20,7 @@ We use Docker to containerize all micro-services and you `just` need to run a fe
 | [homebrew](https://brew.sh/)                |        |         |
 | [XCode](https://developer.apple.com/xcode/) |        |         |
 
-### first setup / after branch/PR checkout sometimes
+### first installation
 
 ```bash
 git clone https://github.com/ordilabs/live live--ordilabs
@@ -28,7 +28,7 @@ cd live--ordilabs
 just install
 ```
 
-### dev environment
+### developing
 
 All micro-services are managed with 2 simple commands
 
@@ -43,7 +43,7 @@ Once they are running, you can start developing
 just watch # for changes, recompile rust/css, refresh frontend
 ```
 
-### just commands
+### additional commands
 
 Once up and running you can perform dev tasks
 
