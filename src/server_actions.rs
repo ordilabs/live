@@ -124,7 +124,6 @@ pub(crate) async fn tick_bitcoin_core(
     let event = LiveEvent::MempoolInfo(mempool_info.join(" | "));
     _ = EVENT_CHANNEL.send(&event).await;
 
-    dbg!(media_counts);
     if broadcast.len() > 4 {
         broadcast.resize(4, String::new());
     }
@@ -159,6 +158,7 @@ pub(crate) async fn tick_bitcoin_core(
 
 pub async fn content(path: web::Path<Content>) -> impl Responder {
     let s = path.inscription_id.to_owned();
+
     dbg!(&path.inscription_id);
     if s.starts_with("punk") {
         let location = format!("/punks/{}", s);
@@ -175,15 +175,8 @@ pub async fn content(path: web::Path<Content>) -> impl Responder {
             .body("body");
     }
 
-    //dbg!(path.inscription_id.as_str());
-    //let path_ = path.inscription_id.clone();
-    //let s = path.inscription_id.as_str();
-    //dbg!(&s);
-    //log!("{}", s);
-
     let txid = &s.as_str()[0..64];
     let backend = BitcoinCore::new();
-    dbg!("content for: {}", txid);
 
     // get content from remote server
     // todo gfi: use the /raw api instead of /hex

@@ -68,12 +68,8 @@ pub async fn clear_server_count() -> Result<i32, ServerFnError> {
 pub fn App(cx: Scope) -> impl IntoView {
     provide_meta_context(cx);
 
-    // setup_interval() only on client
-    // #[cfg(not(feature = "ssr"))]
-    // set_interval(|| log!("interval"), std::time::Duration::from_secs(1)).unwrap();
-
     #[cfg(not(feature = "ssr"))]
-    let multiplayer_value = {
+    let (multiplayer_value, info_value) = {
         use futures::StreamExt;
 
         let mut source = gloo_net::eventsource::futures::EventSource::new("/api/events")
@@ -90,17 +86,7 @@ pub fn App(cx: Scope) -> impl IntoView {
             }),
         );
 
-        on_cleanup(cx, move || source.close());
-        s
-    };
-
-    #[cfg(not(feature = "ssr"))]
-    let info_value = {
-        use futures::StreamExt;
-
-        let mut source = gloo_net::eventsource::futures::EventSource::new("/api/events")
-            .expect("couldn't connect to SSE stream");
-        let s = create_signal_from_stream(
+        let s2 = create_signal_from_stream(
             cx,
             source.subscribe("info").unwrap().map(|value| {
                 value
@@ -113,21 +99,16 @@ pub fn App(cx: Scope) -> impl IntoView {
         );
 
         on_cleanup(cx, move || source.close());
-        s
+        (s, s2)
     };
 
     #[cfg(feature = "ssr")]
-    let (multiplayer_value, _) = create_signal(cx, None::<String>);
+    let ((multiplayer_value, _), (info_value, _)) = (
+        create_signal(cx, None::<String>),
+        create_signal(cx, None::<String>),
+    );
 
-    #[cfg(feature = "ssr")]
-    let (info_value, _) = create_signal(cx, None::<String>);
-
-    let initial_items = vec![
-        "punk_0.webp".to_string(),
-        "punk_1.webp".to_string(),
-        "punk_2.webp".to_string(),
-        "punk_3.webp".to_string(),
-    ];
+    let initial_items: Vec<_> = (0..6).map(|n| format!("punk_{}.webp", n)).collect();
 
     view! {
         cx,
