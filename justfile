@@ -37,8 +37,10 @@ clean-services:
   cd docker && docker compose down -v
 
 watch:
-  echo "watch-tailwindcss \n watch-leptos" | \
-    xargs -I CMD -P2 just CMD
+  npx tailwindcss \
+    -i ./src/style/input.css \
+    -o ./target/style/output.css
+  just watch-leptos
 
 watch-tailwindcss:
   npx tailwindcss \
