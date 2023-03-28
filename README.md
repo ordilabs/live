@@ -30,17 +30,17 @@ just install
 
 ### dev environment
 
-Run each command in a separate terminal
+All micro-services are managed with 2 simple commands
 
 ```bash
 just run-services
 # just clean-services
+```
 
-# watch code for changes, recompile, refresh frontend
-just watch
+Once they are running, you can start developing
 
-# open all .local domains in a browser
-just open
+```bash
+just watch # for changes, recompile rust/css, refresh frontend
 ```
 
 ### just commands
@@ -48,6 +48,8 @@ just open
 Once up and running you can perform dev tasks
 
 ```bash
+just open # all .local domains in a browser
+
 # generate(mine) 1 block
 just g 1 
 
