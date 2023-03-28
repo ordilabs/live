@@ -25,7 +25,7 @@ We use Docker to containerize all micro-services and you `just` need to run a fe
 ```bash
 git clone https://github.com/ordilabs/live live--ordilabs
 cd live--ordilabs
-just setup-once
+just install
 ```
 
 ### dev environment
@@ -33,11 +33,8 @@ just setup-once
 Run each command in a separate terminal
 
 ```bash
-# start up dev environment
-just up
-
-# reset
-## just down
+just run-services
+# just clean-services
 
 # watch code for changes, recompile, refresh frontend
 just watch
@@ -51,14 +48,14 @@ just open
 Once up and running you can perform dev tasks
 
 ```bash
-# mine 1 block
-just g 1
+# generate(mine) 1 block
+just g 1 
 
 # inscribe a punk
 just p
 
 # create temporary tunnel to expose your .local on the internet
-just tunnel
+just run-tunnel
 ```
 
 see more commands with `just -l`

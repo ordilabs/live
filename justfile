@@ -6,7 +6,7 @@ default:
 export CARGO_REGISTRIES_CRATES_IO_PROTOCOL := "sparse"
 export DOCKER_BUILDKIT := "0"
 
-setup-once:
+install:
   just _install-tools
   just _download-punks
   rustup override set nightly
@@ -14,24 +14,26 @@ setup-once:
   #cd docker && docker compose build
   npm install
   @echo "Almost done: adding *.local domains to your /etc/hosts requires sudo"
-  sudo just _setup-hosts
-  @echo "Setup done.\n"
-  @echo 'To open all relevant *.local domains run `just open`'
-  @echo 'To reset the dev environment run `just down`.'
-  @echo 'To start the dev environment run `just up`.'
+  just _install-hosts
+  @echo "Install done.\n"
+  @echo "Relevant next commands:"
+  @echo '`just open` all relevant *.local domains'
+  @echo '`just clean-services` resets the micro-services (AND ALL THEIR DATA!)'
+  @echo '`just run-services` starts all micro-sevices inside docker'
+  @echo '`just watch` auto recompile rust, css code. refresh frontend'
 
 [macos]
-up:  
+run-services:
   cd docker && docker compose up
 
 [linux]
-up:
+run-services:
   # if someone has a better solution, be my guest
   sed 's/GATEWAY_IPV4/'` ip addr show eth0 | grep inet | awk '{print $2}' | cut -d/ -f1 | head -n1`'/g' \
     docker/docker-compose.monkey-patch-linux.yml | tee tmp/docker-compose.linux.yml
   cd docker && docker compose -f docker-compose.yml -f ../tmp/docker-compose.linux.yml up 
 
-down:
+clean-services:
   cd docker && docker compose down -v
 
 watch:
@@ -47,14 +49,14 @@ watch-tailwindcss:
 watch-leptos:
   cargo leptos watch
 
-build-r:
+build-release:
   npx tailwindcss \
     -i ./src/style/input.css \
     -o ./target/style/output.css \
     --minify
   cargo leptos build --release
 
-tunnel:
+run-tunnel:
   cd docker && docker compose run --rm cftunnel 2>&1 | grep "|"
 
 _tunnel:
@@ -114,7 +116,7 @@ _install-tools:
   cargo install --locked \
     cargo-leptos \
 
-_setup-hosts:
+_install-hosts:
   just _add-host-once mempool-ol.local
   just _add-host-once ord-ol.local
   just _add-host-once live-ol.local
