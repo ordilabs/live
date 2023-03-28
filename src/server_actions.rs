@@ -113,13 +113,14 @@ pub(crate) async fn tick_bitcoin_core(
         *media_bytes.entry(media).or_insert(0) += bytes;
     }
 
-    let mempool_info: Vec<_> = media_counts
+    let mut mempool_info: Vec<_> = media_counts
         .iter()
         .map(|(key, count)| {
             let bytes = media_bytes.get(key).unwrap_or(&0).to_owned();
-            format!("{:?}: {} ({} bytes)", key, count, bytes)
+            format!("{:?}: {} ({:.1} KiB)", key, count, bytes as f64 / 1024.)
         })
         .collect();
+    mempool_info.sort();
     let event = LiveEvent::MempoolInfo(mempool_info.join(" | "));
     _ = EVENT_CHANNEL.send(&event).await;
 
