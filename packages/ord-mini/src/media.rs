@@ -9,7 +9,7 @@ use {
 
 use anyhow::{anyhow, Error};
 
-#[derive(Debug, PartialEq, Copy, Clone)]
+#[derive(Debug, PartialEq, Copy, Clone, Hash, Eq)]
 pub enum Media {
     Audio,
     Iframe,
