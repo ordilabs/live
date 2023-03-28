@@ -75,7 +75,7 @@ services:
       VIRTUAL_PORT: "8080"
       FRONTEND_HTTP_PORT: "8080"
       BACKEND_MAINNET_HTTP_HOST: "mempool-api"
-    image: mempool/frontend:latest
+    image: mempool/frontend:v2.5.0-rc3
     user: "1000:1000"
     restart: on-failure
     stop_grace_period: 15s
@@ -99,7 +99,7 @@ services:
       DATABASE_USERNAME: "mempool"
       DATABASE_PASSWORD: "mempool"
       STATISTICS_ENABLED: "true"
-    image: mempool/backend:latest
+    image: mempool/backend:v2.5.0-rc3
     restart: on-failure
     stop_grace_period: 15s
     command: "./wait-for-it.sh mempool-db:3306 electrs:50002 --timeout=720 --strict -- ./start.sh"
@@ -112,7 +112,7 @@ services:
       MYSQL_USER: "mempool"
       MYSQL_PASSWORD: "mempool"
       MYSQL_ROOT_PASSWORD: "admin"
-    image: mariadb:10.5.8
+    image: mariadb:10.7.8
     restart: on-failure
     stop_grace_period: 15s
     volumes:
@@ -151,6 +151,17 @@ services:
       - --http-host-header=live-ol.tunnel
       - --url=http://nginx-proxy:80
 
+  leptos:
+    profiles:
+      - leptos
+    build:
+      dockerfile: leptos.Dockerfile
+    volumes:
+      - ../.git/:/mnt/.git:ro
+      - leptos-target:/mnt/target:rw
+    working_dir: /app
+    command: sleep infinity
+
 volumes:
   nginx-proxy-certs: # dummy 
   ord:
@@ -159,3 +170,4 @@ volumes:
   bitcoin-core:
   electrs:
   fixtures-ord:
+  leptos-target:

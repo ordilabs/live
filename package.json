@@ -1,21 +1,18 @@
 {
-  "name": "ordinals-live",
-  "version": "1.0.0",
+  "name": "ordilabs_live",
+  "version": "0.1.0-alpha",
   "description": "",
   "main": "tailwind.config.js",
-  "scripts": {
-    "build-css": "./node_modules/.bin/tailwindcss -i ./input.css -o ./style/output.css",
-    "watch-css": "./node_modules/.bin/tailwindcss -i ./input.css -o ./style/output.css --watch"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ordilabs/ordinals-live.git"
+    "url": "git+https://github.com/ordilabs/live.git"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ordilabs/ordinals-live/issues"
+    "url": "https://github.com/ordilabs/live/issues"
   },
-  "homepage": "https://github.com/ordilabs/ordinals-live#readme",
+  "homepage": "https://github.com/ordilabs/live#readme",
   "devDependencies": {
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.3",

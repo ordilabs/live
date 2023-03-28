@@ -20,45 +20,44 @@ We use Docker to containerize all micro-services and you `just` need to run a fe
 | [homebrew](https://brew.sh/)                |        |         |
 | [XCode](https://developer.apple.com/xcode/) |        |         |
 
-### first setup / after branch/PR checkout sometimes
+### first installation
 
 ```bash
 git clone https://github.com/ordilabs/live live--ordilabs
 cd live--ordilabs
-just setup-once
+just install
 ```
 
-### dev environment
+### developing
 
-Run each command in a separate terminal
+All micro-services are managed with 2 simple commands
 
 ```bash
-# start up dev environment
-just up
-
-# reset
-## just down
-
-# watch code for changes, recompile, refresh frontend
-just watch
-
-# open all .local domains in a browser
-just open
+just run-services
+# just clean-services
 ```
 
-### just commands
+Once they are running, you can start developing
+
+```bash
+just watch # for changes, recompile rust/css, refresh frontend
+```
+
+### additional commands
 
 Once up and running you can perform dev tasks
 
 ```bash
-# mine 1 block
-just g 1
+just open # all .local domains in a browser
+
+# generate(mine) 1 block
+just g 1 
 
 # inscribe a punk
 just p
 
 # create temporary tunnel to expose your .local on the internet
-just tunnel
+just run-tunnel
 ```
 
 see more commands with `just -l`
