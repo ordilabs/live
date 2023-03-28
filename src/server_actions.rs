@@ -1,5 +1,5 @@
 use super::*;
-use std::{collections::HashMap, mem};
+use std::collections::HashMap;
 extern crate ord_mini;
 extern crate rand;
 use rand::seq::IteratorRandom;
@@ -36,9 +36,8 @@ pub(crate) async fn tick_space(
                 }
                 let maybe_inscription = backend.maybe_inscription(&txid).await.unwrap();
                 if maybe_inscription.is_some() {
-                    let ins = format!("{}i0", &txid);
-                    _ = INSCRIPTION_CHANNEL.send(&ins).await;
-                    log!("broadcast {}", &txid);
+                    let event = LiveEvent::RandomInscription(format!("{}i0", &txid));
+                    _ = EVENT_CHANNEL.send(&event).await;
                 }
                 _ = ordipool.entry(txid.clone()).or_insert(maybe_inscription);
 
@@ -59,8 +58,6 @@ pub(crate) async fn tick_bitcoin_core(
     let mpr = mpr.unwrap_or_default();
 
     let mpr_len = mpr.len();
-    let mut mpr_ins = 0;
-    let mut mpr_img = 0;
     let mut broadcast = vec![];
 
     // remove all non-mempool txs
@@ -123,8 +120,8 @@ pub(crate) async fn tick_bitcoin_core(
             format!("{:?}: {} ({} bytes)", key, count, bytes)
         })
         .collect();
-    let mempool_info = mempool_info.join(" | ");
-    //_ = INFO_CHANNEL.send(&mempool_info).await;
+    let event = LiveEvent::MempoolInfo(mempool_info.join(" | "));
+    _ = EVENT_CHANNEL.send(&event).await;
 
     dbg!(media_counts);
     if broadcast.len() > 4 {
@@ -132,7 +129,7 @@ pub(crate) async fn tick_bitcoin_core(
     }
 
     // no new inscription, show something random
-    if broadcast.len() == 0 {
+    if &broadcast.len() == &0 {
         let chosen = ordipool
             .iter()
             .filter(|entry: &(&String, &Option<Inscription>)| {
@@ -141,23 +138,21 @@ pub(crate) async fn tick_bitcoin_core(
             .choose(&mut rand::thread_rng());
         if chosen.is_some() {
             let txid = chosen.unwrap().0;
-            let ins = format!("{}i0", &txid);
-            _ = INSCRIPTION_CHANNEL.send(&ins).await;
-            log!("re-broadcast {}", &txid);
+            let event = LiveEvent::RandomInscription(format!("{}i0", &txid));
+            _ = EVENT_CHANNEL.send(&event).await;
         }
     } else {
-        for txid in broadcast {
-            let ins = format!("{}i0", &txid);
-            _ = INSCRIPTION_CHANNEL.send(&ins).await;
-            log!("first-broadcast {}", &txid);
+        for txid in &broadcast {
+            let event = LiveEvent::NewInscription(format!("{}i0", &txid));
+            _ = EVENT_CHANNEL.send(&event).await;
         }
     }
 
     log!(
         "tick: bitcoin_core, {}, {}, {}",
         &mpr_len,
-        &mpr_ins,
-        &mpr_img
+        &broadcast.len(),
+        &ordipool.len()
     );
 }
 

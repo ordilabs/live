@@ -24,9 +24,18 @@ pub fn register_server_functions() {
 static COUNT: AtomicI32 = AtomicI32::new(0);
 
 #[cfg(feature = "ssr")]
+#[derive(Clone)]
+pub enum LiveEvent {
+    NewInscription(String),
+    RandomInscription(String),
+    MempoolInfo(String),
+}
+
+#[cfg(feature = "ssr")]
 lazy_static::lazy_static! {
-    pub static ref COUNT_CHANNEL: BroadcastChannel<i32> = BroadcastChannel::new();
+   pub static ref COUNT_CHANNEL: BroadcastChannel<i32> = BroadcastChannel::new();
     pub static ref INSCRIPTION_CHANNEL: BroadcastChannel<String> = BroadcastChannel::new();
+    pub static ref EVENT_CHANNEL: BroadcastChannel<LiveEvent> = BroadcastChannel::new();
 }
 // "/api" is an optional prefix that allows you to locate server functions wherever you'd like on the server
 #[server(GetServerCount, "/api")]
