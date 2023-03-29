@@ -54,15 +54,22 @@ pub(crate) async fn tick_bitcoin_core(
     backend: &BitcoinCore,
     ordipool: &mut HashMap<String, Option<Inscription>>,
 ) {
+    let tick_start = std::time::Instant::now();
+
     let mpr = backend.recent().await.ok();
     let mpr = mpr.unwrap_or_default();
 
     let mpr_len = mpr.len();
     let mut broadcast = vec![];
 
-    // remove all non-mempool txs
-    let txid: Vec<_> = mpr.iter().map(|entry| &entry.txid).collect();
-    ordipool.retain(|key, _| txid.contains(&key));
+    // remove all non-mempool txs,
+    // current impl is slow and happens mostly when a new block was found
+    let tick_retain = std::time::Instant::now();
+    if ordipool.len() > mpr.len() {
+        let txid: Vec<_> = mpr.iter().map(|entry| &entry.txid).collect();
+        ordipool.retain(|key, _| txid.contains(&key));
+    }
+    let duration_retain = std::time::Instant::now() - tick_retain;
 
     let mut backend_query_count = 0;
 
@@ -82,6 +89,13 @@ pub(crate) async fn tick_bitcoin_core(
 
         ordipool.insert(txid.clone(), maybe_inscription.clone());
 
+        // on startup, don't process too many per tick
+        let duration = std::time::Instant::now() - tick_start;
+        if duration.as_millis() > 1000 {
+            println!("processed {}/{}", ordipool.len(), mpr_len);
+            break;
+        }
+
         if maybe_inscription.is_none() {
             continue;
         }
@@ -94,12 +108,6 @@ pub(crate) async fn tick_bitcoin_core(
 
         let inscription_id = format!("{}i0", &txid);
         broadcast.push(inscription_id);
-
-        // on startup, don't process too many per tick
-        if backend_query_count > 1000 {
-            println!("processed {}/{}", ordipool.len(), mpr_len);
-            break;
-        }
     }
 
     // count the inscriptions and bytes, group by media type
@@ -147,12 +155,24 @@ pub(crate) async fn tick_bitcoin_core(
             _ = EVENT_CHANNEL.send(&event).await;
         }
     }
+    let duration = std::time::Instant::now() - tick_start;
+    let format = num_format::CustomFormat::builder()
+        .separator("_")
+        .build()
+        .unwrap();
+
+    let mut buf = num_format::Buffer::new();
+    buf.write_formatted(&duration.as_micros(), &format);
+    let mut buf2 = num_format::Buffer::new();
+    buf2.write_formatted(&duration_retain.as_micros(), &format);
 
     log!(
-        "tick: bitcoin_core, {}, {}, {}",
+        "tick: bitcoin_core, {}, {}, {}, {}, {}",
         &mpr_len,
         &broadcast.len(),
-        &ordipool.len()
+        &ordipool.len(),
+        buf.as_str(),
+        buf2.as_str(),
     );
 }
 

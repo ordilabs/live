@@ -18,6 +18,7 @@ cfg_if! {
         use ord_mini::Inscription;
         use std::collections::HashMap;
         extern crate dotenv;
+        extern crate num_format;
 
 
         #[get("/style.css")]
