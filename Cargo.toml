@@ -29,6 +29,7 @@ leptos_actix = { version = "0.2.4", optional = true }
 leptos_meta = { version = "0.2.4", default-features = false }
 leptos_router = { version = "0.2.4", default-features = false }
 log = "0.4"
+num-format = { version = "0.4.4", optional = true }
 ord-mini = { version = "0.5.1", path = "packages/ord-mini", optional = true }
 rand = { version = "0.8.5", optional = true }
 reqwest = { version = "0.11.16", optional = true, features = ["json"] }
@@ -48,6 +49,7 @@ ssr = [
   "dep:bitcoincore-rpc",
   "dep:dotenv",
   "dep:hex",
+  "dep:num-format",
   "dep:ord-mini",
   "dep:reqwest",
   "leptos_actix",
