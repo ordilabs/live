@@ -8,8 +8,9 @@ use {
             opcodes,
             script::{self, Instruction, Instructions},
         },
-        util::taproot::TAPROOT_ANNEX_PREFIX,
-        Script, Transaction, Witness,
+        taproot::TAPROOT_ANNEX_PREFIX,
+        ScriptBuf, Transaction, Witness,
+        script::PushBytes,
     },
     std::{iter::Peekable, str},
 };
@@ -57,28 +58,42 @@ impl Inscription {
     // }
 
     fn append_reveal_script_to_builder(&self, mut builder: script::Builder) -> script::Builder {
+        let protocol_push_bytes: &PushBytes = <&PushBytes>::try_from(PROTOCOL_ID).unwrap();
+
         builder = builder
             .push_opcode(opcodes::OP_FALSE)
             .push_opcode(opcodes::all::OP_IF)
-            .push_slice(PROTOCOL_ID);
+            .push_slice(protocol_push_bytes);
+
+        let content_tag_push_bytes: &PushBytes = <&PushBytes>::try_from(CONTENT_TYPE_TAG).unwrap();
 
         if let Some(content_type) = &self.content_type {
             builder = builder
-                .push_slice(CONTENT_TYPE_TAG)
-                .push_slice(content_type);
+                .push_slice(content_tag_push_bytes);
+
+            content_type.iter().for_each(|t| {
+                //let content_type_push_bytes = PushBytesBuf::try_from(t).unwrap();
+                let xt = &[*t];
+                let content_type_push_bytes: &PushBytes = <&PushBytes>::try_from(xt).unwrap();
+                builder = builder.clone().push_slice(content_type_push_bytes);
+            });
         }
 
         if let Some(body) = &self.body {
-            builder = builder.push_slice(BODY_TAG);
-            for chunk in body.chunks(520) {
-                builder = builder.push_slice(chunk);
-            }
+            let body_tag_push_bytes: &PushBytes = <&PushBytes>::try_from(BODY_TAG).unwrap();
+
+            builder = builder.push_slice(body_tag_push_bytes);
+            body.iter().for_each(|chunk| {
+                let xchunk = &[*chunk];
+                let chunk_push_bytes: &PushBytes = <&PushBytes>::try_from(xchunk).unwrap();
+                builder = builder.clone().push_slice(chunk_push_bytes);
+            });
         }
 
         builder.push_opcode(opcodes::all::OP_ENDIF)
     }
     #[allow(dead_code)]
-    pub(crate) fn append_reveal_script(&self, builder: script::Builder) -> Script {
+    pub(crate) fn append_reveal_script(&self, builder: script::Builder) -> ScriptBuf {
         self.append_reveal_script_to_builder(builder).into_script()
     }
 
@@ -131,7 +146,7 @@ enum InscriptionError {
     InvalidInscription,
     KeyPathSpend,
     NoInscription,
-    Script(script::Error),
+    ScriptBuf(script::Error),
     UnrecognizedEvenField,
 }
 
@@ -170,7 +185,7 @@ impl<'a> InscriptionParser<'a> {
             .unwrap();
 
         InscriptionParser {
-            instructions: Script::from(Vec::from(script)).instructions().peekable(),
+            instructions: ScriptBuf::from(Vec::from(script)).instructions().peekable(),
         }
         .parse_script()
     }
@@ -178,8 +193,9 @@ impl<'a> InscriptionParser<'a> {
     fn parse_script(mut self) -> Result<Inscription> {
         loop {
             let next = self.advance()?;
+            let no_push_bytes: &PushBytes = <&PushBytes>::try_from(&[]).unwrap();
 
-            if next == Instruction::PushBytes(&[]) {
+            if next == Instruction::PushBytes(no_push_bytes) {
                 if let Some(inscription) = self.parse_inscription()? {
                     return Ok(inscription);
                 }
@@ -191,43 +207,50 @@ impl<'a> InscriptionParser<'a> {
         self.instructions
             .next()
             .ok_or(InscriptionError::NoInscription)?
-            .map_err(InscriptionError::Script)
+            .map_err(InscriptionError::ScriptBuf)
     }
 
     fn parse_inscription(&mut self) -> Result<Option<Inscription>> {
         if self.advance()? == Instruction::Op(opcodes::all::OP_IF) {
-            if !self.accept(Instruction::PushBytes(PROTOCOL_ID))? {
+            let protocol_push_bytes: &PushBytes = <&PushBytes>::try_from(PROTOCOL_ID).unwrap();
+            if !self.accept(Instruction::PushBytes(protocol_push_bytes))? {
                 return Err(InscriptionError::NoInscription);
             }
 
             let mut fields = BTreeMap::new();
+            let body_tag_push_bytes: &PushBytes = <&PushBytes>::try_from(BODY_TAG).unwrap();
 
-            loop {
-                match self.advance()? {
-                    Instruction::PushBytes(BODY_TAG) => {
-                        let mut body = Vec::new();
-                        while !self.accept(Instruction::Op(opcodes::all::OP_ENDIF))? {
-                            body.extend_from_slice(self.expect_push()?);
-                        }
-                        fields.insert(BODY_TAG, body);
-                        break;
-                    }
+                loop {
+                    match self.advance()? {
                     Instruction::PushBytes(tag) => {
-                        if fields.contains_key(tag) {
-                            return Err(InscriptionError::InvalidInscription);
+                        match tag {
+                            _ if tag == body_tag_push_bytes => {
+                                let mut body = Vec::new();
+                                while !self.accept(Instruction::Op(opcodes::all::OP_ENDIF))? {
+                                    body.extend_from_slice(self.expect_push()?);
+                                } 
+                                fields.insert(body_tag_push_bytes, body);
+                                break;
+                            }
+                            _ => {
+                                if fields.contains_key(tag) {
+                                    return Err(InscriptionError::InvalidInscription);
+                                }
+                                fields.insert(tag, self.expect_push()?.to_vec());
+                            }
                         }
-                        fields.insert(tag, self.expect_push()?.to_vec());
                     }
                     Instruction::Op(opcodes::all::OP_ENDIF) => break,
                     _ => return Err(InscriptionError::InvalidInscription),
                 }
             }
 
-            let body = fields.remove(BODY_TAG);
-            let content_type = fields.remove(CONTENT_TYPE_TAG);
+            let body = fields.remove(body_tag_push_bytes);
+            let content_tag_push_bytes: &PushBytes = <&PushBytes>::try_from(CONTENT_TYPE_TAG).unwrap();
+            let content_type = fields.remove(content_tag_push_bytes);
 
             for tag in fields.keys() {
-                if let Some(lsb) = tag.first() {
+                if let Some(lsb) = tag.as_bytes().first() {
                     if lsb % 2 == 0 {
                         return Err(InscriptionError::UnrecognizedEvenField);
                     }
@@ -242,7 +265,7 @@ impl<'a> InscriptionParser<'a> {
 
     fn expect_push(&mut self) -> Result<&'a [u8]> {
         match self.advance()? {
-            Instruction::PushBytes(bytes) => Ok(bytes),
+            Instruction::PushBytes(bytes) => Ok(bytes.as_bytes()),
             _ => Err(InscriptionError::InvalidInscription),
         }
     }
@@ -257,7 +280,7 @@ impl<'a> InscriptionParser<'a> {
                     Ok(false)
                 }
             }
-            Some(Err(err)) => Err(InscriptionError::Script(*err)),
+            Some(Err(err)) => Err(InscriptionError::ScriptBuf(*err)),
             None => Ok(false),
         }
     }
@@ -310,7 +333,7 @@ mod tests {
     fn ignore_unparsable_scripts() {
         assert_eq!(
             InscriptionParser::parse(&Witness::from_vec(vec![vec![0x01], Vec::new()])),
-            Err(InscriptionError::Script(script::Error::EarlyEndOfScript)),
+            Err(InscriptionError::ScriptBuf(script::Error::EarlyEndOfScript)),
         );
     }
 
@@ -318,7 +341,7 @@ mod tests {
     fn no_inscription() {
         assert_eq!(
             InscriptionParser::parse(&Witness::from_vec(vec![
-                Script::new().into_bytes(),
+                ScriptBuf::new().into_bytes(),
                 Vec::new()
             ])),
             Err(InscriptionError::NoInscription),
@@ -563,10 +586,10 @@ mod tests {
     fn extract_from_transaction() {
         let tx = Transaction {
             version: 0,
-            lock_time: bitcoin::PackedLockTime(0),
+            lock_time: bitcoin::LockTime(0),
             input: vec![TxIn {
                 previous_output: OutPoint::null(),
-                script_sig: Script::new(),
+                script_sig: ScriptBuf::new(),
                 sequence: Sequence(0),
                 witness: envelope(&[b"ord", &[1], b"text/plain;charset=utf-8", &[], b"ord"]),
             }],
@@ -583,17 +606,17 @@ mod tests {
     fn do_not_extract_from_second_input() {
         let tx = Transaction {
             version: 0,
-            lock_time: bitcoin::PackedLockTime(0),
+            lock_time: bitcoin::LockTime(0),
             input: vec![
                 TxIn {
                     previous_output: OutPoint::null(),
-                    script_sig: Script::new(),
+                    script_sig: ScriptBuf::new(),
                     sequence: Sequence(0),
                     witness: Witness::new(),
                 },
                 TxIn {
                     previous_output: OutPoint::null(),
-                    script_sig: Script::new(),
+                    script_sig: ScriptBuf::new(),
                     sequence: Sequence(0),
                     witness: inscription("foo", [1; 1040]).to_witness(),
                 },
@@ -614,10 +637,10 @@ mod tests {
 
         let tx = Transaction {
             version: 0,
-            lock_time: bitcoin::PackedLockTime(0),
+            lock_time: bitcoin::LockTime(0),
             input: vec![TxIn {
                 previous_output: OutPoint::null(),
-                script_sig: Script::new(),
+                script_sig: ScriptBuf::new(),
                 sequence: Sequence(0),
                 witness,
             }],
