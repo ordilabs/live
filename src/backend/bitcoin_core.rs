@@ -89,7 +89,8 @@ impl Backend for BitcoinCore {
 
     async fn maybe_inscription(&self, txid: &str) -> Result<Option<Inscription>> {
         let client = bitcoincore_rpc::Client::new(&self.root, self.auth.clone()).unwrap();
-        let txid = bitcoin::Txid::from_hex(txid).unwrap();
+        //let txid = bitcoin::Txid::from_hex(txid).unwrap();
+        let txid = txid.parse::<bitcoincore_rpc::bitcoin::Txid>().unwrap();
 
         // let hex = client.get_raw_transaction(&txid, None)?;
         // let data = hex::decode(&hex)?;
