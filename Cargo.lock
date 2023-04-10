@@ -1503,9 +1503,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_router"
-version = "0.2.4"
+version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "443669ca496573d42cc9ae6454082347336b7f918ebfaaeb7ba2443b7d2f7cf8"
+checksum = "214fca795824160eac59a0168607f3ff14ab09390a62938ee26e7ef077f27536"
 dependencies = [
  "cfg-if 1.0.0",
  "common_macros",
