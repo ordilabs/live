@@ -8,7 +8,6 @@ use std::{env::var, path::PathBuf, str::FromStr};
 use super::*;
 use anyhow::Result;
 
-use bitcoin::hashes::hex::FromHex;
 use bitcoincore_rpc::*;
 use bitcoincore_rpc_json::*;
 

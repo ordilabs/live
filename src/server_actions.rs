@@ -71,7 +71,7 @@ pub(crate) async fn tick_bitcoin_core(
     }
     let duration_retain = std::time::Instant::now() - tick_retain;
 
-    let mut backend_query_count = 0;
+    // let mut backend_query_count = 0;
 
     for (_n, entry) in mpr.into_iter().enumerate() {
         let txid = entry.txid;
@@ -80,7 +80,7 @@ pub(crate) async fn tick_bitcoin_core(
         }
 
         let maybe_inscription = backend.maybe_inscription(&txid).await;
-        backend_query_count += 1;
+        // backend_query_count += 1;
 
         let maybe_inscription = maybe_inscription.unwrap_or_else(|e| {
             log::warn!("{}", e);
