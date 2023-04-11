@@ -117,8 +117,6 @@ async fn sse_handler(
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
-    use std::net::SocketAddrV6;
-
     dotenv::dotenv().ok();
 
     tracing_subscriber::registry()
@@ -128,7 +126,9 @@ async fn main() {
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
-    let assets_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("assets");
+    let assets_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("target")
+        .join("site");
     let static_files_service = ServeDir::new(assets_dir).append_index_html_on_directories(true);
 
     // crate::app::register_server_functions();
@@ -190,7 +190,7 @@ async fn main() {
     let routes = generate_route_list(|cx| view! { cx, <App/> }).await;
 
     let app = Router::new()
-        .route("api/*fn_name", post(leptos_axum::handle_server_fns))
+        .route("/api/*fn_name", post(leptos_axum::handle_server_fns))
         .route("/special/:id", get(custom_handler))
         .route("/preview/:inscription_id", get(server_actions::preview))
         .route("/content/:inscription_id", get(server_actions::content))
