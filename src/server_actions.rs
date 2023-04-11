@@ -203,7 +203,17 @@ pub async fn content(Path(inscription_id): Path<String>) -> impl IntoResponse {
     // get content from remote server
     // todo gfi: use the /raw api instead of /hex
 
-    let maybe_inscription = backend.maybe_inscription(txid).await.unwrap();
+    let query = backend.maybe_inscription(txid).await;
+
+    if query.is_err() {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            header_map,
+            format!("{:?}", query.err()).as_bytes().to_vec(),
+        );
+    }
+
+    let maybe_inscription = query.unwrap();
 
     if maybe_inscription.is_none() {
         return (

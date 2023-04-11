@@ -196,7 +196,7 @@ async fn main() {
         .route("/content/:inscription_id", get(server_actions::content))
         .route("/sse", get(sse_handler))
         .leptos_routes(leptos_options.clone(), routes, |cx| view! { cx, <App/> })
-        .fallback_service(static_files_service)
+        .fallback(fallback::file_and_error_handler)
         .layer(TraceLayer::new_for_http());
 
     // run it
