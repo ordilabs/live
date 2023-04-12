@@ -12,7 +12,7 @@ use axum::response::Response as AxumResponse;
 use tower::ServiceExt;
 use tower_http::services::ServeDir;
 use std::sync::Arc;
-use leptos::{LeptosOptions, Errors, view};
+use leptos::{LeptosOptions, view};
 use crate::app::{App, AppProps};
 
 }}

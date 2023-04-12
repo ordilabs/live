@@ -34,9 +34,9 @@ cfg_if! { if #[cfg(feature = "ssr")] {
         response::sse::{Event, Sse},
     };
     use futures::stream::{self, Stream};
-    use std::{convert::Infallible, net::SocketAddr, path::PathBuf, time::Duration};
+    use std::{convert::Infallible, time::Duration};
     use tokio_stream::StreamExt as _;
-    use tower_http::{services::ServeDir, trace::TraceLayer};
+    use tower_http::trace::TraceLayer;
     use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
     use std::sync::Arc;
 
@@ -68,12 +68,18 @@ async fn custom_handler(
 async fn sse_handler(
     TypedHeader(user_agent): TypedHeader<headers::UserAgent>,
 ) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {
-    println!("`{}` connected", user_agent.as_str());
+    tracing::debug!("`{}` connected", user_agent.as_str());
 
     // A `Stream` that repeats an event every second
-    let stream = stream::repeat_with(|| Event::default().data("hi!"))
-        .map(Ok)
-        .throttle(Duration::from_secs(1));
+    let stream = stream::once(async { LiveEvent::MempoolInfo("".to_owned()) })
+        .chain(EVENT_CHANNEL.clone())
+        .map(|event| match event {
+            LiveEvent::NewInscription(data) | LiveEvent::RandomInscription(data) => {
+                Ok(Event::default().event("inscription").data(data.as_str()))
+            }
+
+            LiveEvent::MempoolInfo(data) => Ok(Event::default().event("info").data(data.as_str())),
+        });
 
     Sse::new(stream).keep_alive(
         axum::response::sse::KeepAlive::new()
@@ -143,41 +149,43 @@ async fn main() {
     // let routes = generate_route_list(|cx| view! { cx,
     //    <App/> });
 
-    // let mut ordipool:  HashMap<String, Option<Inscription>> = HashMap::new();
-    // let backend = std::env::var("BACKEND").unwrap_or("bitcoin_core".to_string()).to_lowercase();
-    // //let backend_str = backend.as_str();
-    // let backend_space = backend::Space::new();
-    // let backend_bitcoin_core = backend::BitcoinCore::new();
+    let mut ordipool: HashMap<String, Option<Inscription>> = HashMap::new();
+    let backend = std::env::var("BACKEND")
+        .unwrap_or("bitcoin_core".to_string())
+        .to_lowercase();
+    //let backend_str = backend.as_str();
+    let backend_space = backend::Space::new();
+    let backend_bitcoin_core = backend::BitcoinCore::new();
 
-    // // todo print more relevant config stuff
-    // dbg!(&backend_bitcoin_core);
+    // todo print more relevant config stuff
+    dbg!(&backend_bitcoin_core);
     // if std::env::var("RUST_BACKTRACE").is_ok() {
     //     let mut buffer = String::new();
     //     let stdin = std::io::stdin(); // We get `Stdin` here.
     //     println!("Press enter to start with config above. Crtl+C to abort.");
-    //     stdin.read_line(&mut buffer)?;
+    //     stdin.read_line(&mut buffer).expect(msg);
     // }
 
-    // actix_rt::spawn(async move {
-    //     //let mut runs = 100u32;
-    //     let mut interval = actix_rt::time::interval(std::time::Duration::from_millis(3142));
-    //     loop {
-    //         interval.tick().await;
-    //         //log!("tick2");
-    //         //runs += 1;
-    //         //let punk = format!("punk_{}.webp", &runs);
-    //         //INSCRIPTION_CHANNEL.send(&punk).await.unwrap();
-    //         if backend == "space" {
-    //             server_actions::tick_space(&backend_space, &mut ordipool).await;
-    //         } else if backend == "bitcoin_core" {
-    //             server_actions::tick_bitcoin_core(&backend_bitcoin_core, &mut ordipool).await;
-    //         } else {
-    //             panic!("Unknown backend");
-    //         }
-    //         //server_actions::tick(&backend, &mut ordipool).await;
-    //         // do something
-    //     }
-    // });
+    tokio::spawn(async move {
+        //let mut runs = 100u32;
+        let mut interval = actix_rt::time::interval(std::time::Duration::from_millis(3142));
+        loop {
+            interval.tick().await;
+            //log!("tick2");
+            //runs += 1;
+            //let punk = format!("punk_{}.webp", &runs);
+            //INSCRIPTION_CHANNEL.send(&punk).await.unwrap();
+            if backend == "space" {
+                server_actions::tick_space(&backend_space, &mut ordipool).await;
+            } else if backend == "bitcoin_core" {
+                server_actions::tick_bitcoin_core(&backend_bitcoin_core, &mut ordipool).await;
+            } else {
+                panic!("Unknown backend");
+            }
+            //server_actions::tick(&backend, &mut ordipool).await;
+            // do something
+        }
+    });
 
     // build our application with a route
     let conf = get_configuration(Some("Cargo.toml")).await.unwrap();
@@ -185,11 +193,11 @@ async fn main() {
     let routes = generate_route_list(|cx| view! { cx, <App/> }).await;
 
     let app = Router::new()
+        .route("/api/events", get(sse_handler))
         .route("/api/*fn_name", post(leptos_axum::handle_server_fns))
         .route("/special/:id", get(custom_handler))
         .route("/preview/:inscription_id", get(server_actions::preview))
         .route("/content/:inscription_id", get(server_actions::content))
-        .route("/sse", get(sse_handler))
         .leptos_routes(leptos_options.clone(), routes, |cx| view! { cx, <App/> })
         .fallback(fallback::file_and_error_handler)
         .layer(Extension(Arc::new(leptos_options)))

@@ -9,8 +9,7 @@ use ord_mini::{Inscription, Media};
 use backend::{Backend, BitcoinCore, Space};
 use serde::*;
 
-use axum::http::{header, HeaderMap, StatusCode, Uri};
-use axum::response::{Response, Result};
+use axum::http::{header, HeaderMap, StatusCode};
 use axum::{extract::Path, response::IntoResponse};
 //use std::io::Read::read_to_end;
 
@@ -181,12 +180,20 @@ pub(crate) async fn tick_bitcoin_core(
 pub async fn content(Path(inscription_id): Path<String>) -> impl IntoResponse {
     let s = inscription_id;
 
-    let header_map = HeaderMap::new();
+    let mut header_map = HeaderMap::new();
 
     dbg!(&s);
     if s.starts_with("punk") {
-        let uri = format!("/punks/{}", s);
+        let location = format!("/punks/{}", s);
+
+        header_map.insert(
+            header::LOCATION,
+            header::HeaderValue::from_str(&location).unwrap(),
+        );
         return (StatusCode::TEMPORARY_REDIRECT, header_map, vec![]);
+
+        //header_map.append(header::LOCATION, uri.parse().unwrap());
+        //return (StatusCode::TEMPORARY_REDIRECT, header_map, vec![]);
     }
 
     if s.len() < 64 {
@@ -296,5 +303,9 @@ pub async fn preview(Path(inscription_id): Path<String>) -> impl IntoResponse {
   </html>
   "#;
 
-    (StatusCode::OK, resp.replace("{}", &inscription_id));
+    (
+        StatusCode::OK,
+        [(header::CONTENT_TYPE, "text/html")],
+        resp.replace("{}", &inscription_id),
+    )
 }

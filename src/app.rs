@@ -12,13 +12,13 @@ use std::sync::atomic::{AtomicI32, Ordering};
 #[cfg(feature = "ssr")]
 use broadcaster::BroadcastChannel;
 
-#[cfg(feature = "ssr")]
-pub fn register_server_functions() {
-    _ = GetServerCount::register();
-    _ = AdjustServerCount::register();
-    _ = ClearServerCount::register();
-    _ = GetLastInscription::register();
-}
+// #[cfg(feature = "ssr")]
+// pub fn register_server_functions() {
+//     _ = GetServerCount::register();
+//     _ = AdjustServerCount::register();
+//     _ = ClearServerCount::register();
+//     _ = GetLastInscription::register();
+// }
 
 #[cfg(feature = "ssr")]
 static COUNT: AtomicI32 = AtomicI32::new(0);
