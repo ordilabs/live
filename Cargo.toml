@@ -31,7 +31,7 @@ leptos_meta = { version = "0.2.5", default-features = false }
 leptos_router = { version = "0.2.5", default-features = false }
 log = "0.4"
 num-format = { version = "0.4.4", optional = true }
-ord-mini = { version = "0.6.0", path = "packages/ord-mini", optional = true }
+ord-mini = { version = "0.5.2-alpha", git = "https://github.com/ordilabs/ord-mini.git", optional = true }
 rand = { version = "0.8.5", optional = true }
 reqwest = { version = "0.11.16", optional = true, features = ["json"] }
 serde = { version = "1", features = ["derive"] }
@@ -47,7 +47,32 @@ tracing-subscriber = { version = "0.3.16", features = [
 wasm-bindgen = "0.2"
 
 [features]
-ssr = ["dep:axum", "dep:headers", "dep:tokio", "dep:tower", "dep:tower-http", "dep:tokio-stream", "dep:tracing-subscriber", "dep:tracing", "dep:rand", "dep:actix-rt", "dep:anyhow", "dep:async-trait", "dep:bitcoin", "dep:bitcoincore-rpc-json", "dep:bitcoincore-rpc", "dep:dotenv", "dep:hex", "dep:num-format", "dep:ord-mini", "dep:reqwest", "dep:leptos_axum", "leptos_meta/ssr", "leptos_router/ssr", "leptos/ssr"]
+ssr = [
+  "dep:axum",
+  "dep:headers",
+  "dep:tokio",
+  "dep:tower",
+  "dep:tower-http",
+  "dep:tokio-stream",
+  "dep:tracing-subscriber",
+  "dep:tracing",
+  "dep:rand",
+  "dep:actix-rt",
+  "dep:anyhow",
+  "dep:async-trait",
+  "dep:bitcoin",
+  "dep:bitcoincore-rpc-json",
+  "dep:bitcoincore-rpc",
+  "dep:dotenv",
+  "dep:hex",
+  "dep:num-format",
+  "dep:ord-mini",
+  "dep:reqwest",
+  "dep:leptos_axum",
+  "leptos_meta/ssr",
+  "leptos_router/ssr",
+  "leptos/ssr",
+]
 default = []
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
 stable = ["leptos/stable", "leptos_router/stable"]
