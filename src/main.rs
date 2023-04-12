@@ -126,10 +126,6 @@ async fn main() {
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
-    let assets_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("target")
-        .join("site");
-    let static_files_service = ServeDir::new(assets_dir).append_index_html_on_directories(true);
 
     // crate::app::register_server_functions();
 
@@ -186,7 +182,6 @@ async fn main() {
     // build our application with a route
     let conf = get_configuration(Some("Cargo.toml")).await.unwrap();
     let leptos_options = conf.leptos_options;
-    let addr = leptos_options.site_addr.clone();
     let routes = generate_route_list(|cx| view! { cx, <App/> }).await;
 
     let app = Router::new()
@@ -197,6 +192,7 @@ async fn main() {
         .route("/sse", get(sse_handler))
         .leptos_routes(leptos_options.clone(), routes, |cx| view! { cx, <App/> })
         .fallback(fallback::file_and_error_handler)
+        .layer(Extension(Arc::new(leptos_options)))
         .layer(TraceLayer::new_for_http());
 
     // run it
