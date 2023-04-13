@@ -305,7 +305,10 @@ pub async fn preview(Path(inscription_id): Path<String>) -> impl IntoResponse {
 
     (
         StatusCode::OK,
-        [(header::CONTENT_TYPE, "text/html")],
+        [(
+            header::CONTENT_TYPE,
+            header::HeaderValue::from_static(mime::TEXT_HTML_UTF_8.as_ref()),
+        )],
         resp.replace("{}", &inscription_id),
     )
 }

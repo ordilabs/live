@@ -88,38 +88,6 @@ async fn sse_handler(
     )
 }
 
-// #[get("/api/events")]
-// async fn counter_events() -> impl Responder {
-//     use futures::StreamExt;
-
-//     let stream =
-//         futures::stream::once(async { LiveEvent::MempoolInfo("".to_string()) })
-//             .chain(EVENT_CHANNEL.clone())
-//             .map(|event| {
-//                 let string = match event {
-//                     LiveEvent::NewInscription(value) |
-//                     LiveEvent::RandomInscription(value) => {
-//                         let value = value.as_str();
-//                         format!(
-//                             "event: inscription\ndata: {value}\n\n"
-//                         )
-//                     }
-
-//                     LiveEvent::MempoolInfo(value) => {
-//                         let value = value.as_str();
-//                         format!(
-//                             "event: info\ndata: {value}\n\n"
-//                         )
-//                     }
-//                 };
-
-//                 Ok(web::Bytes::from(string)) as Result<web::Bytes>
-//             });
-//     HttpResponse::Ok()
-//         .insert_header(("Content-Type", "text/event-stream"))
-//         .streaming(stream)
-// }
-
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() {
@@ -133,7 +101,7 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    // crate::app::register_server_functions();
+    crate::app::register_server_functions();
 
     // let app = Router::new()
     // .fallback_service(static_files_service)
@@ -168,7 +136,8 @@ async fn main() {
 
     tokio::spawn(async move {
         //let mut runs = 100u32;
-        let mut interval = actix_rt::time::interval(std::time::Duration::from_millis(3142));
+
+        let mut interval = tokio::time::interval(std::time::Duration::from_millis(3142));
         loop {
             interval.tick().await;
             //log!("tick2");
