@@ -59,10 +59,9 @@ ssr = [
 ]
 default = []
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
-stable = ["leptos/stable", "leptos_router/stable"]
 
 [package.metadata.cargo-all-features]
-denylist = ["actix-files", "actix-web", "leptos_actix", "stable"]
+denylist = ["actix-files", "actix-web", "leptos_actix"]
 skip_feature_sets = [["ssr", "hydrate"]]
 
 [package.metadata.leptos]
