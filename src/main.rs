@@ -38,7 +38,7 @@ cfg_if! { if #[cfg(feature = "ssr")] {
     use tokio_stream::StreamExt as _;
     use tower_http::trace::TraceLayer;
     use tracing_subscriber::prelude::*;
-    use axum_prometheus::PrometheusMetricLayer;
+
 
 
 
@@ -129,7 +129,11 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let (prometheus_layer, metric_handle) = PrometheusMetricLayer::pair();
+    use axum::{routing::get, Router};
+    use axum_otel_metrics::HttpMetricsLayerBuilder;
+    let metrics = HttpMetricsLayerBuilder::new().build();
+
+    tokio::spawn(async move { process_metrics_server().await });
 
     crate::app::register_server_functions();
 
@@ -184,23 +188,28 @@ async fn main() {
         _client: HttpClient {},
     };
 
-    //tokio::spawn(async move { start_metrics_server() });
+    // -- extern crate axum-prometheus: currently disabled, because it can't be used in conjunction with process_metrics
+    // use axum_prometheus::PrometheusMetricLayer;
+    // let (prometheus_layer, metric_handle) = PrometheusMetricLayer::pair();
 
     // build our application with a route
     let app = Router::new()
+        .merge(metrics.routes())
         .route("/api/events", get(sse_handler))
         .route("/api/*fn_name", post(leptos_axum::handle_server_fns))
         .route("/special/:id", get(custom_handler))
         .route("/preview/:inscription_id", get(server_actions::preview))
         .route("/content/:inscription_id", get(server_actions::content))
-        .route("/metrics", get(|| async move { metric_handle.render() }))
         .with_state(state)
+        // related: axum-prometheus
+        //.route("/metrics", get(|| async move { metric_handle.render() }))
         .leptos_routes(leptos_options.clone(), routes, |cx| view! { cx, <App/> })
-        //todo punks_ fallback
+        // todo: punks_*.webp fallback
         .fallback(fallback::file_and_error_handler)
         .layer(Extension(Arc::new(leptos_options.clone())))
-        .layer(prometheus_layer)
-        .layer(TraceLayer::new_for_http());
+        .layer(metrics)
+        .layer(TraceLayer::new_for_http())
+        .merge(Router::new());
 
     tracing::debug!("listening on {}", leptos_options.site_addr);
     axum::Server::bind(&leptos_options.site_addr)
@@ -209,36 +218,35 @@ async fn main() {
         .unwrap();
 }
 
-// #[cfg(feature = "ssr")]
-// async fn start_metrics_server() {
-//     //use tokio::net::unix::SocketAddr;
-//      use std::future::ready;
-//     use std::net::SocketAddr;
+#[cfg(feature = "ssr")]
+pub async fn process_metrics_server() {
+    use metrics_exporter_prometheus::PrometheusBuilder;
+    use metrics_process::Collector;
 
-//     // setup_metrics_recorder
-//     const EXPONENTIAL_SECONDS: &[f64] = &[
-//         0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0,
-//     ];
+    let builder = PrometheusBuilder::new();
+    let handle = builder
+        .install_recorder()
+        .expect("failed to install Prometheus recorder");
 
-//     let recorder_handle = PrometheusBuilder::new()
-//         .set_buckets_for_metric(
-//             Matcher::Full("http_requests_duration_seconds".to_string()),
-//             EXPONENTIAL_SECONDS,
-//         )
-//         .unwrap()
-//         .install_recorder()
-//         .unwrap();
+    let collector = Collector::default();
+    // Call `describe()` method to register help string.
+    collector.describe();
 
-//     let metrics_app = Router::new().route("/metrics", get(move || ready(recorder_handle.render())));
+    let addr = "127.0.0.1:9000".parse().unwrap();
 
-//     // NOTE: expose metrics endpoint on a different port
-//     let addr = SocketAddr::from(([127, 0, 0, 1], 3090));
-//     tracing::debug!("listening on {}", addr);
-//     axum::Server::bind(&addr)
-//         .serve(metrics_app.into_make_service())
-//         .await
-//         .unwrap()
-// }
+    let app = Router::new().route(
+        "/metrics",
+        get(move || {
+            // Collect information just before handle '/metrics'
+            collector.collect();
+            std::future::ready(handle.render())
+        }),
+    );
+    axum::Server::bind(&addr)
+        .serve(app.into_make_service())
+        .await
+        .unwrap();
+}
 
 #[cfg(not(feature = "ssr"))]
 pub fn main() {
