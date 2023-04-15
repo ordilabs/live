@@ -232,7 +232,7 @@ pub async fn process_metrics_server() {
     // Call `describe()` method to register help string.
     collector.describe();
 
-    let addr = "127.0.0.1:9000".parse().unwrap();
+    let addr = "127.0.0.1:9100".parse().unwrap();
 
     let app = Router::new().route(
         "/metrics",
