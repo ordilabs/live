@@ -13,10 +13,11 @@ cfg_if! { if #[cfg(feature = "ssr")] {
     extern crate leptos_axum;
     use leptos_axum::{generate_route_list, LeptosRoutes};
     mod fallback;
+    use crate::backend::BitcoinCore;
 
     use axum::body::Body as AxumBody;
     use axum::{
-        extract::{Extension, Path, },
+        extract::{Extension, Path, State, FromRef},
         http::Request,
         response::{IntoResponse, Response},
         routing::{get, post},
@@ -40,6 +41,35 @@ cfg_if! { if #[cfg(feature = "ssr")] {
     use tracing_subscriber::prelude::*;
 
     use std::sync::Arc;
+
+    #[derive(Clone)]
+    pub(crate) struct HttpClient {}
+
+    #[derive(Clone)]
+    pub(crate) struct Database {}
+
+    #[derive(Clone)]
+    pub(crate) struct AppState {
+        pub(crate) core: backend::bitcoin_core::BitcoinCore,
+        pub(crate) _client: HttpClient,
+        pub(crate) _db: Database,
+    }
+
+    // support converting an `AppState` in an `ApiState`
+    impl FromRef<AppState> for HttpClient {
+        fn from_ref(app_state: &AppState) -> HttpClient {
+            app_state._client.clone()
+        }
+    }
+
+     // support converting an `AppState` in an `ApiState`
+     impl FromRef<AppState> for BitcoinCore {
+        fn from_ref(app_state: &AppState) -> BitcoinCore {
+            app_state.core.clone()
+        }
+    }
+
+
 
 }}
 mod app;
@@ -147,6 +177,12 @@ async fn main() {
     let leptos_options = conf.leptos_options;
     let routes = generate_route_list(|cx| view! { cx, <App/> }).await;
 
+    let state = AppState {
+        core: backend::BitcoinCore::new(),
+        _db: Database {},
+        _client: HttpClient {},
+    };
+
     // build our application with a route
     let app = Router::new()
         .route("/api/events", get(sse_handler))
@@ -154,6 +190,7 @@ async fn main() {
         .route("/special/:id", get(custom_handler))
         .route("/preview/:inscription_id", get(server_actions::preview))
         .route("/content/:inscription_id", get(server_actions::content))
+        .with_state(state)
         .leptos_routes(leptos_options.clone(), routes, |cx| view! { cx, <App/> })
         //todo punks_ fallback
         .fallback(fallback::file_and_error_handler)

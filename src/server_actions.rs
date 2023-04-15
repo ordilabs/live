@@ -177,7 +177,11 @@ pub(crate) async fn tick_bitcoin_core(
     );
 }
 
-pub async fn content(Path(inscription_id): Path<String>) -> impl IntoResponse {
+pub(crate) async fn content(
+    Path(inscription_id): Path<String>,
+    State(_client): State<HttpClient>,
+    State(core): State<BitcoinCore>,
+) -> impl IntoResponse {
     let s = inscription_id;
 
     let mut header_map = HeaderMap::new();
@@ -205,12 +209,12 @@ pub async fn content(Path(inscription_id): Path<String>) -> impl IntoResponse {
     }
 
     let txid = &s.as_str()[0..64];
-    let backend = BitcoinCore::new();
+    //let backend = BitcoinCore::new();
 
     // get content from remote server
     // todo gfi: use the /raw api instead of /hex
 
-    let query = backend.maybe_inscription(txid).await;
+    let query = core.maybe_inscription(txid).await;
 
     if query.is_err() {
         return (

@@ -19,9 +19,9 @@ pub struct BitcoinCore {
     //client: bitcoincore_rpc::Client,
 }
 
-#[async_trait]
-impl Backend for BitcoinCore {
-    fn new() -> Self {
+//#[async_trait]
+impl BitcoinCore {
+    pub fn new() -> Self {
         let core_url = var("CORE_URL").unwrap_or("127.0.0.1:18443".to_owned());
 
         let auth = match var("CORE_USER").ok() {
@@ -46,7 +46,7 @@ impl Backend for BitcoinCore {
         }
     }
 
-    async fn get_latest_inscriptions(&self) -> Vec<Inscription> {
+    pub async fn _get_latest_inscriptions(&self) -> Vec<Inscription> {
         let mut inscriptions = Vec::new();
         let mpr = self.recent().await.ok();
 
@@ -66,7 +66,7 @@ impl Backend for BitcoinCore {
         inscriptions
     }
 
-    async fn recent(&self) -> Result<MempoolRecent> {
+    pub async fn recent(&self) -> Result<MempoolRecent> {
         let client = bitcoincore_rpc::Client::new(&self.root, self.auth.clone()).unwrap();
         let grm = client.get_raw_mempool()?;
 
@@ -86,7 +86,7 @@ impl Backend for BitcoinCore {
         Ok(mpr)
     }
 
-    async fn maybe_inscription(&self, txid: &str) -> Result<Option<Inscription>> {
+    pub async fn maybe_inscription(&self, txid: &str) -> Result<Option<Inscription>> {
         let client = bitcoincore_rpc::Client::new(&self.root, self.auth.clone()).unwrap();
         //let txid = bitcoin::Txid::from_hex(txid).unwrap();
         let txid = txid.parse::<bitcoincore_rpc::bitcoin::Txid>().unwrap();
