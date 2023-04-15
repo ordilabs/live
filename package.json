@@ -1,18 +1,5 @@
 {
-  "name": "ordilabs_live",
-  "version": "0.1.0-alpha",
-  "description": "",
-  "main": "tailwind.config.js",
-  "scripts": {},
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ordilabs/live.git"
-  },
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/ordilabs/live/issues"
-  },
-  "homepage": "https://github.com/ordilabs/live#readme",
+  "COMMENT": "Package.json is needed to install deps of Tailwind only",
   "devDependencies": {
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.3",
