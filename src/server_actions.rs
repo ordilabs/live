@@ -51,6 +51,7 @@ pub(crate) async fn tick_space(
     log!("tick space, {}", &mpr_len);
 }
 
+#[tracing::instrument]
 pub(crate) async fn tick_bitcoin_core(
     backend: &BitcoinCore,
     ordipool: &mut HashMap<String, Option<Inscription>>,
@@ -186,7 +187,7 @@ pub(crate) async fn content(
 
     let mut header_map = HeaderMap::new();
 
-    dbg!(&s);
+    //dbg!(&s);
     if s.starts_with("punk") {
         let location = format!("/punks/{}", s);
 
@@ -272,6 +273,7 @@ fn image_response_axum(inscription: Inscription) -> (StatusCode, HeaderMap, Vec<
     (StatusCode::OK, headers, inscription.into_body().unwrap())
 }
 
+#[tracing::instrument]
 pub async fn preview(Path(inscription_id): Path<String>) -> impl IntoResponse {
     let resp = r#"<!doctype html>
   <html lang=en>

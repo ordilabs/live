@@ -116,65 +116,50 @@ async fn sse_handler(
 
 #[cfg(feature = "ssr")]
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     dotenv::dotenv().ok();
 
     let console_layer = console_subscriber::spawn();
     tracing_subscriber::registry()
+        .with(console_layer)
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "example_sse=debug,tower_http=debug".into()),
+                //.unwrap_or_else(|_| "tokio=debug,runtime=trace".into()),
+                .unwrap_or_else(|_| "info".into()),
         )
-        .with(console_layer)
         .with(tracing_subscriber::fmt::layer())
         .init();
 
+    let task_process_metrics = tokio::task::Builder::new()
+        .name("process_metrics")
+        .spawn(spawn_process_metrics())
+        .unwrap();
+
+    let task_server_ticks = tokio::task::Builder::new()
+        .name("server_ticks")
+        .spawn(spawn_server_ticks())
+        .unwrap();
+
+    spawn_app().await;
+
+    let result = tokio::try_join! {
+        task_server_ticks,
+        task_process_metrics,
+        //task_leptos
+    };
+    result?;
+
+    Ok(())
+}
+
+#[cfg(feature = "ssr")]
+#[tracing::instrument]
+async fn spawn_app() {
     use axum::{routing::get, Router};
     use axum_otel_metrics::HttpMetricsLayerBuilder;
     let metrics = HttpMetricsLayerBuilder::new().build();
 
-    tokio::spawn(async move { process_metrics_server().await });
-
     crate::app::register_server_functions();
-
-    let mut ordipool: HashMap<String, Option<Inscription>> = HashMap::new();
-    let backend = std::env::var("BACKEND")
-        .unwrap_or("bitcoin_core".to_string())
-        .to_lowercase();
-    //let backend_str = backend.as_str();
-    let backend_space = backend::Space::new();
-    let backend_bitcoin_core = backend::BitcoinCore::new();
-
-    // todo print more relevant config stuff
-    dbg!(&backend_bitcoin_core);
-    // if std::env::var("RUST_BACKTRACE").is_ok() {
-    //     let mut buffer = String::new();
-    //     let stdin = std::io::stdin(); // We get `Stdin` here.
-    //     println!("Press enter to start with config above. Crtl+C to abort.");
-    //     stdin.read_line(&mut buffer).expect(msg);
-    // }
-
-    tokio::spawn(async move {
-        //let mut runs = 100u32;
-
-        let mut interval = tokio::time::interval(std::time::Duration::from_millis(3142));
-        loop {
-            interval.tick().await;
-            //log!("tick2");
-            //runs += 1;
-            //let punk = format!("punk_{}.webp", &runs);
-            //INSCRIPTION_CHANNEL.send(&punk).await.unwrap();
-            if backend == "space" {
-                server_actions::tick_space(&backend_space, &mut ordipool).await;
-            } else if backend == "bitcoin_core" {
-                server_actions::tick_bitcoin_core(&backend_bitcoin_core, &mut ordipool).await;
-            } else {
-                panic!("Unknown backend");
-            }
-            //server_actions::tick(&backend, &mut ordipool).await;
-            // do something
-        }
-    });
 
     // Setting this to None means we'll be using cargo-leptos and its env vars.
     // when not using cargo-leptos None must be replaced with Some("Cargo.toml")
@@ -219,7 +204,41 @@ async fn main() {
 }
 
 #[cfg(feature = "ssr")]
-pub async fn process_metrics_server() {
+#[tracing::instrument]
+pub async fn spawn_server_ticks() {
+    let mut ordipool: HashMap<String, Option<Inscription>> = HashMap::new();
+    let backend = std::env::var("BACKEND")
+        .unwrap_or("bitcoin_core".to_string())
+        .to_lowercase();
+    //let backend_str = backend.as_str();
+    let backend_space = backend::Space::new();
+    let backend_bitcoin_core = backend::BitcoinCore::new();
+
+    // todo: print more relevant config stuff
+    tracing::info!(?backend_bitcoin_core);
+
+    let mut interval = tokio::time::interval(std::time::Duration::from_millis(3142));
+    loop {
+        interval.tick().await;
+        //log!("tick2");
+        //runs += 1;
+        //let punk = format!("punk_{}.webp", &runs);
+        //INSCRIPTION_CHANNEL.send(&punk).await.unwrap();
+        if backend == "space" {
+            server_actions::tick_space(&backend_space, &mut ordipool).await;
+        } else if backend == "bitcoin_core" {
+            server_actions::tick_bitcoin_core(&backend_bitcoin_core, &mut ordipool).await;
+        } else {
+            panic!("Unknown backend");
+        }
+        //server_actions::tick(&backend, &mut ordipool).await;
+        // do something
+    }
+}
+
+#[cfg(feature = "ssr")]
+#[tracing::instrument]
+pub async fn spawn_process_metrics() {
     use metrics_exporter_prometheus::PrometheusBuilder;
     use metrics_process::Collector;
 
