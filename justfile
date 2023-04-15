@@ -97,6 +97,12 @@ open:
     http://mempool-ol.local \
 
 [linux]
+open:
+  xdg-open http://live-ol.local
+  xdg-open http://ord-ol.local
+  xdg-open http://mempool-ol.local
+
+[linux]
 _install-tools:
   sudo apt install -y \
     build-essential \
