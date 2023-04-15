@@ -44,6 +44,7 @@ watch-leptos:
 
 build-release:
   npx tailwindcss \
+    -c ./src/style/tailwind.config.js \
     -i ./src/style/input.css \
     -o ./target/style/output.css \
     --minify
@@ -102,7 +103,9 @@ _install-tools:
     pkg-config \
     libssl-dev \
 
+  # TODO Switch back to stable `cargo-leptos` as soon as `hot-reload` is supported there 
   cargo install --locked \
+    --git https://github.com/akesson/cargo-leptos \
     cargo-leptos \
   
 
