@@ -37,7 +37,8 @@ cfg_if! { if #[cfg(feature = "ssr")] {
     use std::{convert::Infallible, time::Duration};
     use tokio_stream::StreamExt as _;
     use tower_http::trace::TraceLayer;
-    use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+    use tracing_subscriber::prelude::*;
+
     use std::sync::Arc;
 
 }}
@@ -89,11 +90,13 @@ async fn sse_handler(
 async fn main() {
     dotenv::dotenv().ok();
 
+    let console_layer = console_subscriber::spawn();
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()
                 .unwrap_or_else(|_| "example_sse=debug,tower_http=debug".into()),
         )
+        .with(console_layer)
         .with(tracing_subscriber::fmt::layer())
         .init();
 
