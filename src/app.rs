@@ -19,7 +19,7 @@ pub fn register_server_functions() {
     _ = AdjustServerCount::register();
     _ = ClearServerCount::register();
     _ = GetLastInscription::register();
-    _ = SetTheme::register();
+    _ = SetDarkTheme::register();
 }
 
 #[cfg(feature = "ssr")]
@@ -66,8 +66,8 @@ pub async fn clear_server_count() -> Result<i32, ServerFnError> {
     Ok(0)
 }
 
-#[server(SetTheme, "/api")]
-pub async fn set_theme(cx: Scope, theme: Theme) -> Result<Theme, ServerFnError> {
+#[server(SetDarkTheme, "/api")]
+pub async fn set_dark_theme(cx: Scope, is_dark: bool) -> Result<bool, ServerFnError> {
     use axum::http::header::{HeaderMap, HeaderValue, SET_COOKIE};
     use leptos_axum::{ResponseOptions, ResponseParts};
 
@@ -77,12 +77,12 @@ pub async fn set_theme(cx: Scope, theme: Theme) -> Result<Theme, ServerFnError> 
     let mut headers = HeaderMap::new();
     headers.insert(
         SET_COOKIE,
-        HeaderValue::from_str(&format!("theme={theme}; Path=/")).expect("to create header value"),
+        HeaderValue::from_str(&format!("darkmode={is_dark}; Path=/")).expect("to create header value"),
     );
     response_parts.headers = headers;
 
     response.overwrite(response_parts);
-    Ok(theme)
+    Ok(is_dark)
 }
 
 #[component]
@@ -145,7 +145,7 @@ pub fn App(cx: Scope) -> impl IntoView {
           <Meta name="twitter:image" content="https://live.ordilabs.org/ordilabs-logo-name-white.png"/>
           <Link rel="shortcut icon" href="/favicon.png"/>
           <Stylesheet id="leptos" href="/pkg/ordilabs_live.css"/>
-          <body class:dark=move || theme_ctx.theme.get() == Theme::Dark>
+          <body class:dark=move || theme_ctx.is_dark.get()>
             <div class="flex h-full bg-white dark:bg-slate-800">
               <div class="flex flex-1 flex-col overflow-hidden">
                 <Header />
