@@ -2004,7 +2004,7 @@ dependencies = [
 [[package]]
 name = "ord-mini"
 version = "0.5.2-alpha"
-source = "git+https://github.com/ordilabs/ord-mini.git#4dd2d4112fdd4634f21ae9993687e408c0ec7a4e"
+source = "git+https://github.com/ordilabs/ord-mini.git#16704bb8c3aec25dc5f84b3856f2cb4c2955891e"
 dependencies = [
  "anyhow",
  "bitcoin",
