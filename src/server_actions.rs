@@ -1,10 +1,9 @@
 use super::*;
 use std::collections::HashMap;
-extern crate ord_mini;
 extern crate rand;
 use rand::seq::IteratorRandom;
 
-use ord_mini::{Inscription, Media};
+use ord_labs::{Inscription, Media};
 
 use backend::{Backend, BitcoinCore, Space};
 use serde::*;
