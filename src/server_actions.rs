@@ -6,10 +6,11 @@ use rand::seq::IteratorRandom;
 
 use ord_mini::{Inscription, Media};
 
-use actix_web::http::header::{self, HeaderValue};
 use backend::{Backend, BitcoinCore, Space};
 use serde::*;
 
+use axum::http::{header, HeaderMap, StatusCode};
+use axum::{extract::Path, response::IntoResponse};
 //use std::io::Read::read_to_end;
 
 #[derive(Deserialize)]
@@ -50,6 +51,7 @@ pub(crate) async fn tick_space(
     log!("tick space, {}", &mpr_len);
 }
 
+#[tracing::instrument]
 pub(crate) async fn tick_bitcoin_core(
     backend: &BitcoinCore,
     ordipool: &mut HashMap<String, Option<Inscription>>,
@@ -176,65 +178,103 @@ pub(crate) async fn tick_bitcoin_core(
     );
 }
 
-pub async fn content(path: web::Path<Content>) -> impl Responder {
-    let s = path.inscription_id.to_owned();
+pub(crate) async fn content(
+    Path(inscription_id): Path<String>,
+    State(_client): State<HttpClient>,
+    State(core): State<BitcoinCore>,
+) -> impl IntoResponse {
+    let s = inscription_id;
 
-    dbg!(&path.inscription_id);
+    let mut header_map = HeaderMap::new();
+
+    //dbg!(&s);
     if s.starts_with("punk") {
         let location = format!("/punks/{}", s);
 
-        return HttpResponse::TemporaryRedirect()
-            .insert_header((header::LOCATION, location))
-            .content_type("text/plain")
-            .body("body");
+        header_map.insert(
+            header::LOCATION,
+            header::HeaderValue::from_str(&location).unwrap(),
+        );
+        return (StatusCode::TEMPORARY_REDIRECT, header_map, vec![]);
+
+        //header_map.append(header::LOCATION, uri.parse().unwrap());
+        //return (StatusCode::TEMPORARY_REDIRECT, header_map, vec![]);
     }
 
     if s.len() < 64 {
-        return HttpResponse::NotFound()
-            .content_type("text/plain")
-            .body("body");
+        return (
+            StatusCode::NOT_FOUND,
+            header_map,
+            "Error 404: Not found".as_bytes().to_vec(),
+        );
     }
 
     let txid = &s.as_str()[0..64];
-    let backend = BitcoinCore::new();
+    //let backend = BitcoinCore::new();
 
     // get content from remote server
     // todo gfi: use the /raw api instead of /hex
 
-    let maybe_inscription = backend.maybe_inscription(txid).await.unwrap();
+    let query = core.maybe_inscription(txid).await;
 
-    match maybe_inscription {
-        Some(inscription) => match inscription.media() {
-            Media::Image => image_response_actix(inscription),
-            _ => HttpResponse::Ok()
-                .content_type("text/plain")
-                .body("Not an image"),
-        },
-        None => HttpResponse::NotFound()
-            .content_type("text/plain")
-            .body("Not found"),
+    if query.is_err() {
+        return (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            header_map,
+            format!("{:?}", query.err()).as_bytes().to_vec(),
+        );
     }
+
+    let maybe_inscription = query.unwrap();
+
+    if maybe_inscription.is_none() {
+        return (
+            StatusCode::NOT_FOUND,
+            header_map,
+            "Error 404: Not found".as_bytes().to_vec(),
+        );
+    };
+
+    let inscription = maybe_inscription.unwrap();
+
+    if inscription.media() != Media::Image {
+        return (
+            StatusCode::OK,
+            header_map,
+            "Not an image".as_bytes().to_vec(),
+        );
+    }
+
+    return image_response_axum(inscription);
 }
 
-fn image_response_actix(inscription: Inscription) -> HttpResponse {
-    HttpResponse::Ok()
-        .content_type(inscription.content_type().unwrap())
-        .insert_header((
-            header::CONTENT_SECURITY_POLICY,
-            HeaderValue::from_static("default-src 'unsafe-eval' 'unsafe-inline' data:"),
-        ))
-        .insert_header((
-            header::CACHE_CONTROL,
-            HeaderValue::from_static("max-age=31536000, immutable"),
-        ))
-        .insert_header((
-            header::CONTENT_LENGTH,
-            inscription.content_length().unwrap_or_default(),
-        ))
-        .body(inscription.into_body().unwrap())
+fn image_response_axum(inscription: Inscription) -> (StatusCode, HeaderMap, Vec<u8>) {
+    let mut headers = HeaderMap::new();
+
+    headers.insert(
+        header::CONTENT_SECURITY_POLICY,
+        "default-src 'unsafe-eval' 'unsafe-inline' data:"
+            .parse()
+            .unwrap(),
+    );
+    headers.insert(
+        header::CACHE_CONTROL,
+        "max-age=31536000, immutable".parse().unwrap(),
+    );
+
+    inscription
+        .content_type()
+        .map(|content_type| headers.insert(header::CONTENT_TYPE, content_type.parse().unwrap()));
+
+    inscription
+        .content_length()
+        .map(|content_length| headers.insert(header::CONTENT_LENGTH, content_length.into()));
+
+    (StatusCode::OK, headers, inscription.into_body().unwrap())
 }
 
-pub async fn preview(path: web::Path<Content>) -> impl Responder {
+#[tracing::instrument]
+pub async fn preview(Path(inscription_id): Path<String>) -> impl IntoResponse {
     let resp = r#"<!doctype html>
   <html lang=en>
     <head>
@@ -268,7 +308,13 @@ pub async fn preview(path: web::Path<Content>) -> impl Responder {
     </body>
   </html>
   "#;
-    HttpResponse::Ok()
-        .content_type("text/html")
-        .body(resp.replace("{}", &path.inscription_id))
+
+    (
+        StatusCode::OK,
+        [(
+            header::CONTENT_TYPE,
+            header::HeaderValue::from_static(mime::TEXT_HTML_UTF_8.as_ref()),
+        )],
+        resp.replace("{}", &inscription_id),
+    )
 }
