@@ -2002,9 +2002,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "ord-mini"
-version = "0.5.2-alpha"
-source = "git+https://github.com/ordilabs/ord-mini.git#4dd2d4112fdd4634f21ae9993687e408c0ec7a4e"
+name = "ord-labs"
+version = "0.1.0"
 dependencies = [
  "anyhow",
  "bitcoin",
@@ -2053,7 +2052,7 @@ dependencies = [
  "metrics-process",
  "mime",
  "num-format",
- "ord-mini",
+ "ord-labs",
  "rand",
  "reqwest",
  "serde",

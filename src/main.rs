@@ -5,8 +5,8 @@ cfg_if! { if #[cfg(feature = "ssr")] {
     use leptos::*;
     mod backend;
     use backend::Backend;
-    extern crate ord_mini;
-    use ord_mini::Inscription;
+    extern crate ord_labs;
+    use ord_labs::Inscription;
     use std::collections::HashMap;
     extern crate dotenv;
     extern crate leptos_axum;
