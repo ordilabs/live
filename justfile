@@ -115,8 +115,7 @@ _install-tools:
   which cwebp || brew install webp
   which sccache || brew install sccache 
 
-  cargo install --locked \
-    cargo-leptos \
+  cargo install --locked --git https://github.com/akesson/cargo-leptos cargo-leptos
 
 _install-hosts:
   just _add-host-once mempool-ol.local
