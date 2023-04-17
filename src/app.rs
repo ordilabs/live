@@ -145,25 +145,23 @@ pub fn App(cx: Scope) -> impl IntoView {
           <Meta name="twitter:image" content="https://live.ordilabs.org/ordilabs-logo-name-white.png"/>
           <Link rel="shortcut icon" href="/favicon.png"/>
           <Stylesheet id="leptos" href="/pkg/ordilabs_live.css"/>
-          <body class:dark=move || theme_ctx.is_dark.get()>
-            <div class="flex h-full bg-white dark:bg-slate-800">
-              <div class="flex flex-1 flex-col overflow-hidden">
-                <Header />
-                <div class="flex flex-1 items-stretch overflow-hidden">
-                    <main class="flex-1 overflow-y-auto">
-                      <div class="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
-                        <div class="flex">
-                          <h1 class="flex-1 text-2xl font-bold text-gray-900 dark:text-gray-100">
-                              "Live unconfirmed inscriptions"
-                          </h1>
-                        </div>
-                        <div class="text-xs text-gray-900 dark:text-gray-100">{info_value}</div>
-                        <LiveGrid initial_items multiplayer_value/>
+          <body class:dark=move || theme_ctx.is_dark.get() class="bg-white dark:bg-slate-800 h-screen">
+            <div class="flex h-full flex-1 flex-col overflow-hidden">
+              <Header />
+              <div class="flex flex-1 items-stretch overflow-hidden">
+                  <main class="flex-1 overflow-y-auto">
+                    <div class="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
+                      <div class="flex">
+                        <h1 class="flex-1 text-2xl font-bold text-gray-900 dark:text-gray-100">
+                            "Live unconfirmed inscriptions"
+                        </h1>
                       </div>
-                    </main>
-                </div>
-                <Footer />
+                      <div class="text-xs text-gray-900 dark:text-gray-100">{info_value}</div>
+                      <LiveGrid initial_items multiplayer_value/>
+                    </div>
+                  </main>
               </div>
+              <Footer />
             </div>
           </body>
         </Router>
