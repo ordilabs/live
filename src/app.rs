@@ -145,8 +145,8 @@ pub fn App(cx: Scope) -> impl IntoView {
           <Meta name="twitter:image" content="https://live.ordilabs.org/ordilabs-logo-name-white.png"/>
           <Link rel="shortcut icon" href="/favicon.png"/>
           <Stylesheet id="leptos" href="/pkg/ordilabs_live.css"/>
-          <body class:dark=move || theme_ctx.is_dark.get() class="bg-white dark:bg-slate-800 h-screen">
-            <div class="flex h-full flex-1 flex-col overflow-hidden">
+          <body class:dark=move || theme_ctx.is_dark.get() class="h-screen">
+            <div class="flex h-full flex-1 flex-col overflow-hidden bg-white dark:bg-slate-800">
               <Header />
               <div class="flex flex-1 items-stretch overflow-hidden">
                   <main class="flex-1 overflow-y-auto">
