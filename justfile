@@ -163,3 +163,15 @@ _download-punks:
       seq 0 1 9999 | xargs -n1 -P 10 -I{} cwebp -lossless punk_{}.png -o punk_{}.webp \
     )
     -cd tmp/punks && rm punk_*.png*
+
+e2e-test:
+    # Setup
+    cd docker && docker compose up -d
+    just watch > /dev/null 2>&1 &
+    sleep 5 # Wait for just watch finish starting
+    # Test
+    node test/end2end/runner.ts
+    # Teardown
+    kill $(ps aux | grep ordilabs_ | grep -v grep | awk '{print $2}') # kill process that is not killed (port 3000)
+    kill $(ps aux | grep cargo-lep | grep -v grep | awk '{print $2}') # kill process that is not killed (port 3001)
+    cd docker && docker compose down
