@@ -61,3 +61,38 @@ just run-tunnel
 ```
 
 see more commands with `just -l`
+
+#### known issues
+
+##### Linux
+
+*Issue by running `just run-services` command:*
+
+```bash
+Error response from daemon: invalid IP address in add-host: ""
+error: Recipe `run-services` failed on line 34 with exit code 1
+``` 
+*Quick fix (manually):* 
+
+- In `just` file override `run-services` as follow
+
+```bash
+[linux]
+run-services:
+  # if someone has a better solution, be my guest
+  cd docker && docker compose -f docker-compose.yml -f docker-compose.monkey-patch-linux.yml up 
+```
+
+- Get you local IP address (on Ubuntu `Settings` -> `Network` -> `Details` -> `IPv4 Address`) and replace `GATEWAY_IPV4` with that IP in `docker/docker-compose.monkey-patch-linux.yml`
+
+```bash
+version: "3.7"
+
+services:
+
+  nginx-proxy:
+    extra_hosts:
+      # Replace {IP-ADDRESS} with your local IP address
+      # e.g. "host.docker.internal.:192.168.1.212" 
+      - "host.docker.internal.:{IP-ADDRESS}"
+```
