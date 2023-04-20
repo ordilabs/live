@@ -1708,24 +1708,13 @@ dependencies = [
 
 [[package]]
 name = "metrics"
-version = "0.20.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b9b8653cec6897f73b519a43fba5ee3d50f62fe9af80b428accdcc093b4a849"
-dependencies = [
- "ahash 0.7.6",
- "metrics-macros 0.6.0",
- "portable-atomic 0.3.19",
-]
-
-[[package]]
-name = "metrics"
 version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aa8ebbd1a9e57bbab77b9facae7f5136aea44c356943bf9a198f647da64285d6"
 dependencies = [
  "ahash 0.8.3",
- "metrics-macros 0.7.0",
- "portable-atomic 1.2.0",
+ "metrics-macros",
+ "portable-atomic",
 ]
 
 [[package]]
@@ -1737,23 +1726,12 @@ dependencies = [
  "hyper",
  "indexmap",
  "ipnet",
- "metrics 0.21.0",
+ "metrics",
  "metrics-util",
  "quanta",
  "thiserror",
  "tokio",
  "tracing",
-]
-
-[[package]]
-name = "metrics-macros"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "731f8ecebd9f3a4aa847dfe75455e4757a45da40a7793d2f0b1f9b6ed18b23f3"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
 ]
 
 [[package]]
@@ -1769,13 +1747,13 @@ dependencies = [
 
 [[package]]
 name = "metrics-process"
-version = "1.0.9"
+version = "1.0.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "99eab79be9f7c18565e889d6eaed6f1ebdafb2b6a88aef446d2fee5e7796ed10"
+checksum = "767e7caea6cb64b66f96f7ab0e5f8bd8334d72dbbc522c99bed71d8a382d515f"
 dependencies = [
  "libproc",
  "mach2",
- "metrics 0.20.1",
+ "metrics",
  "once_cell",
  "procfs",
  "rlimit",
@@ -1791,7 +1769,7 @@ dependencies = [
  "crossbeam-epoch",
  "crossbeam-utils",
  "hashbrown 0.13.2",
- "metrics 0.21.0",
+ "metrics",
  "num_cpus",
  "quanta",
  "sketches-ddsketch",
@@ -2296,12 +2274,6 @@ name = "pkg-config"
 version = "0.3.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6ac9a59f73473f1b8d852421e59e64809f025994837ef743615c6d0c5b305160"
-
-[[package]]
-name = "portable-atomic"
-version = "0.3.19"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "26f6a7b87c2e435a3241addceeeff740ff8b7e76b74c13bf9acb17fa454ea00b"
 
 [[package]]
 name = "portable-atomic"
