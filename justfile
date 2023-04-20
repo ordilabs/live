@@ -59,7 +59,7 @@ _tunnel:
 
 ORDA := "ord -r --wallet alice --rpc-url bitcoin-core:18443/wallet/alice"
 _fixtures:
-  -[ -f .fixtures ] && sleep infinity
+  -[ -f .fixtures.done ] && sleep infinity
   -bitcoin-cli -named createwallet wallet_name=miner load_on_startup=true
   bitcoin-cli -rpcwallet=miner getnewaddress | tee miner.txt && just _generate 101
   -{{ORDA}} wallet restore "pipe minimum luggage modify solid sail another twenty say pioneer cloud scrub"
@@ -70,12 +70,12 @@ _fixtures:
   bitcoin-cli -rpcwallet=miner -named sendtoaddress fee_rate=1 address=`cat alice.txt` amount=4
   just _generate 1
   {{ORDA}} wallet balance
-  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_0.webp | shuf | head -n1`
-  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_1.webp | shuf | head -n1`
-  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_2.webp | shuf | head -n1`
-  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_3.webp | shuf | head -n1`
+  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_0.webp | shuf | head -n1` --fee-rate 1
+  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_1.webp | shuf | head -n1` --fee-rate 1
+  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_2.webp | shuf | head -n1` --fee-rate 1
+  {{ORDA}} wallet inscribe `ls /tmp/punks/punk_3.webp | shuf | head -n1` --fee-rate 1
   just _generate 1 
-  touch .fixtures
+  touch .fixtures.done
   sleep infinity
 
 _generate BLOCKS:

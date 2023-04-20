@@ -65,9 +65,9 @@ services:
       - ./bitcoin.conf:/root/.bitcoin/bitcoin.conf
       - ./.env:/root/.env
       - ../justfile:/root/justfile
-    command: "wait-for-it.sh bitcoin-core:18443 mempool-api:8999 --strict --timeout=720 -- just _fixtures"
-    restart: on-failure
-    stop_grace_period: 15s
+    command: "wait-for bitcoin-core:18443 -- just _fixtures"
+    restart: "no"
+    stop_grace_period: 1s
 
   mempool-web:
     environment:
