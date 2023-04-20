@@ -16,20 +16,20 @@ use anyhow::Result;
 
 #[derive(Deserialize, Debug)]
 pub struct MempoolRecentEntry {
-    pub txid: String,
-    pub fee: u64,
-    pub vsize: f64,
-    pub value: u64,
+  pub txid: String,
+  pub fee: u64,
+  pub vsize: f64,
+  pub value: u64,
 }
 
 pub type MempoolRecent = Vec<MempoolRecentEntry>;
 
 #[async_trait]
 pub trait Backend {
-    fn new() -> Self;
-    async fn get_latest_inscriptions(&self) -> Vec<Inscription>;
+  fn new() -> Self;
+  async fn get_latest_inscriptions(&self) -> Vec<Inscription>;
 
-    async fn recent(&self) -> Result<MempoolRecent>;
+  async fn recent(&self) -> Result<MempoolRecent>;
 
-    async fn maybe_inscription(&self, txid: &str) -> Result<Option<Inscription>>;
+  async fn maybe_inscription(&self, txid: &str) -> Result<Option<Inscription>>;
 }
