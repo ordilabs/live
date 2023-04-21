@@ -157,6 +157,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 async fn spawn_app() {
     use axum::{routing::get, Router};
     use axum_otel_metrics::HttpMetricsLayerBuilder;
+    use tower_http::services::ServeDir;
     let metrics = HttpMetricsLayerBuilder::new().build();
 
     crate::app::register_server_functions();
@@ -189,7 +190,8 @@ async fn spawn_app() {
         // related: axum-prometheus
         //.route("/metrics", get(|| async move { metric_handle.render() }))
         .leptos_routes(leptos_options.clone(), routes, |cx| view! { cx, <App/> })
-        // todo: punks_*.webp fallback
+        // punks_*.webp fallback
+        .nest_service("/punks", ServeDir::new("./tmp/punks"))
         .fallback(fallback::file_and_error_handler)
         .layer(Extension(Arc::new(leptos_options.clone())))
         .layer(metrics)
