@@ -1,5 +1,5 @@
 [hooks]
-pre-commit = "cargo test"
+pre-commit = "leptosfmt ./src -t 2 && cargo check"
 pre-push = ["cargo check", "cargo fmt -- --check"]
 
 
