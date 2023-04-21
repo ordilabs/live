@@ -67,7 +67,10 @@ pub async fn clear_server_count() -> Result<i32, ServerFnError> {
 }
 
 #[server(SetDarkTheme, "/api")]
-pub async fn set_dark_theme(cx: Scope, is_dark: bool) -> Result<bool, ServerFnError> {
+pub async fn set_dark_theme(
+  #[allow(unused_variables)] cx: Scope,
+  is_dark: bool,
+) -> Result<bool, ServerFnError> {
   use axum::http::header::{HeaderMap, HeaderValue, SET_COOKIE};
   use leptos_axum::{ResponseOptions, ResponseParts};
 
