@@ -117,6 +117,7 @@ async fn sse_handler(
 #[cfg(feature = "ssr")]
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+  // load the .env file located in CWD or its parents in sequence.
   dotenv::dotenv().ok();
 
   let console_layer = console_subscriber::spawn();
@@ -218,6 +219,8 @@ pub async fn spawn_server_ticks() {
 
   // todo: print more relevant config stuff
   tracing::info!(?backend_bitcoin_core);
+  let block_count = backend_bitcoin_core.get_block_count();
+  tracing::info!(?block_count);
 
   let mut interval = tokio::time::interval(std::time::Duration::from_millis(3142));
   loop {
