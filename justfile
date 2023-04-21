@@ -11,6 +11,7 @@ install:
   just _download-punks
   rustup override set nightly
   rustup target add wasm32-unknown-unknown
+  rustup component add rustfmt
   #cd docker && docker compose build
   npm install
   @echo "Almost done: adding *.local domains to your /etc/hosts requires sudo"
@@ -102,6 +103,8 @@ _install-tools:
     webp \
     pkg-config \
     libssl-dev \
+  
+  which leptosfmt || cargo install --locked leptosfmt
 
   # TODO Switch back to stable `cargo-leptos` as soon as `hot-reload` is supported there 
   cargo install --locked \
@@ -114,6 +117,7 @@ _install-tools:
   which magick || brew install imagemagick
   which cwebp || brew install webp
   which sccache || brew install sccache 
+  which leptosfmt || cargo install leptosfmt
 
   cargo install --locked --git https://github.com/akesson/cargo-leptos cargo-leptos
 
