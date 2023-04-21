@@ -14,14 +14,15 @@ FROM amd64/ubuntu:22.04
 #   cargo install --locked --path .
 
 RUN apt-get update && apt-get install -y \
-  curl \
   ca-certificates \
+  curl \
   gpg \
   jq \
   lsb-release \
+  netcat-traditional \
   ""
 
-ADD https://github.com/casey/ord/releases/download/0.5.1/ord-0.5.1-x86_64-unknown-linux-gnu.tar.gz /tmp/
+ADD https://github.com/casey/ord/releases/download/0.5.2/ord-0.5.2-x86_64-unknown-linux-gnu.tar.gz /tmp/
 RUN cd /tmp && tar -xvf ord-*.tar.gz && mv ord /usr/local/bin/
 
 ADD https://proget.makedeb.org/debian-feeds/prebuilt-mpr.pub /tmp/prebuilt-mpr.pub
@@ -39,8 +40,9 @@ RUN apt-get update && apt-get install -y \
 
 
 #can be done in one step with ADD --chmod-755 with buildkit
-ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/81b1373f17855a4dc21156cfe1694c31d7d1792e/wait-for-it.sh /usr/local/bin/wait-for-it.sh
-RUN chmod +x /usr/local/bin/wait-for-it.sh
+
+ADD https://raw.githubusercontent.com/eficode/wait-for/v2.2.4/wait-for  /usr/local/bin/wait-for
+RUN chmod +x /usr/local/bin/wait-for
 
 # todo gfi: make this multi-arch
 ADD https://bitcoincore.org/bin/bitcoin-core-24.0.1/bitcoin-24.0.1-x86_64-linux-gnu.tar.gz /
@@ -56,7 +58,7 @@ WORKDIR /root
 # COPY --from=builder /usr/local/bin/bitcoin-cli /usr/local/bin/
 # COPY --from=builder /usr/local/bin/bitcoind /usr/local/bin/
 # COPY --from=builder /usr/bin/jq /usr/local/bin/
-# COPY --from=builder /usr/bin/wait-for-it.sh /usr/local/bin/
+# COPY --from=builder /usr/bin/wait-for /usr/local/bin/
 
 # RUN apt-get update && apt-get install -y \
 #   curl \
