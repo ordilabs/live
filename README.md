@@ -28,6 +28,16 @@ cd live--ordilabs
 just install
 ```
 
+### inscription watching
+
+Run a local instance of Ordi Live after starting bitcoin core:
+
+```bash
+just watch
+```
+
+Open a browser `http:://127.0.0.1:3000` to new inscriptions hitting your mempool in real time
+
 ### developing
 
 All micro-services are managed with 2 simple commands
@@ -37,9 +47,10 @@ just run-services
 # just clean-services
 ```
 
-Once they are running, you can start developing
+Once they are running, you can start developing.
 
 ```bash
+cp .env.sample .env # and uncomment the relevant lines
 just watch # for changes, recompile rust/css, refresh frontend
 ```
 
@@ -71,8 +82,9 @@ see more commands with `just -l`
 ```bash
 Error response from daemon: invalid IP address in add-host: ""
 error: Recipe `run-services` failed on line 34 with exit code 1
-``` 
-*Quick fix (manually):* 
+```
+
+*Quick fix (manually):*
 
 - In `just` file override `run-services` as follow
 
