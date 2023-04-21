@@ -2,6 +2,8 @@
 extern crate bitcoin;
 extern crate bitcoincore_rpc;
 extern crate bitcoincore_rpc_json;
+extern crate directories;
+use directories::BaseDirs;
 
 use std::{env::var, path::PathBuf, str::FromStr};
 
@@ -22,16 +24,16 @@ pub struct BitcoinCore {
 //#[async_trait]
 impl BitcoinCore {
   pub fn new() -> Self {
-    let core_url = var("CORE_URL").unwrap_or("127.0.0.1:18443".to_owned());
+    let core_url = var("CORE_URL").unwrap_or("127.0.0.1:8332".to_owned());
 
     let auth = match var("CORE_USER").ok() {
       None => {
-        let fallback = "docker/bitcoin.cookie".to_owned();
-        let core_cookie = var("CORE_COOKIE").unwrap_or(fallback);
-        let home = var("HOME").expect("HOME to be set");
+        let mut fallback = bitcoin_dir(bitcoin::Network::Bitcoin);
+        fallback.push(".cookie");
+        let core_cookie = var("CORE_COOKIE").unwrap_or(fallback.to_str().unwrap().to_owned());
+        let home = var("HOME").expect("env HOME to be set");
         let path = core_cookie.replace("~", &home);
         let path = PathBuf::from_str(&path).expect("a valid path");
-
         bitcoincore_rpc::Auth::CookieFile(path)
       }
       Some(core_user) => {
@@ -44,6 +46,11 @@ impl BitcoinCore {
       root: core_url,
       auth,
     }
+  }
+
+  pub fn get_block_count(&self) -> u64 {
+    let client = bitcoincore_rpc::Client::new(&self.root, self.auth.clone()).unwrap();
+    client.get_block_count().unwrap()
   }
 
   pub async fn _get_latest_inscriptions(&self) -> Vec<Inscription> {
@@ -130,4 +137,33 @@ impl BitcoinCore {
       .collect();
     Ok(mpr)
   }
+}
+
+pub fn bitcoin_dir(network: bitcoin::Network) -> PathBuf {
+  let mut bitcoin_dir: PathBuf = BaseDirs::new().unwrap().data_dir().into();
+
+  match std::env::consts::OS {
+    "windows" | "macos" => {
+      bitcoin_dir.push("Bitcoin");
+    }
+    _ => {
+      bitcoin_dir.push(".bitcoin");
+    }
+  };
+
+  match network {
+    bitcoin::Network::Bitcoin => {}
+    bitcoin::Network::Testnet => {
+      bitcoin_dir.push("testnet3");
+    }
+    bitcoin::Network::Regtest => {
+      bitcoin_dir.push("regtest");
+    }
+    bitcoin::Network::Signet => {
+      bitcoin_dir.push("signet");
+    }
+    _ => todo!(),
+  };
+
+  return bitcoin_dir;
 }
