@@ -134,7 +134,7 @@ pub fn App(cx: Scope) -> impl IntoView {
 
   let theme_ctx = use_context::<ThemeContext>(cx).expect("Failed to get ThemeContext");
 
-  let output_name = std::env::var("LEPTOS_OUTPUT_NAME").unwrap();
+  // let output_name = std::env::var("LEPTOS_OUTPUT_NAME").unwrap();
 
   view! { cx,
     <Router>
