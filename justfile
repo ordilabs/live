@@ -38,7 +38,7 @@ run-services:
 clean-services:
   cd docker && docker compose down -v
 
-tor:
+socator:
   docker run --rm -ti \
     -p ${CORE_PORT}:5000 \
     -e "TOR_SITE='${TOR_ADDRESS}'" \
