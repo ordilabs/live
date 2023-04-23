@@ -77,24 +77,6 @@ see more commands with `just -l`
 
 `socat` can be used as a relay between the standard web and a hidden service on the Tor network. 
 
-Two options:
-
-#### Option A: Using [`socat`](https://linux.die.net/man/1/socat) command
-
-- Add to `.env`
-```bash
-CORE_ADDRESS=127.0.0.1
-CORE_PORT=8332
-```
-
-- Run
-```bash
-# Replace {onion-address} + {onion-port} with your data
-socat TCP4-LISTEN:5000,reuseaddr,fork SOCKS4A:127.0.0.1:{onion-address}.onion:{onion-port},socksport=9050
-```
-
-#### Option B: Using Docker and `socator`
-
 - Add to `.env`
 ```bash
 CORE_ADDRESS=127.0.0.1
@@ -105,10 +87,20 @@ TOR_ADDRESS={onion-address}.onion
 TOR_PORT={onion-port}
 ```
 
-- Run
-```bash
-just tor
-```
+- Then you have to options:
+
+   - Option A: Using Docker and `socator`
+
+   ```bash
+   just tor
+   ```
+
+   - Option A: Using [`socat`](https://linux.die.net/man/1/socat) command (currently tested on Linux only). Note: `socat` needs to be install on your machine.
+
+   ```bash
+   just socat
+   ```
+
 
 #### known issues
 

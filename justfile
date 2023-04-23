@@ -46,6 +46,9 @@ tor:
     --name socator \
     cloudgenius/socator
 
+socat:
+  socat TCP4-LISTEN:${CORE_PORT},reuseaddr,fork SOCKS4A:127.0.0.1:${TOR_ADDRESS}:${TOR_PORT},socksport=9050
+
 watch:
   just watch-leptos
 
