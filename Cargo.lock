@@ -2105,7 +2105,7 @@ dependencies = [
 [[package]]
 name = "ord-labs"
 version = "0.1.0"
-source = "git+https://github.com/ordilabs/ord-labs.git#ef6e9bcc19129fb1d539efe415d02fcc6e1f4dae"
+source = "git+https://github.com/ordilabs/ord-labs.git?branch=main#223bf012f36a47e71c8077259f1f4a51ffebf786"
 dependencies = [
  "anyhow",
  "bitcoin",

@@ -209,12 +209,14 @@ pub(crate) async fn content(
   }
 
   let txid = &s.as_str()[0..64];
-  //let backend = BitcoinCore::new();
+  let index: Result<usize, _> = s[65..].parse();
+  if index.is_err() {
+    return (StatusCode::NOT_FOUND, header_map, vec![]);
+  }
 
-  // get content from remote server
-  // todo gfi: use the /raw api instead of /hex
+  let index = index.unwrap();
 
-  let query = core.maybe_inscription(txid).await;
+  let query = core.maybe_inscription_with_index(txid, index).await;
 
   if query.is_err() {
     return (
