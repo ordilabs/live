@@ -40,7 +40,7 @@ clean-services:
 
 tor:
   docker run --rm -ti \
-    -p 5000:5000 \
+    -p ${CORE_PORT}:5000 \
     -e "TOR_SITE='${TOR_ADDRESS}'" \
     -e "TOR_SITE_PORT='${TOR_PORT}'" \
     --name socator \

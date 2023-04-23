@@ -83,10 +83,8 @@ Two options:
 
 - Add to `.env`
 ```bash
-# `socat` is listening on TCP port 5000
 CORE_ADDRESS=127.0.0.1
-#  `socat` is listening on TCP port 5000
-CORE_PORT=5000
+CORE_PORT=8332
 ```
 
 - Run
@@ -99,10 +97,8 @@ socat TCP4-LISTEN:5000,reuseaddr,fork SOCKS4A:127.0.0.1:{onion-address}.onion:{o
 
 - Add to `.env`
 ```bash
-# `socator` is listening on TCP port 5000
 CORE_ADDRESS=127.0.0.1
-#  `socator` is listening on TCP port 5000
-CORE_PORT=5000
+CORE_PORT=8332
 
 # Replace {onion-address} + {onion-port} with your data
 TOR_ADDRESS={onion-address}.onion
