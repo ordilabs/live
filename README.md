@@ -87,7 +87,7 @@ TOR_ADDRESS={onion-address}.onion
 TOR_PORT={onion-port}
 ```
 
-- Then you have to options:
+- Then you have two options:
 
    - Option A: Using Docker and `socator`
 
@@ -95,7 +95,7 @@ TOR_PORT={onion-port}
    just tor
    ```
 
-   - Option A: Using [`socat`](https://linux.die.net/man/1/socat) command (currently tested on Linux only). Note: `socat` needs to be install on your machine.
+   - Option B: Using [`socat`](https://linux.die.net/man/1/socat) command (currently tested on Linux only). Note: `socat` needs to be install on your machine.
 
    ```bash
    just socat
