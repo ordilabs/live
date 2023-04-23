@@ -38,7 +38,7 @@ metrics-exporter-prometheus = { version = "0.12.0", optional = true }
 metrics-process = { version = "1.0.10", optional = true }
 mime = { version = "0.3.17", optional = true }
 num-format = { version = "0.4.4", optional = true }
-ord-labs = { version = "0.1.0", git = "https://github.com/FelixWeis/ord.git", branch = "f/23w16-hidden-inscriptions", optional = true, features = [
+ord-labs = { version = "0.1.0", git = "https://github.com/ordilabs/ord-labs.git", branch = "main", optional = true, features = [
   "unstable",
 ] }
 rand = { version = "0.8.5", optional = true }
