@@ -154,7 +154,7 @@ inscribe-punk-1: # generate
   cd docker && docker compose exec fixtures just _inscribe-punk 1
 
 _inscribe-punk PUNK:
-  seq 9999 | shuf | head -n1 | xargs -I{} {{ORDA}} wallet inscribe /tmp/punks/punk_{}.webp
+  seq 9999 | shuf | head -n1 | xargs -I{} {{ORDA}} wallet inscribe /tmp/punks/punk_{}.webp --fee-rate 1
   #just _generate 1
 
 
