@@ -106,19 +106,19 @@ async fn sse_handler(
   })
   .chain(EVENT_CHANNEL.clone())
   .map(|event| match event {
-    LiveEvent::NewInscription(data) | LiveEvent::RandomInscription(data) => Ok(
-      Event::default()
-        .event("inscription")
-        .json_data(data.as_str())
-        .unwrap(),
-    ),
-    LiveEvent::MempoolInfo(data) => Ok(
-      Event::default()
-        .event("info")
-        .json_data(data.as_str())
-        .unwrap(),
-    ),
-    LiveEvent::BlockCount(data) => Ok(Event::default().event("block").json_data(&data).unwrap()),
+    LiveEvent::NewInscription(data) | LiveEvent::RandomInscription(data) => {
+      Ok(Event::default().event("inscription").data(data.as_str()))
+    }
+    LiveEvent::MempoolInfo(data) => Ok(Event::default().event("info").data(data.as_str())),
+    LiveEvent::BlockCount(data) => {
+      let s = serde_json::to_string(&data).unwrap();
+      Ok(Event::default().event("block").data(&s.as_str()))
+    }
+    // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
+    LiveEvent::ServerTime(data) => {
+      let s = serde_json::to_string(&data).unwrap();
+      Ok(Event::default().event("time").data(&s.as_str()))
+    }
   });
 
   Sse::new(stream).keep_alive(

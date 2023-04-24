@@ -55,8 +55,22 @@ pub fn Header(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-pub fn Footer(cx: Scope, block_value: ReadSignal<Option<String>>) -> impl IntoView {
-  let block = block_value;
+pub fn Footer(
+  cx: Scope,
+  block_rs: ReadSignal<Option<u64>>,
+  time_rs: ReadSignal<Option<std::time::SystemTime>>,
+) -> impl IntoView {
+  let block = block_rs;
+
+  // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
+  let time = time_rs;
+  let current = move || match time.get() {
+    None => String::from("--"),
+    Some(v) => match v.duration_since(std::time::SystemTime::UNIX_EPOCH) {
+      Err(_) => String::from("invalid"),
+      Ok(v) => format!("{}", v.as_secs()),
+    },
+  };
 
   view! { cx,
     <footer class="bg-white dark:bg-slate-800">
@@ -78,6 +92,8 @@ pub fn Footer(cx: Scope, block_value: ReadSignal<Option<String>>) -> impl IntoVi
             ></path>
           </svg>
           {block}
+          " | "
+          {current}
         </div>
         <div class="md:flex md:items-center my-2 md:my-0">
           <div class="flex justify-center space-x-4">

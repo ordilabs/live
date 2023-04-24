@@ -2161,6 +2161,7 @@ dependencies = [
  "reqwest",
  "rusty-hook",
  "serde",
+ "serde_json",
  "thiserror",
  "tokio",
  "tokio-stream",

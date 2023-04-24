@@ -9,6 +9,7 @@ mod providers;
 
 #[cfg(feature = "ssr")]
 use std::sync::atomic::{AtomicI32, Ordering};
+use std::time::SystemTime;
 
 #[cfg(feature = "ssr")]
 use broadcaster::BroadcastChannel;
@@ -32,6 +33,8 @@ pub enum LiveEvent {
   RandomInscription(String),
   MempoolInfo(String),
   BlockCount(u64),
+  // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
+  ServerTime(std::time::SystemTime),
 }
 
 #[cfg(feature = "ssr")]
@@ -93,7 +96,8 @@ pub async fn set_dark_theme(
 struct StreamValues {
   inscription: ReadSignal<Option<String>>,
   info: ReadSignal<Option<String>>,
-  block: ReadSignal<Option<String>>,
+  block: ReadSignal<Option<u64>>,
+  time: ReadSignal<Option<SystemTime>>,
 }
 
 #[component]
@@ -101,6 +105,7 @@ pub fn App(cx: Scope) -> impl IntoView {
   provide_meta_context(cx);
   provide_theme_context(cx);
 
+  // #[cfg(feature = "ssr")]
   #[cfg(not(feature = "ssr"))]
   let stream_values = {
     use futures::StreamExt;
@@ -110,36 +115,55 @@ pub fn App(cx: Scope) -> impl IntoView {
     let inscription = create_signal_from_stream(
       cx,
       source.subscribe("inscription").unwrap().map(|value| {
-        value
+        let s = value
           .expect("no message event")
           .1
           .data()
           .as_string()
-          .expect("expected string value")
+          .expect("expected string value");
+
+        serde_json::from_str::<String>(s.as_str()).expect("expected String value")
       }),
     );
 
     let info = create_signal_from_stream(
       cx,
       source.subscribe("info").unwrap().map(|value| {
-        value
+        let s = value
           .expect("no message event")
           .1
           .data()
           .as_string()
-          .expect("expected string value")
+          .expect("expected string value");
+
+        serde_json::from_str::<String>(s.as_str()).expect("expected String value")
       }),
     );
 
     let block = create_signal_from_stream(
       cx,
       source.subscribe("block").unwrap().map(|value| {
-        value
+        let s = value
           .expect("no message event")
           .1
           .data()
           .as_string()
-          .expect("expected string value")
+          .expect("expected string value");
+        serde_json::from_str::<u64>(s.as_str()).expect("expected u64 value")
+      }),
+    );
+
+    // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
+    let time = create_signal_from_stream(
+      cx,
+      source.subscribe("time").unwrap().map(|value| {
+        let s = value
+          .expect("no message event")
+          .1
+          .data()
+          .as_string()
+          .expect("expected string value");
+        serde_json::from_str::<SystemTime>(s.as_str()).expect("expected SystemTime value")
       }),
     );
 
@@ -149,6 +173,7 @@ pub fn App(cx: Scope) -> impl IntoView {
       inscription,
       info,
       block,
+      time,
     }
   };
 
@@ -156,13 +181,15 @@ pub fn App(cx: Scope) -> impl IntoView {
   let stream_values = StreamValues {
     inscription: create_signal(cx, None::<String>).0,
     info: create_signal(cx, None::<String>).0,
-    block: create_signal(cx, None::<String>).0,
+    block: create_signal(cx, None::<u64>).0,
+    time: create_signal(cx, None::<SystemTime>).0,
   };
 
   let StreamValues {
     inscription,
     info,
     block,
+    time,
   } = stream_values;
 
   let initial_items: Vec<_> = (0..6).map(|n| format!("punk_{}.webp", n)).collect();
@@ -199,7 +226,7 @@ pub fn App(cx: Scope) -> impl IntoView {
               </div>
             </main>
           </div>
-          <Footer block_value=block/>
+          <Footer block_rs=block time_rs=time/>
         </div>
       </body>
     </Router>
