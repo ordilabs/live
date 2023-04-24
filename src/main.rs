@@ -93,19 +93,33 @@ async fn custom_handler(
 #[cfg(feature = "ssr")]
 async fn sse_handler(
   TypedHeader(user_agent): TypedHeader<headers::UserAgent>,
+  State(core): State<BitcoinCore>,
 ) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {
   tracing::debug!("`{}` connected", user_agent.as_str());
 
-  // A `Stream` that repeats an event every second
-  let stream = stream::once(async { LiveEvent::MempoolInfo("".to_owned()) })
-    .chain(EVENT_CHANNEL.clone())
-    .map(|event| match event {
-      LiveEvent::NewInscription(data) | LiveEvent::RandomInscription(data) => {
-        Ok(Event::default().event("inscription").data(data.as_str()))
-      }
+  let initial_block_count = core.get_block_count().await;
 
-      LiveEvent::MempoolInfo(data) => Ok(Event::default().event("info").data(data.as_str())),
-    });
+  // A `Stream` that repeats an event every second
+  let stream = stream::once(async move {
+    // Send initial value for block
+    LiveEvent::BlockCount(initial_block_count)
+  })
+  .chain(EVENT_CHANNEL.clone())
+  .map(|event| match event {
+    LiveEvent::NewInscription(data) | LiveEvent::RandomInscription(data) => Ok(
+      Event::default()
+        .event("inscription")
+        .json_data(data.as_str())
+        .unwrap(),
+    ),
+    LiveEvent::MempoolInfo(data) => Ok(
+      Event::default()
+        .event("info")
+        .json_data(data.as_str())
+        .unwrap(),
+    ),
+    LiveEvent::BlockCount(data) => Ok(Event::default().event("block").json_data(&data).unwrap()),
+  });
 
   Sse::new(stream).keep_alive(
     axum::response::sse::KeepAlive::new()
@@ -219,8 +233,6 @@ pub async fn spawn_server_ticks() {
 
   // todo: print more relevant config stuff
   tracing::info!(?backend_bitcoin_core);
-  let block_count = backend_bitcoin_core.get_block_count();
-  tracing::info!(?block_count);
 
   let mut interval = tokio::time::interval(std::time::Duration::from_millis(3142));
   loop {

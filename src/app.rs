@@ -26,11 +26,12 @@ pub fn register_server_functions() {
 static COUNT: AtomicI32 = AtomicI32::new(0);
 
 #[cfg(feature = "ssr")]
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum LiveEvent {
   NewInscription(String),
   RandomInscription(String),
   MempoolInfo(String),
+  BlockCount(u64),
 }
 
 #[cfg(feature = "ssr")]
@@ -88,18 +89,25 @@ pub async fn set_dark_theme(
   Ok(is_dark)
 }
 
+#[allow(dead_code)]
+struct StreamValues {
+  inscription: ReadSignal<Option<String>>,
+  info: ReadSignal<Option<String>>,
+  block: ReadSignal<Option<String>>,
+}
+
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
   provide_meta_context(cx);
   provide_theme_context(cx);
 
   #[cfg(not(feature = "ssr"))]
-  let (multiplayer_value, info_value) = {
+  let stream_values = {
     use futures::StreamExt;
 
     let mut source = gloo_net::eventsource::futures::EventSource::new("/api/events")
       .expect("couldn't connect to SSE stream");
-    let s = create_signal_from_stream(
+    let inscription = create_signal_from_stream(
       cx,
       source.subscribe("inscription").unwrap().map(|value| {
         value
@@ -111,7 +119,7 @@ pub fn App(cx: Scope) -> impl IntoView {
       }),
     );
 
-    let s2 = create_signal_from_stream(
+    let info = create_signal_from_stream(
       cx,
       source.subscribe("info").unwrap().map(|value| {
         value
@@ -123,15 +131,39 @@ pub fn App(cx: Scope) -> impl IntoView {
       }),
     );
 
+    let block = create_signal_from_stream(
+      cx,
+      source.subscribe("block").unwrap().map(|value| {
+        value
+          .expect("no message event")
+          .1
+          .data()
+          .as_string()
+          .expect("expected string value")
+      }),
+    );
+
     on_cleanup(cx, move || source.close());
-    (s, s2)
+
+    StreamValues {
+      inscription,
+      info,
+      block,
+    }
   };
 
   #[cfg(feature = "ssr")]
-  let ((multiplayer_value, _), (info_value, _)) = (
-    create_signal(cx, None::<String>),
-    create_signal(cx, None::<String>),
-  );
+  let stream_values = StreamValues {
+    inscription: create_signal(cx, None::<String>).0,
+    info: create_signal(cx, None::<String>).0,
+    block: create_signal(cx, None::<String>).0,
+  };
+
+  let StreamValues {
+    inscription,
+    info,
+    block,
+  } = stream_values;
 
   let initial_items: Vec<_> = (0..6).map(|n| format!("punk_{}.webp", n)).collect();
 
@@ -162,12 +194,12 @@ pub fn App(cx: Scope) -> impl IntoView {
                     "Live unconfirmed inscriptions"
                   </h1>
                 </div>
-                <div class="text-xs text-gray-900 dark:text-gray-100">{info_value}</div>
-                <LiveGrid initial_items multiplayer_value/>
+                <div class="text-xs text-gray-900 dark:text-gray-100">{info}</div>
+                <LiveGrid initial_items multiplayer_value=inscription/>
               </div>
             </main>
           </div>
-          <Footer/>
+          <Footer block_value=block/>
         </div>
       </body>
     </Router>
