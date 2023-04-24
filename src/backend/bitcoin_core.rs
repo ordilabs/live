@@ -13,7 +13,6 @@ use anyhow::Result;
 use bitcoincore_rpc::*;
 use bitcoincore_rpc_json::*;
 
-//use bitcoin::bitcoincore_rpc_json::GetBlockTemplateResult;
 #[derive(Debug, Clone)]
 pub struct BitcoinCore {
   auth: bitcoincore_rpc::Auth,
@@ -24,7 +23,9 @@ pub struct BitcoinCore {
 //#[async_trait]
 impl BitcoinCore {
   pub fn new() -> Self {
-    let core_url = var("CORE_URL").unwrap_or("127.0.0.1:8332".to_owned());
+    let core_address = var("CORE_ADDRESS").unwrap_or("127.0.0.1".to_owned());
+    let core_port = var("CORE_PORT").unwrap_or("8332".to_owned());
+    let core_url = format!("{}:{}", core_address, core_port);
 
     let auth = match var("CORE_USER").ok() {
       None => {
@@ -95,14 +96,9 @@ impl BitcoinCore {
 
   pub async fn maybe_inscription(&self, txid: &str) -> Result<Option<Inscription>> {
     let client = bitcoincore_rpc::Client::new(&self.root, self.auth.clone()).unwrap();
-    //let txid = bitcoin::Txid::from_hex(txid).unwrap();
     let txid = txid.parse::<bitcoincore_rpc::bitcoin::Txid>().unwrap();
 
-    // let hex = client.get_raw_transaction(&txid, None)?;
-    // let data = hex::decode(&hex)?;
-    // let transaction: Transaction = bitcoin::consensus::deserialize(&data)?;
     let transaction = client.get_raw_transaction(&txid, None)?;
-    //dbg!(&transaction);
     let maybe_inscription = Inscription::from_transaction(&transaction);
     Ok(maybe_inscription)
   }
