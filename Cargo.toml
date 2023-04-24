@@ -50,7 +50,7 @@ tokio-stream = { version = "0.1.12", optional = true }
 tower = { version = "0.4.13", optional = true }
 tower-http = { version = "0.4.0", optional = true, features = ["fs", "trace"] }
 tracing = { version = "0.1.37", optional = true }
-tracing-subscriber = { version = "0.3.16", features = [
+tracing-subscriber = { version = "0.3.17", features = [
   "env-filter",
 ], optional = true }
 wasm-bindgen = "0.2"
