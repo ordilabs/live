@@ -154,7 +154,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 }
 
 #[cfg(feature = "ssr")]
-#[tracing::instrument]
+// #[tracing::instrument]
 async fn spawn_app() {
   use axum::{routing::get, Router};
   use axum_otel_metrics::HttpMetricsLayerBuilder;
@@ -207,7 +207,7 @@ async fn spawn_app() {
 }
 
 #[cfg(feature = "ssr")]
-#[tracing::instrument]
+// #[tracing::instrument]
 pub async fn spawn_server_ticks() {
   let mut ordipool: HashMap<String, Option<Inscription>> = HashMap::new();
   let backend = std::env::var("BACKEND")
@@ -242,7 +242,7 @@ pub async fn spawn_server_ticks() {
 }
 
 #[cfg(feature = "ssr")]
-#[tracing::instrument]
+// #[tracing::instrument]
 pub async fn spawn_process_metrics() {
   use metrics_exporter_prometheus::PrometheusBuilder;
   use metrics_process::Collector;

@@ -17,8 +17,6 @@ pub struct Content {
   pub inscription_id: String,
 }
 
-//#[derive(Deserialize)]
-
 pub(crate) async fn tick_space(
   backend: &Space,
   ordipool: &mut HashMap<String, Option<Inscription>>,
@@ -50,7 +48,7 @@ pub(crate) async fn tick_space(
   log!("tick space, {}", &mpr_len);
 }
 
-#[tracing::instrument]
+// #[tracing::instrument]
 pub(crate) async fn tick_bitcoin_core(
   backend: &BitcoinCore,
   ordipool: &mut HashMap<String, Option<Inscription>>,
@@ -274,7 +272,7 @@ fn image_response_axum(inscription: Inscription) -> (StatusCode, HeaderMap, Vec<
   (StatusCode::OK, headers, inscription.into_body().unwrap())
 }
 
-#[tracing::instrument]
+// #[tracing::instrument]
 pub async fn preview(Path(inscription_id): Path<String>) -> impl IntoResponse {
   let resp = r#"<!doctype html>
   <html lang=en>
