@@ -112,6 +112,11 @@ pub fn App(cx: Scope) -> impl IntoView {
 
     let mut source = gloo_net::eventsource::futures::EventSource::new("/api/events")
       .expect("couldn't connect to SSE stream");
+
+    // Note:
+    // All data of subscriptions are stringified JSON (similar to `JSON.stringify` in JS) - see implementation in `main.rs -> sse_handler`
+    // And needs to be deserialized `serde_json::from_str` (similar to `JSON.parse` in JS)
+
     let inscription = create_signal_from_stream(
       cx,
       source.subscribe("inscription").unwrap().map(|value| {

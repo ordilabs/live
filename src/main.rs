@@ -106,10 +106,17 @@ async fn sse_handler(
   })
   .chain(EVENT_CHANNEL.clone())
   .map(|event| match event {
+    // Note:
+    // Any data sent over wire needs to be serialized into a stringified JSON using `serde_json::to_string` (similar to `JSON.stringify` in JS)
+    // It will be deserialized at frontend using `serde_json::from_str` (similar to `JSON.parse` in JS) - see implementation in `App.rs -> App`
     LiveEvent::NewInscription(data) | LiveEvent::RandomInscription(data) => {
-      Ok(Event::default().event("inscription").data(data.as_str()))
+      let s = serde_json::to_string(&data).unwrap();
+      Ok(Event::default().event("inscription").data(&s.as_str()))
     }
-    LiveEvent::MempoolInfo(data) => Ok(Event::default().event("info").data(data.as_str())),
+    LiveEvent::MempoolInfo(data) => {
+      let s = serde_json::to_string(&data).unwrap();
+      Ok(Event::default().event("info").data(&s.as_str()))
+    }
     LiveEvent::BlockCount(data) => {
       let s = serde_json::to_string(&data).unwrap();
       Ok(Event::default().event("block").data(&s.as_str()))
