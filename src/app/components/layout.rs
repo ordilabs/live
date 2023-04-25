@@ -1,6 +1,8 @@
 use crate::app::components::{ThemeToggle, ThemeToggleProps};
 use leptos::*;
 
+use crate::app::providers::*;
+
 #[component]
 pub fn Header(cx: Scope) -> impl IntoView {
   view! { cx,
@@ -55,15 +57,14 @@ pub fn Header(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-pub fn Footer(
-  cx: Scope,
-  block_rs: ReadSignal<Option<u64>>,
-  time_rs: ReadSignal<Option<std::time::SystemTime>>,
-) -> impl IntoView {
-  let block = block_rs;
+pub fn Footer(cx: Scope) -> impl IntoView {
+  let StreamContext {
+    block,
+    // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
+    time,
+    ..
+  } = use_context::<StreamContext>(cx).expect("Failed to get StreamContext");
 
-  // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
-  let time = time_rs;
   let current = move || match time.get() {
     None => String::from("--"),
     Some(v) => match v.duration_since(std::time::SystemTime::UNIX_EPOCH) {

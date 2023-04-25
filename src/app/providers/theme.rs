@@ -1,8 +1,7 @@
-#![allow(dead_code)]
+use leptos::*;
 use std::*;
 
-use crate::app::SetDarkTheme;
-use leptos::*;
+use crate::app::functions::theme::SetDarkTheme;
 
 #[derive(Clone)]
 pub(crate) struct ThemeContext {

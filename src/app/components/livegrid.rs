@@ -1,25 +1,21 @@
 use leptos::*;
+use leptos_router::*;
 
-// const MANY_COUNTERS: usize = 4;
 #[allow(dead_code)]
 type CounterHolder = Vec<(usize, (ReadSignal<String>, WriteSignal<String>))>;
 
-// #[derive(Copy, Clone)]
-// struct CounterUpdater {
-//     set_counters: WriteSignal<CounterHolder>,
-// }
 #[allow(clippy::used_underscore_binding)]
 #[component]
 pub fn LiveGrid(
   cx: Scope,
-  initial_items: Vec<String>,
-  multiplayer_value: ReadSignal<Option<String>>,
+  initial_inscriptions: Vec<String>,
+  inscription_info: ReadSignal<Option<String>>,
 ) -> impl IntoView {
   let (next_counter_id, set_next_counter_id) = create_signal(cx, 0);
   let (counters, set_counters) = create_signal::<CounterHolder>(cx, vec![]);
   //provide_context(cx, CounterUpdater { set_counters });
 
-  for item in initial_items {
+  for item in initial_inscriptions {
     let id = next_counter_id();
     let sig = create_signal(cx, item);
     set_counters.update(move |counters| counters.push((id, sig)));
@@ -27,7 +23,7 @@ pub fn LiveGrid(
   }
 
   create_effect(cx, move |_| {
-    let s = multiplayer_value();
+    let s = inscription_info();
     //log!("effect: multiplayer_value = {:?}", s);
     if s.is_none() || s == Some("".to_string()) {
       return;
@@ -85,11 +81,11 @@ pub fn InscriptionItem(
   set_value: WriteSignal<String>,
 ) -> impl IntoView {
   let _ = set_value;
-  let _ = id;
+  let detail_url = move || format!("/inscription/{}", id);
   let preview_url = move || format!("/preview/{}", value.get());
   view! { cx,
     <li class="relative">
-      <a href=preview_url target=preview_url title="Click to view the unconfirmed inscription.">
+      <A href=detail_url>
         <div class="ring-2 ring-red-500 aspect-w-10 aspect-h-10 group block w-full overflow-hidden rounded-lg bg-gray-100">
           <iframe
             src=preview_url
@@ -98,11 +94,8 @@ pub fn InscriptionItem(
             loading="lazy"
             class="pointer-events-none object-cover"
           ></iframe>
-          <button type="button" class="absolute inset-0 focus:outline-none">
-            <span class="sr-only">"View details for ordinal"</span>
-          </button>
         </div>
-      </a>
+      </A>
     </li>
   }
 }
