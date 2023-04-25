@@ -1,6 +1,7 @@
 use super::*;
 use std::collections::HashMap;
 extern crate rand;
+
 use rand::seq::IteratorRandom;
 
 use ord_labs::{Inscription, Media};
@@ -55,8 +56,22 @@ pub(crate) async fn tick_bitcoin_core(
   backend: &BitcoinCore,
   ordipool: &mut HashMap<String, Option<Inscription>>,
 ) {
+  // Current block
+  let block_count = backend.get_block_count().await;
+  tracing::info!(?block_count);
+
+  // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
+  let t = std::time::SystemTime::now();
+  let event = LiveEvent::ServerTime(t);
+  _ = EVENT_CHANNEL.send(&event).await;
+
+  let event = LiveEvent::BlockCount(block_count);
+  _ = EVENT_CHANNEL.send(&event).await;
+
   let tick_start = std::time::Instant::now();
 
+  // TODO(@sectore) Disable `recent` call temporarily - it breaks on mainnet
+  // let mpr: MempoolRecent = Vec::default();
   let mpr = backend.recent().await.ok();
   let mpr = mpr.unwrap_or_default();
 

@@ -9,6 +9,7 @@ mod providers;
 
 #[cfg(feature = "ssr")]
 use std::sync::atomic::{AtomicI32, Ordering};
+use std::time::SystemTime;
 
 #[cfg(feature = "ssr")]
 use broadcaster::BroadcastChannel;
@@ -26,11 +27,14 @@ pub fn register_server_functions() {
 static COUNT: AtomicI32 = AtomicI32::new(0);
 
 #[cfg(feature = "ssr")]
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub enum LiveEvent {
   NewInscription(String),
   RandomInscription(String),
   MempoolInfo(String),
+  BlockCount(u64),
+  // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
+  ServerTime(std::time::SystemTime),
 }
 
 #[cfg(feature = "ssr")]
@@ -88,50 +92,110 @@ pub async fn set_dark_theme(
   Ok(is_dark)
 }
 
+#[allow(dead_code)]
+struct StreamValues {
+  inscription: ReadSignal<Option<String>>,
+  info: ReadSignal<Option<String>>,
+  block: ReadSignal<Option<u64>>,
+  time: ReadSignal<Option<SystemTime>>,
+}
+
 #[component]
 pub fn App(cx: Scope) -> impl IntoView {
   provide_meta_context(cx);
   provide_theme_context(cx);
 
+  // #[cfg(feature = "ssr")]
   #[cfg(not(feature = "ssr"))]
-  let (multiplayer_value, info_value) = {
+  let stream_values = {
     use futures::StreamExt;
 
     let mut source = gloo_net::eventsource::futures::EventSource::new("/api/events")
       .expect("couldn't connect to SSE stream");
-    let s = create_signal_from_stream(
+
+    // Note:
+    // All data of subscriptions are stringified JSON (similar to `JSON.stringify` in JS) - see implementation in `main.rs -> sse_handler`
+    // And needs to be deserialized `serde_json::from_str` (similar to `JSON.parse` in JS)
+
+    let inscription = create_signal_from_stream(
       cx,
       source.subscribe("inscription").unwrap().map(|value| {
-        value
+        let s = value
           .expect("no message event")
           .1
           .data()
           .as_string()
-          .expect("expected string value")
+          .expect("expected string value");
+
+        serde_json::from_str::<String>(s.as_str()).expect("expected String value")
       }),
     );
 
-    let s2 = create_signal_from_stream(
+    let info = create_signal_from_stream(
       cx,
       source.subscribe("info").unwrap().map(|value| {
-        value
+        let s = value
           .expect("no message event")
           .1
           .data()
           .as_string()
-          .expect("expected string value")
+          .expect("expected string value");
+
+        serde_json::from_str::<String>(s.as_str()).expect("expected String value")
+      }),
+    );
+
+    let block = create_signal_from_stream(
+      cx,
+      source.subscribe("block").unwrap().map(|value| {
+        let s = value
+          .expect("no message event")
+          .1
+          .data()
+          .as_string()
+          .expect("expected string value");
+        serde_json::from_str::<u64>(s.as_str()).expect("expected u64 value")
+      }),
+    );
+
+    // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
+    let time = create_signal_from_stream(
+      cx,
+      source.subscribe("time").unwrap().map(|value| {
+        let s = value
+          .expect("no message event")
+          .1
+          .data()
+          .as_string()
+          .expect("expected string value");
+        serde_json::from_str::<SystemTime>(s.as_str()).expect("expected SystemTime value")
       }),
     );
 
     on_cleanup(cx, move || source.close());
-    (s, s2)
+
+    StreamValues {
+      inscription,
+      info,
+      block,
+      time,
+    }
   };
 
   #[cfg(feature = "ssr")]
-  let ((multiplayer_value, _), (info_value, _)) = (
-    create_signal(cx, None::<String>),
-    create_signal(cx, None::<String>),
-  );
+  let stream_values = StreamValues {
+    inscription: create_signal(cx, None::<String>).0,
+    info: create_signal(cx, None::<String>).0,
+    block: create_signal(cx, None::<u64>).0,
+    time: create_signal(cx, None::<SystemTime>).0,
+  };
+
+  let StreamValues {
+    inscription,
+    info,
+    block,
+    time,
+  } = stream_values;
 
   let initial_items: Vec<_> = (0..6).map(|n| format!("punk_{}.webp", n)).collect();
 
@@ -162,12 +226,12 @@ pub fn App(cx: Scope) -> impl IntoView {
                     "Live unconfirmed inscriptions"
                   </h1>
                 </div>
-                <div class="text-xs text-gray-900 dark:text-gray-100">{info_value}</div>
-                <LiveGrid initial_items multiplayer_value/>
+                <div class="text-xs text-gray-900 dark:text-gray-100">{info}</div>
+                <LiveGrid initial_items multiplayer_value=inscription/>
               </div>
             </main>
           </div>
-          <Footer/>
+          <Footer block_rs=block time_rs=time/>
         </div>
       </body>
     </Router>

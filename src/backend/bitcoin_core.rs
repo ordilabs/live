@@ -49,7 +49,7 @@ impl BitcoinCore {
     }
   }
 
-  pub fn get_block_count(&self) -> u64 {
+  pub async fn get_block_count(&self) -> u64 {
     let client = bitcoincore_rpc::Client::new(&self.root, self.auth.clone()).unwrap();
     client.get_block_count().unwrap()
   }
