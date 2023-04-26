@@ -1,5 +1,6 @@
 use crate::app::components::{ThemeToggle, ThemeToggleProps};
 use leptos::*;
+use leptos_router::*;
 
 use crate::app::providers::*;
 
@@ -8,21 +9,23 @@ pub fn Header(cx: Scope) -> impl IntoView {
   view! { cx,
     <header class="w-full">
       <nav class="bg-gray-800">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="content">
           <div class="flex h-16 justify-between">
             <div class="flex">
               <div class="-ml-2 mr-2 flex items-center md:hidden"></div>
               <div class="flex flex-shrink-0 items-center">
-                <img
-                  class="block h-8 w-auto lg:hidden"
-                  src="/ordilabs-logo-name-h.svg"
-                  alt="Ordilabs"
-                />
-                <img
-                  class="hidden h-8 w-auto lg:block"
-                  src="/ordilabs-logo-name-h.svg"
-                  alt="Ordilabs"
-                />
+                <A href="/">
+                  <img
+                    class="block h-8 w-auto lg:hidden"
+                    src="/ordilabs-logo-name-h.svg"
+                    alt="Ordilabs"
+                  />
+                  <img
+                    class="hidden h-8 w-auto lg:block"
+                    src="/ordilabs-logo-name-h.svg"
+                    alt="Ordilabs"
+                  />
+                </A>
               </div>
             </div>
             <div class="flex items-center">
@@ -75,7 +78,7 @@ pub fn Footer(cx: Scope) -> impl IntoView {
 
   view! { cx,
     <footer class="bg-white dark:bg-slate-800">
-      <div class="mx-auto max-w-7xl flex flex-col-reverse md:flex-row md:justify-between px-4 sm:px-6 lg:px-8 py-2 md:py-6">
+      <div class="content flex flex-col-reverse md:flex-row md:justify-between py-2 md:py-6">
         <div class="flex justify-center md:items-center mb-2 md:mb-0 text-gray-400 dark:text-gray-400">
           <svg
             class="h-6 w-6 mr-1"

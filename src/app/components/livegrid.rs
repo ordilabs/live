@@ -1,3 +1,4 @@
+use crate::app::components::preview::*;
 use leptos::*;
 use leptos_router::*;
 
@@ -9,7 +10,7 @@ type CounterHolder = Vec<(usize, (ReadSignal<String>, WriteSignal<String>))>;
 pub fn LiveGrid(
   cx: Scope,
   initial_inscriptions: Vec<String>,
-  inscription: ReadSignal<Option<String>>,
+  inscription_id: ReadSignal<Option<String>>,
 ) -> impl IntoView {
   let (next_counter_id, set_next_counter_id) = create_signal(cx, 0);
   let (counters, set_counters) = create_signal::<CounterHolder>(cx, vec![]);
@@ -23,8 +24,7 @@ pub fn LiveGrid(
   }
 
   create_effect(cx, move |_| {
-    let s = inscription();
-    //log!("effect: multiplayer_value = {:?}", s);
+    let s = inscription_id();
     if s.is_none() || s == Some("".to_string()) {
       return;
     }
@@ -37,7 +37,7 @@ pub fn LiveGrid(
   });
 
   view! { cx,
-    <section class="mt-8 pb-16" aria-labelledby="gallery-heading">
+    <section class="pt-8 pb-8" aria-labelledby="gallery-heading">
       <h2 id="gallery-heading" class="sr-only">
         "Recently viewed"
       </h2>
@@ -48,8 +48,8 @@ pub fn LiveGrid(
         <For
           each=counters
           key=|counter| counter.0
-          view=move |cx, (id, (value, _)): (usize, (ReadSignal<String>, WriteSignal<String>))| {
-              view! { cx, <InscriptionItem id value/> }
+          view=move |cx, (_, (inscription_id, _)): (usize, (ReadSignal<String>, WriteSignal<String>))| {
+              view! { cx, <InscriptionItem id=inscription_id() /> }
           }
         />
       </ul>
@@ -58,21 +58,13 @@ pub fn LiveGrid(
 }
 
 #[component]
-pub fn InscriptionItem(cx: Scope, id: usize, value: ReadSignal<String>) -> impl IntoView {
-  let detail_url = move || format!("/inscription/{}", id);
-  let preview_url = move || format!("/preview/{}", value());
+pub fn InscriptionItem(cx: Scope, id: String) -> impl IntoView {
+  let detail_url = format!("/inscription/{}", &id);
+  let class = "aspect-w-10 aspect-h-10".to_string();
   view! { cx,
     <li class="relative">
       <A href=detail_url>
-        <div class="ring-2 ring-red-500 aspect-w-10 aspect-h-10 group block w-full overflow-hidden rounded-lg bg-gray-100">
-          <iframe
-            src=preview_url
-            sandbox="allow-scripts"
-            scrolling="no"
-            loading="lazy"
-            class="pointer-events-none object-cover"
-          ></iframe>
-        </div>
+        <Preview class id />
       </A>
     </li>
   }

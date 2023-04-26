@@ -11,14 +11,14 @@ pub fn Home(cx: Scope) -> impl IntoView {
   let initial_inscriptions: Vec<_> = (0..6).map(|n| format!("punk_{}.webp", n)).collect();
 
   view! { cx,
-    <div class="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
+    <div class="content py-8">
       <div class="flex">
         <h1 class="flex-1 text-2xl font-bold text-gray-900 dark:text-gray-100">
           "Live unconfirmed inscriptions"
         </h1>
       </div>
       <div class="text-xs text-gray-900 dark:text-gray-100">{info}</div>
-      <LiveGrid initial_inscriptions inscription/>
+      <LiveGrid initial_inscriptions inscription_id=inscription/>
     </div>
   }
 }
