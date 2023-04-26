@@ -3,12 +3,14 @@ use std::*;
 
 use crate::app::functions::theme::SetDarkTheme;
 
+#[allow(dead_code)]
 #[derive(Clone)]
 pub(crate) struct ThemeContext {
   pub set_dark_action: Action<SetDarkTheme, Result<bool, ServerFnError>>,
   pub is_dark: Signal<bool>,
 }
 
+#[allow(dead_code)]
 #[cfg(not(feature = "ssr"))]
 fn initial_theme(_cx: Scope) -> bool {
   use wasm_bindgen::JsCast;
@@ -34,6 +36,7 @@ fn initial_theme(cx: Scope) -> bool {
     .unwrap_or(false)
 }
 
+#[allow(dead_code)]
 pub fn provide_theme_context(cx: Scope) {
   if use_context::<ThemeContext>(cx).is_none() {
     let initial = initial_theme(cx);

@@ -9,7 +9,7 @@ type CounterHolder = Vec<(usize, (ReadSignal<String>, WriteSignal<String>))>;
 pub fn LiveGrid(
   cx: Scope,
   initial_inscriptions: Vec<String>,
-  inscription_info: ReadSignal<Option<String>>,
+  inscription: ReadSignal<Option<String>>,
 ) -> impl IntoView {
   let (next_counter_id, set_next_counter_id) = create_signal(cx, 0);
   let (counters, set_counters) = create_signal::<CounterHolder>(cx, vec![]);
@@ -23,7 +23,7 @@ pub fn LiveGrid(
   }
 
   create_effect(cx, move |_| {
-    let s = inscription_info();
+    let s = inscription();
     //log!("effect: multiplayer_value = {:?}", s);
     if s.is_none() || s == Some("".to_string()) {
       return;
@@ -48,8 +48,8 @@ pub fn LiveGrid(
         <For
           each=counters
           key=|counter| counter.0
-          view=move |cx, (id, (value, set_value)): (usize, (ReadSignal<String>, WriteSignal<String>))| {
-              view! { cx, <InscriptionItem id value set_value/> }
+          view=move |cx, (id, (value, _)): (usize, (ReadSignal<String>, WriteSignal<String>))| {
+              view! { cx, <InscriptionItem id value/> }
           }
         />
       </ul>
@@ -58,31 +58,9 @@ pub fn LiveGrid(
 }
 
 #[component]
-pub fn LiveItem(
-  cx: Scope,
-  id: usize,
-  value: ReadSignal<String>,
-  set_value: WriteSignal<String>,
-) -> impl IntoView {
-  //let CounterUpdater { set_counters } = use_context(cx).unwrap();
-  //let input = move |_ev| set_value("hello".to_owned());
-
-  //let default_value = move || value.get().to_owned() + " - " + id.to_string().as_ref();
-  let _ = set_value;
-  on_cleanup(cx, || log::debug!("deleted a row"));
-
-  view! { cx, <li>{id} ": " {value}</li> }
-}
-#[component]
-pub fn InscriptionItem(
-  cx: Scope,
-  id: usize,
-  value: ReadSignal<String>,
-  set_value: WriteSignal<String>,
-) -> impl IntoView {
-  let _ = set_value;
+pub fn InscriptionItem(cx: Scope, id: usize, value: ReadSignal<String>) -> impl IntoView {
   let detail_url = move || format!("/inscription/{}", id);
-  let preview_url = move || format!("/preview/{}", value.get());
+  let preview_url = move || format!("/preview/{}", value());
   view! { cx,
     <li class="relative">
       <A href=detail_url>
