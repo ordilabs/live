@@ -49,7 +49,7 @@ pub fn LiveGrid(
           each=counters
           key=|counter| counter.0
           view=move |cx, (_, (inscription_id, _)): (usize, (ReadSignal<String>, WriteSignal<String>))| {
-              view! { cx, <InscriptionItem id=inscription_id() /> }
+              view! { cx, <InscriptionItem id=inscription_id()/> }
           }
         />
       </ul>
@@ -64,7 +64,7 @@ pub fn InscriptionItem(cx: Scope, id: String) -> impl IntoView {
   view! { cx,
     <li class="relative">
       <A href=detail_url>
-        <Preview class id />
+        <Preview class id/>
       </A>
     </li>
   }

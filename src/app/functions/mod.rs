@@ -12,7 +12,6 @@ cfg_if! {
     use leptos::ServerFn;
 
     pub fn register_server_functions() {
-      _ = inscription::GetLastInscription::register();
       _ = inscription::GetInscriptionDetails::register();
       _ = theme::SetDarkTheme::register();
     }

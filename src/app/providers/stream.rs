@@ -13,7 +13,7 @@ pub(crate) struct StreamContext {
   pub time: ReadSignal<Option<SystemTime>>,
 }
 
-pub fn provide_api_context(cx: Scope) {
+pub fn provide_stream_context(cx: Scope) {
   if use_context::<StreamContext>(cx).is_none() {
     #[cfg(not(feature = "ssr"))]
     let context = {

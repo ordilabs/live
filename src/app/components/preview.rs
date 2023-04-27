@@ -9,14 +9,14 @@ pub fn Preview(cx: Scope, id: String, #[prop(optional)] class: String) -> impl I
   );
 
   view! { cx,
-        <div class=clazz>
-          <iframe
-            src=preview_url
-            sandbox="allow-scripts"
-            scrolling="no"
-            loading="lazy"
-            class="pointer-events-none object-cover"
-          ></iframe>
-        </div>
+    <div class=clazz>
+      <iframe
+        src=preview_url
+        sandbox="allow-scripts"
+        scrolling="no"
+        loading="lazy"
+        class="pointer-events-none object-cover"
+      ></iframe>
+    </div>
   }
 }
