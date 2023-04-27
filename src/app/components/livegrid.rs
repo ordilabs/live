@@ -60,7 +60,7 @@ pub fn LiveGrid(
 #[component]
 pub fn InscriptionItem(cx: Scope, id: String) -> impl IntoView {
   let detail_url = format!("/inscription/{}", &id);
-  let class = "aspect-w-10 aspect-h-10".to_string();
+  let class = "ring-2 ring-red-500 rounded-lg aspect-w-10 aspect-h-10".to_string();
   view! { cx,
     <li class="relative">
       <A href=detail_url>

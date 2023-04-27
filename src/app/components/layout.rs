@@ -33,7 +33,7 @@ pub fn Header(cx: Scope) -> impl IntoView {
                 <a
                   href="https://github.com/ordilabs/live"
                   target="_blank"
-                  class="relative inline-flex items-center gap-x-1.5 rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+                  class="relative inline-flex items-center gap-x-1.5 rounded-md ease bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
                 >
                   <svg
                     class="-ml-0.5 h-5 w-5"
@@ -103,7 +103,7 @@ pub fn Footer(cx: Scope) -> impl IntoView {
           <div class="flex justify-center space-x-4">
             <a
               href="https://twitter.com/OrdiLabs_org"
-              class="text-gray-400 hover:text-gray-500 dark:text-gray-100"
+              class="text-gray-400 hover:text-gray-500 dark:text-gray-100 ease hover:bg-gray-200 p-2 rounded-full dark:hover:bg-white/20 "
             >
               <span class="sr-only">"Twitter"</span>
               <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -112,7 +112,7 @@ pub fn Footer(cx: Scope) -> impl IntoView {
             </a>
             <a
               href="https://github.com/ordilabs/live"
-              class="text-gray-400 hover:text-gray-500 dark:text-gray-100"
+              class="text-gray-400 hover:text-gray-500 dark:text-gray-100 ease hover:bg-gray-200 p-2 rounded-full dark:hover:bg-white/20"
             >
               <span class="sr-only">"GitHub"</span>
               <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">

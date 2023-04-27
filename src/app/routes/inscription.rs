@@ -30,7 +30,7 @@ pub fn Label(cx: Scope, children: Children) -> impl IntoView {
 pub fn Inscription(cx: Scope) -> impl IntoView {
   let params = use_params_map(cx);
   let id = move || params().get("id").cloned().unwrap_or_default();
-  let preview_url = move || format!("/preview/{}", &id());
+  let (fullscreen, set_fullscreen) = create_signal(cx, false);
 
   view! { cx,
     <div class="content">
@@ -42,35 +42,34 @@ pub fn Inscription(cx: Scope) -> impl IntoView {
               }
               false => {
                   view! { cx,
-                    <div class="px-20 md:px-40 lg:px-60 my-10 flex items-center justify-center">
-                      <div class="relative w-full h-full">
+                    <div class="relative px-20 md:px-40 lg:px-60 my-10 flex items-center justify-center">
+                      <button
+                        class="group relative w-full h-full"
+                        on:click=move |_| set_fullscreen.set(true)
+                      >
                         <Preview
-                          class="w-full h-full aspect-w-4 aspect-h-4 ring-4 sm:ring-8".to_owned()
+                          class="ring-4 sm:ring-8 ring-red-500 rounded-lg aspect-w-4 aspect-h-4 group-hover:brightness-100"
+                              .to_owned()
                           id=id()
                         />
-                        <a
-                          href=preview_url
-                          target=preview_url
-                          title="Click to view the unconfirmed inscription."
-                        >
-                          <div class="absolute right-1 bottom-1 ease bg-white/70 hover:bg-white/90 text-gray-700 hover:text-gray-900 dark:text-gray-200 hover:dark:text-gray-50 dark:bg-slate-900/70 dark:hover:bg-slate-900/90 w-6 h-6 sm:w-10 sm:h-10 flex justify-center items-center p-1 sm:p-2 rounded-lg">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth=1.5
-                              stroke="currentColor"
-                              class="w-6 h-6"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                              ></path>
-                            </svg>
-                          </div>
-                        </a>
-                      </div>
+                        <div class="absolute right-2 top-2 sm:right-5 sm:top-5 shadow-md ease
+                        bg-white opacity-80 group-hover:opacity-100 text-gray-900 w-6 h-6 sm:w-10 sm:h-10 flex justify-center items-center p-1 sm:p-2 rounded-full">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth=1.5
+                            stroke="currentColor"
+                            class="w-6 h-6"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                            ></path>
+                          </svg>
+                        </div>
+                      </button>
                     </div>
                     <Container>
                       <Title>"id"</Title>
@@ -155,6 +154,29 @@ pub fn Inscription(cx: Scope) -> impl IntoView {
         </svg>
         "Back"
       </A>
+      <Show
+        when=move || fullscreen()
+        fallback=|cx| {
+            view! { cx, <></> }
+                .into_view(cx)
+        }
+      >
+        <button class="group absolute inset-0" on:click=move |_| set_fullscreen.set(false)>
+          <Preview class="absolute inset-0 aspect-w-4 aspect-h-4".to_owned() id=id()/>
+          <div class="absolute right-4 top-4 p-2 ease bg-white opacity-80 group-hover:opacity-100 shadow-md rounded-full text-gray-600">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-6 h-6"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </div>
+        </button>
+      </Show>
     </div>
   }
 }
