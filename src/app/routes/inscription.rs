@@ -161,7 +161,7 @@ pub fn Inscription(cx: Scope) -> impl IntoView {
                 .into_view(cx)
         }
       >
-        <button class="group absolute inset-0" on:click=move |_| set_fullscreen.set(false)>
+        <button class="group absolute w-full inset-0" on:click=move |_| set_fullscreen.set(false)>
           <Preview class="absolute inset-0 aspect-w-4 aspect-h-4".to_owned() id=id()/>
           <div class="absolute right-4 top-4 p-2 ease bg-white opacity-80 group-hover:opacity-100 shadow-md rounded-full text-gray-600">
             <svg
