@@ -120,7 +120,7 @@ pub(crate) async fn tick_bitcoin_core(
       continue;
     }
 
-    let inscription_id = format!("{}i0", &txid);
+    let inscription_id = format!("{}", &txid);
     broadcast.push(inscription_id);
   }
 
