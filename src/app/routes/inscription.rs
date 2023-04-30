@@ -49,7 +49,6 @@ pub fn Inscription(cx: Scope) -> impl IntoView {
                       >
                         <Preview
                           class="ring-4 sm:ring-8 ring-red-500 rounded-lg aspect-w-4 aspect-h-4 group-hover:brightness-100"
-                              .to_owned()
                           id=id()
                         />
                         <div class="absolute right-2 top-2 sm:right-5 sm:top-5 shadow-md ease
@@ -162,7 +161,7 @@ pub fn Inscription(cx: Scope) -> impl IntoView {
         }
       >
         <button class="group absolute w-full inset-0" on:click=move |_| set_fullscreen.set(false)>
-          <Preview class="absolute inset-0 aspect-w-4 aspect-h-4".to_owned() id=id()/>
+          <Preview class="absolute inset-0 aspect-w-4 aspect-h-4" id=id()/>
           <div class="absolute right-4 top-4 p-2 ease bg-white opacity-80 group-hover:opacity-100 shadow-md rounded-full text-gray-600">
             <svg
               xmlns="http://www.w3.org/2000/svg"
