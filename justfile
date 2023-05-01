@@ -69,7 +69,6 @@ run-tunnel:
 _tunnel:
   cd docker && docker compose run --rm cftunnel
 
-
 ORDA := "ord -r --wallet alice --rpc-url bitcoin-core:18443/wallet/alice"
 _fixtures:
   -[ -f .fixtures.done ] && sleep infinity
@@ -90,9 +89,6 @@ _fixtures:
   just _generate 1 
   touch .fixtures.done
   sleep infinity
-
-_generate BLOCKS:
-  bitcoin-cli -rpcwallet=miner -named generatetoaddress nblocks={{BLOCKS}} address=`cat miner.txt`
 
 [macos]
 open:
@@ -149,25 +145,27 @@ alias e := enter
 enter CONTAINER:
   cd docker && docker compose exec {{CONTAINER}} /bin/bash
 
-alias g := generate
-alias c1b := generate-1-block
-generate-1-block:
-  just _generate 1
+alias m1b := mine-1-block
+mine-1-block:
+  just mine-blocks 1
 
-generate NBLOCKS:
-  cd docker && docker compose exec fixtures just _generate {{NBLOCKS}}
+mine-blocks NBLOCKS:
+  cd docker && docker compose exec fixtures just _mine-blocks {{NBLOCKS}}
 
-alias f := faucet
+_mine-blocks NBLOCKS:
+  just _generate {{NBLOCKS}}
+
+_generate BLOCKS:
+  bitcoin-cli -rpcwallet=miner -named generatetoaddress nblocks={{BLOCKS}} address=`cat miner.txt`
+
 faucet ADDRESS AMOUNT:
   cd docker && docker compose exec fixtures just _faucet {{ADDRESS}} {{AMOUNT}}
 
 _faucet ADDRESS AMOUNT:
   bitcoin-cli -rpcwallet=miner -named sendtoaddress fee_rate=1 address={{ADDRESS}} amount={{AMOUNT}}
 
-
-alias p := inscribe-punk-1
-alias c1p := inscribe-punk-1
-inscribe-punk-1: # create 1 punk in the mempool
+alias i1p := inscribe-1-punk
+inscribe-1-punk: # create 1 punk in the mempool
   cd docker && docker compose exec fixtures just _inscribe-punk 1
 
 _inscribe-punk PUNK:
