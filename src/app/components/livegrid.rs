@@ -1,29 +1,19 @@
 use crate::app::components::preview::*;
 use leptos::*;
 use leptos_router::*;
-use log::info;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 #[allow(dead_code)]
 pub struct Item {
   pub key: usize,
-  pub hash: ReadSignal<String>,
-  set_hash: WriteSignal<String>,
+  pub hash: RwSignal<String>,
 }
 
 #[allow(dead_code)]
 impl Item {
   pub fn new(cx: Scope, key: usize, hash: String) -> Self {
-    let (hash, set_hash) = create_signal(cx, hash);
-    Self {
-      key,
-      hash,
-      set_hash,
-    }
-  }
-
-  pub fn update(&self, hash: String) {
-    self.set_hash.set(hash);
+    let hash = create_rw_signal(cx, hash);
+    Self { key, hash }
   }
 }
 
@@ -40,40 +30,29 @@ pub fn LiveGrid(
   let max_item_id = initial_inscriptions.len();
   let next_item_id = store_value(cx, max_item_id);
 
-  let initial_items = initial_inscriptions
+  let initial_items: Items = initial_inscriptions
     .into_iter()
     .enumerate()
     .map(|(index, hash)| Item::new(cx, index, hash))
     .collect();
 
-  let items = create_rw_signal::<Items>(cx, initial_items);
+  let items = store_value::<Items>(cx, initial_items);
 
   create_effect(cx, move |_| {
     let next = inscription_id();
-    info!(
-      "It works! {}",
-      match next.clone() {
-        None => "none".to_string(),
-        Some(a) => a.to_owned(),
-      }
-    );
 
     if next.is_none() || next == Some("".to_string()) {
       return;
     }
 
     let next_value = next.clone().unwrap();
-    info!("next {}", &next_value);
 
     let item_id = next_item_id() % max_item_id;
-    info!("item_id {}", &item_id);
     next_item_id.update_value(|id| *id += 1);
-    info!("item_id {}", next_item_id());
 
-    items.update(|items| {
+    items.update_value(|items| {
       let item = items.get(item_id).unwrap();
-      info!("update2 {}", &item.key);
-      item.update(next_value.clone());
+      item.hash.set(next_value);
     });
   });
 
@@ -88,33 +67,21 @@ pub fn LiveGrid(
       >
         <For
           each=items
-          key=|item| item.key.clone()
-          view=move |cx, item| {
-              let hash = move || item.hash.get();
+          key=|item| item.key
+          view=move |cx, item: Item| {
               view! { cx,
                 <li class="relative">
-                  <p class="text-white">{&hash()}</p>
-                  <p class="text-white">{format!("/inscription/{}", & hash())}</p>
+                  <A href=move || format!("/inscription/{}", item.hash.get())>
+                    <Preview
+                      class="ring-2 ring-red-500 rounded-lg aspect-w-10 aspect-h-10"
+                      hash=item.hash.derive_signal(cx)
+                    />
+                  </A>
                 </li>
               }
           }
         />
       </ul>
     </section>
-  }
-}
-
-#[component]
-pub fn InscriptionItem(cx: Scope, id: Signal<String>) -> impl IntoView {
-  let detail_url = move || format!("/inscription/{}", &id());
-  info!("detail_url {}", &detail_url());
-  let class = "ring-2 ring-red-500 rounded-lg aspect-w-10 aspect-h-10";
-
-  view! { cx,
-    <li class="relative">
-      <A href=detail_url()>
-        <Preview class id=id()/>
-      </A>
-    </li>
   }
 }
