@@ -3,8 +3,32 @@ use leptos::*;
 use leptos_router::*;
 use log::info;
 
+#[derive(Debug, Clone)]
 #[allow(dead_code)]
-type Items = Vec<String>;
+pub struct Item {
+  pub key: usize,
+  pub hash: ReadSignal<String>,
+  set_hash: WriteSignal<String>,
+}
+
+#[allow(dead_code)]
+impl Item {
+  pub fn new(cx: Scope, key: usize, hash: String) -> Self {
+    let (hash, set_hash) = create_signal(cx, hash);
+    Self {
+      key,
+      hash,
+      set_hash,
+    }
+  }
+
+  pub fn update(&self, hash: String) {
+    self.set_hash.set(hash);
+  }
+}
+
+#[allow(dead_code)]
+type Items = Vec<Item>;
 
 #[allow(clippy::used_underscore_binding)]
 #[component]
@@ -13,31 +37,44 @@ pub fn LiveGrid(
   initial_inscriptions: Vec<String>,
   inscription_id: ReadSignal<Option<String>>,
 ) -> impl IntoView {
-  // let (next_counter_id, set_next_counter_id) = create_signal(cx, 0);
-  let items = create_rw_signal::<Items>(cx, initial_inscriptions.clone());
-  //provide_context(cx, CounterUpdater { set_counters });
+  let max_item_id = initial_inscriptions.len();
+  let next_item_id = store_value(cx, max_item_id);
+
+  let initial_items = initial_inscriptions
+    .into_iter()
+    .enumerate()
+    .map(|(index, hash)| Item::new(cx, index, hash))
+    .collect();
+
+  let items = create_rw_signal::<Items>(cx, initial_items);
 
   create_effect(cx, move |_| {
-    let s = inscription_id();
+    let next = inscription_id();
     info!(
       "It works! {}",
-      match &s {
-        None => "'none'",
-        Some(a) => a,
+      match next.clone() {
+        None => "none".to_string(),
+        Some(a) => a.to_owned(),
       }
     );
-    if s.is_none() || s == Some("".to_string()) {
+
+    if next.is_none() || next == Some("".to_string()) {
       return;
     }
 
-    let id = s.unwrap();
+    let next_value = next.clone().unwrap();
+    info!("next {}", &next_value);
 
-    // if !counters().contains(&id) {
-    items.update(|counters| {
-      let _ = counters.pop();
-      counters.insert(0, id)
+    let item_id = next_item_id() % max_item_id;
+    info!("item_id {}", &item_id);
+    next_item_id.update_value(|id| *id += 1);
+    info!("item_id {}", next_item_id());
+
+    items.update(|items| {
+      let item = items.get(item_id).unwrap();
+      info!("update2 {}", &item.key);
+      item.update(next_value.clone());
     });
-    // }
   });
 
   view! { cx,
@@ -51,9 +88,15 @@ pub fn LiveGrid(
       >
         <For
           each=items
-          key=|counter| counter.to_owned()
-          view=move |cx, inscription_id| {
-              view! { cx, <InscriptionItem id=inscription_id/> }
+          key=|item| item.key.clone()
+          view=move |cx, item| {
+              let hash = move || item.hash.get();
+              view! { cx,
+                <li class="relative">
+                  <p class="text-white">{&hash()}</p>
+                  <p class="text-white">{format!("/inscription/{}", & hash())}</p>
+                </li>
+              }
           }
         />
       </ul>
@@ -62,16 +105,15 @@ pub fn LiveGrid(
 }
 
 #[component]
-pub fn InscriptionItem(cx: Scope, id: String) -> impl IntoView {
-  // let id = move || id();
-  let detail_url = format!("/inscription/{}", &id);
+pub fn InscriptionItem(cx: Scope, id: Signal<String>) -> impl IntoView {
+  let detail_url = move || format!("/inscription/{}", &id());
+  info!("detail_url {}", &detail_url());
   let class = "ring-2 ring-red-500 rounded-lg aspect-w-10 aspect-h-10";
-  info!("detail_url {}", &detail_url);
 
   view! { cx,
     <li class="relative">
-      <A href=detail_url>
-        <Preview class id=id/>
+      <A href=detail_url()>
+        <Preview class id=id()/>
       </A>
     </li>
   }
