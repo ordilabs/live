@@ -61,11 +61,8 @@ Once up and running you can perform dev tasks
 ```bash
 just open # all .local domains in a browser
 
-# create 1 punk - inscription in regtest mempool
-just c1p
-
-# create 1 block - mine regtest mempool transaction(s)
-just c1b
+# inscribe-1-punk (into the mempool) then mine-1-block
+just i1p m1b
 
 
 # create temporary tunnel to expose your .local on the internet
