@@ -147,7 +147,10 @@ enter CONTAINER:
 
 alias m1b := mine-1-block
 mine-1-block:
-  cd docker && docker compose exec fixtures just _mine-blocks 1
+  just mine-blocks 1
+
+mine-blocks NBLOCKS:
+  cd docker && docker compose exec fixtures just _mine-blocks {{NBLOCKS}}
 
 _mine-blocks NBLOCKS:
   just _generate {{NBLOCKS}}
