@@ -80,72 +80,67 @@ pub fn Inscription(cx: Scope) -> impl IntoView {
                       <Title>"id"</Title>
                       <Label>{&id()}</Label>
                     </Container>
-                    <div class="text-white">{&isDev.to_string()}</div>
-
                     {if isDev {
-                      view! { cx,
-                        <Container>
-                          <Title>"address"</Title>
-                          <Label>"bc1pyqz4gyra5cssfgawk6dunh4s9car9zrzpkw2l0sz4g9ym0cdxzescnf4u2"</Label>
-                        </Container>
-                        <Container>
-                          <Title>"output value"</Title>
-                          <Label>"546"</Label>
-                        </Container>
-                        <Container>
-                          <Title>"sat"</Title>
-                          <Label>"1862722370424422"</Label>
-                        </Container>
-                        <Container>
-                          <Title>"content length"</Title>
-                          <Label>"53 bytes"</Label>
-                        </Container>
-                        <Container>
-                          <Title>"content type"</Title>
-                          <Label>"text/plain;charset=utf-8"</Label>
-                        </Container>
-                        <Container>
-                          <Title>"time stamp"</Title>
-                          <Label>"2023-04-26 13:54:04 UTC"</Label>
-                        </Container>
-                        <Container>
-                          <Title>"time stamp"</Title>
-                          <Label>"2023-04-26 13:54:04 UTC"</Label>
-                        </Container>
-                        <Container>
-                          <Title>"genesis height"</Title>
-                          <Label>"787095"</Label>
-                        </Container>
-                        <Container>
-                          <Title>"genesis fee"</Title>
-                          <Label>"2448"</Label>
-                        </Container>
-                        <Container>
-                          <Title>"genesis transaction"</Title>
-                          <Label>"a5a6f451c8f0fbd150c05b4d75c7ac45281962f3c41079d2050cc78e78243f6c"</Label>
-                        </Container>
-                        <Container>
-                          <Title>"location"</Title>
-                          <Label>
-                            "a5a6f451c8f0fbd150c05b4d75c7ac45281962f3c41079d2050cc78e78243f6c:0:0"
-                          </Label>
-                        </Container>
-                        <Container>
-                          <Title>"output"</Title>
-                          <Label>"a5a6f451c8f0fbd150c05b4d75c7ac45281962f3c41079d2050cc78e78243f6c:0"</Label>
-                        </Container>
-                        <Container>
-                          <Title>"offset"</Title>
-                          <Label>"0"</Label>
-                        </Container>
-                    }
-                  } else {
-                    view! { cx, <></>}
+                        view! { cx,
+                          <Container>
+                            <Title>"address"</Title>
+                            <Label>"bc1pyqz4gyra5cssfgawk6dunh4s9car9zrzpkw2l0sz4g9ym0cdxzescnf4u2"</Label>
+                          </Container>
+                          <Container>
+                            <Title>"output value"</Title>
+                            <Label>"546"</Label>
+                          </Container>
+                          <Container>
+                            <Title>"sat"</Title>
+                            <Label>"1862722370424422"</Label>
+                          </Container>
+                          <Container>
+                            <Title>"content length"</Title>
+                            <Label>"53 bytes"</Label>
+                          </Container>
+                          <Container>
+                            <Title>"content type"</Title>
+                            <Label>"text/plain;charset=utf-8"</Label>
+                          </Container>
+                          <Container>
+                            <Title>"time stamp"</Title>
+                            <Label>"2023-04-26 13:54:04 UTC"</Label>
+                          </Container>
+                          <Container>
+                            <Title>"time stamp"</Title>
+                            <Label>"2023-04-26 13:54:04 UTC"</Label>
+                          </Container>
+                          <Container>
+                            <Title>"genesis height"</Title>
+                            <Label>"787095"</Label>
+                          </Container>
+                          <Container>
+                            <Title>"genesis fee"</Title>
+                            <Label>"2448"</Label>
+                          </Container>
+                          <Container>
+                            <Title>"genesis transaction"</Title>
+                            <Label>"a5a6f451c8f0fbd150c05b4d75c7ac45281962f3c41079d2050cc78e78243f6c"</Label>
+                          </Container>
+                          <Container>
+                            <Title>"location"</Title>
+                            <Label>"a5a6f451c8f0fbd150c05b4d75c7ac45281962f3c41079d2050cc78e78243f6c:0:0"</Label>
+                          </Container>
+                          <Container>
+                            <Title>"output"</Title>
+                            <Label>"a5a6f451c8f0fbd150c05b4d75c7ac45281962f3c41079d2050cc78e78243f6c:0"</Label>
+                          </Container>
+                          <Container>
+                            <Title>"offset"</Title>
+                            <Label>"0"</Label>
+                          </Container>
+                        }
+                    } else {
+                        view! { cx, <></> }
+                    }}
                   }
-                }
-              }
                       .into_view(cx)
-            }
+              }
           }
       }}
       <A

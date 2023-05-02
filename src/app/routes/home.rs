@@ -17,9 +17,9 @@ pub fn Home(cx: Scope) -> impl IntoView {
           "Live unconfirmed inscriptions"
         </h1>
       </div>
-      // Keep heihgt for empty content - `&#8203;` doesn't work in Leptos - that's why adding a * and make it transparent
-      // Question in Leptos Discord https://discord.com/channels/1031524867910148188/1102915498817097821/1102915498817097821
-      <div class="text-xs text-gray-900 leading-4 dark:text-gray-100 empty:after:content-['*'] empty:after:opacity-0">{info}</div>
+      <div class="text-xs text-gray-900 leading-4 dark:text-gray-100 empty:after:content-['*'] empty:after:opacity-0">
+        {info}
+      </div>
       <LiveGrid initial_inscriptions inscription_id=inscription/>
     </div>
   }
