@@ -42,7 +42,7 @@ ord-labs = { version = "0.1.0", git = "https://github.com/ordilabs/ord-labs.git"
   "unstable",
 ] }
 rand = { version = "0.8.5", optional = true }
-reqwest = { version = "0.11.16", optional = true, features = ["json"] }
+reqwest = { version = "0.11.17", optional = true, features = ["json"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
 thiserror = "1.0.40"
