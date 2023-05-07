@@ -1,5 +1,6 @@
 use super::*;
 use std::collections::HashMap;
+use std::mem;
 extern crate rand;
 
 use rand::seq::IteratorRandom;
@@ -81,7 +82,14 @@ pub(crate) async fn tick_bitcoin_core(
   let tick_retain = std::time::Instant::now();
   if ordipool.len() > mpr.len() {
     let txid: Vec<_> = mpr.iter().map(|entry| &entry.txid).collect();
-    ordipool.retain(|key, _| txid.contains(&key));
+
+    let mut new_ordipool: HashMap<String, Option<Inscription>> = HashMap::with_capacity(txid.len());
+    for txid in txid.iter() {
+      let txid = txid.to_string();
+      new_ordipool.insert(txid.clone(), ordipool.get(&txid).unwrap().clone());
+    }
+
+    mem::swap(ordipool, &mut new_ordipool);
   }
   let duration_retain = std::time::Instant::now() - tick_retain;
 
