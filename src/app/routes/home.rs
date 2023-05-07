@@ -17,7 +17,7 @@ pub fn Home(cx: Scope) -> impl IntoView {
           "Live unconfirmed inscriptions"
         </h1>
       </div>
-      <div class="text-xs text-gray-900 leading-4 dark:text-gray-100 empty:after:content-['*'] empty:after:opacity-0">
+      <div class="text-xs text-gray-900 dark:text-gray-100 empty:after:content-['\u{200b}'] empty:after:inline-block">
         {info}
       </div>
       <LiveGrid initial_inscriptions inscription_id=inscription/>
