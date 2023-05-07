@@ -84,51 +84,47 @@ pub fn Inscription(cx: Scope) -> impl IntoView {
                         view! { cx,
                           <Container>
                             <Title>"address"</Title>
-                            <Label>"bc1pyqz4gyra5cssfgawk6dunh4s9car9zrzpkw2l0sz4g9ym0cdxzescnf4u2"</Label>
+                            <Label>"bc1pz4kvfpurqc2hwgrq0nwtfve2lfxvdpfcdpzc6ujchyr3ztj6gd9sfr6ayf"</Label>
                           </Container>
                           <Container>
                             <Title>"output value"</Title>
-                            <Label>"546"</Label>
+                            <Label>"10000"</Label>
                           </Container>
                           <Container>
                             <Title>"sat"</Title>
-                            <Label>"1862722370424422"</Label>
+                            <Label>"1252201400444387"</Label>
                           </Container>
                           <Container>
                             <Title>"content length"</Title>
-                            <Label>"53 bytes"</Label>
+                            <Label>"793 bytes"</Label>
                           </Container>
                           <Container>
                             <Title>"content type"</Title>
-                            <Label>"text/plain;charset=utf-8"</Label>
+                            <Label>"image/png"</Label>
                           </Container>
                           <Container>
                             <Title>"time stamp"</Title>
-                            <Label>"2023-04-26 13:54:04 UTC"</Label>
-                          </Container>
-                          <Container>
-                            <Title>"time stamp"</Title>
-                            <Label>"2023-04-26 13:54:04 UTC"</Label>
+                            <Label>"2022-12-14 20:32:00 UTC"</Label>
                           </Container>
                           <Container>
                             <Title>"genesis height"</Title>
-                            <Label>"787095"</Label>
+                            <Label>"767430"</Label>
                           </Container>
                           <Container>
                             <Title>"genesis fee"</Title>
-                            <Label>"2448"</Label>
+                            <Label>"322"</Label>
                           </Container>
                           <Container>
                             <Title>"genesis transaction"</Title>
-                            <Label>"a5a6f451c8f0fbd150c05b4d75c7ac45281962f3c41079d2050cc78e78243f6c"</Label>
+                            <Label>"6fb976ab49dcec017f1e201e84395983204ae1a7c2abf7ced0a85d692e442799"</Label>
                           </Container>
                           <Container>
                             <Title>"location"</Title>
-                            <Label>"a5a6f451c8f0fbd150c05b4d75c7ac45281962f3c41079d2050cc78e78243f6c:0:0"</Label>
+                            <Label>"bc4c30829a9564c0d58e6287195622b53ced54a25711d1b86be7cd3a70ef61ed:0:0"</Label>
                           </Container>
                           <Container>
                             <Title>"output"</Title>
-                            <Label>"a5a6f451c8f0fbd150c05b4d75c7ac45281962f3c41079d2050cc78e78243f6c:0"</Label>
+                            <Label>"bc4c30829a9564c0d58e6287195622b53ced54a25711d1b86be7cd3a70ef61ed:0"</Label>
                           </Container>
                           <Container>
                             <Title>"offset"</Title>
