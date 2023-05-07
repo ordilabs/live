@@ -200,7 +200,6 @@ pub fn App(cx: Scope) -> impl IntoView {
   let initial_items: Vec<_> = (0..6).map(|n| format!("punk_{}.webp", n)).collect();
 
   let theme_ctx = use_context::<ThemeContext>(cx).expect("Failed to get ThemeContext");
-
   // let output_name = std::env::var("LEPTOS_OUTPUT_NAME").unwrap();
 
   view! { cx,
@@ -222,8 +221,14 @@ pub fn App(cx: Scope) -> impl IntoView {
             <main class="flex-1 overflow-y-auto">
               <div class="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
                 <div class="flex">
-                  <h1 class="flex-1 text-2xl font-bold text-gray-900 dark:text-gray-100">
-                    "Live unconfirmed inscriptions"
+                  <h1 class="flex-2 text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    "⭕️ Anticipated inscriptions"
+                  </h1>
+                  <h1 class="flex-1 text-2xl text-center font-bold text-gray-900 dark:text-gray-100">
+                    "預期銘文"
+                  </h1>
+                  <h1 class="flex-2 text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    "تسجيل متوقع  ⭕"
                   </h1>
                 </div>
                 <div class="text-xs text-gray-900 dark:text-gray-100">{info}</div>
