@@ -1,26 +1,31 @@
 use crate::app::components::{ThemeToggle, ThemeToggleProps};
 use leptos::*;
+use leptos_router::*;
+
+use crate::app::providers::*;
 
 #[component]
 pub fn Header(cx: Scope) -> impl IntoView {
   view! { cx,
     <header class="w-full">
       <nav class="bg-gray-800">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="content">
           <div class="flex h-16 justify-between">
             <div class="flex">
               <div class="-ml-2 mr-2 flex items-center md:hidden"></div>
               <div class="flex flex-shrink-0 items-center">
-                <img
-                  class="block h-8 w-auto lg:hidden"
-                  src="/ordilabs-logo-name-h.svg"
-                  alt="Ordilabs"
-                />
-                <img
-                  class="hidden h-8 w-auto lg:block"
-                  src="/ordilabs-logo-name-h.svg"
-                  alt="Ordilabs"
-                />
+                <A href="/">
+                  <img
+                    class="block h-8 w-auto lg:hidden"
+                    src="/ordilabs-logo-name-h.svg"
+                    alt="Ordilabs"
+                  />
+                  <img
+                    class="hidden h-8 w-auto lg:block"
+                    src="/ordilabs-logo-name-h.svg"
+                    alt="Ordilabs"
+                  />
+                </A>
               </div>
             </div>
             <div class="flex items-center">
@@ -28,7 +33,7 @@ pub fn Header(cx: Scope) -> impl IntoView {
                 <a
                   href="https://github.com/ordilabs/live"
                   target="_blank"
-                  class="relative inline-flex items-center gap-x-1.5 rounded-md bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+                  class="relative inline-flex items-center gap-x-1.5 rounded-md ease bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
                 >
                   <svg
                     class="-ml-0.5 h-5 w-5"
@@ -55,15 +60,14 @@ pub fn Header(cx: Scope) -> impl IntoView {
 }
 
 #[component]
-pub fn Footer(
-  cx: Scope,
-  block_rs: ReadSignal<Option<u64>>,
-  time_rs: ReadSignal<Option<std::time::SystemTime>>,
-) -> impl IntoView {
-  let block = block_rs;
+pub fn Footer(cx: Scope) -> impl IntoView {
+  let StreamContext {
+    block,
+    // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
+    time,
+    ..
+  } = use_context::<StreamContext>(cx).expect("Failed to get StreamContext");
 
-  // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
-  let time = time_rs;
   let current = move || match time.get() {
     None => String::from("--"),
     Some(v) => match v.duration_since(std::time::SystemTime::UNIX_EPOCH) {
@@ -74,7 +78,7 @@ pub fn Footer(
 
   view! { cx,
     <footer class="bg-white dark:bg-slate-800">
-      <div class="mx-auto max-w-7xl flex flex-col-reverse md:flex-row md:justify-between px-4 sm:px-6 lg:px-8 py-2 md:py-6">
+      <div class="content flex flex-col-reverse md:flex-row md:justify-between py-2 md:py-6">
         <div class="flex justify-center md:items-center mb-2 md:mb-0 text-gray-400 dark:text-gray-400">
           <svg
             class="h-6 w-6 mr-1"
@@ -99,7 +103,7 @@ pub fn Footer(
           <div class="flex justify-center space-x-4">
             <a
               href="https://twitter.com/OrdiLabs_org"
-              class="text-gray-400 hover:text-gray-500 dark:text-gray-100"
+              class="text-gray-400 hover:text-gray-500 dark:text-gray-100 ease hover:bg-gray-200 p-2 rounded-full dark:hover:bg-white/20 "
             >
               <span class="sr-only">"Twitter"</span>
               <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -108,7 +112,7 @@ pub fn Footer(
             </a>
             <a
               href="https://github.com/ordilabs/live"
-              class="text-gray-400 hover:text-gray-500 dark:text-gray-100"
+              class="text-gray-400 hover:text-gray-500 dark:text-gray-100 ease hover:bg-gray-200 p-2 rounded-full dark:hover:bg-white/20"
             >
               <span class="sr-only">"GitHub"</span>
               <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
