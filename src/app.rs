@@ -8,6 +8,7 @@ use leptos_router::*;
 
 mod components;
 pub mod functions;
+pub mod i18n;
 mod providers;
 mod routes;
 
@@ -37,6 +38,7 @@ pub fn App(cx: Scope) -> impl IntoView {
   provide_meta_context(cx);
   provide_theme_context(cx);
   provide_stream_context(cx);
+  provide_i18n_context(cx);
 
   let theme_ctx = use_context::<ThemeContext>(cx).expect("Failed to get ThemeContext");
 

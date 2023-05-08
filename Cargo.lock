@@ -2143,6 +2143,7 @@ dependencies = [
  "bitcoincore-rpc-json",
  "broadcaster",
  "cfg-if 1.0.0",
+ "common_macros",
  "console-subscriber",
  "console_error_panic_hook",
  "console_log",
@@ -2169,6 +2170,7 @@ dependencies = [
  "rusty-hook",
  "serde",
  "serde_json",
+ "strum",
  "thiserror",
  "tokio",
  "tokio-stream",
@@ -3018,6 +3020,28 @@ checksum = "64a4a911eed85daf18834cfaa86a79b7d266ff93ff5ba14005426219480ed662"
 dependencies = [
  "libc",
  "winapi",
+]
+
+[[package]]
+name = "strum"
+version = "0.24.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "063e6045c0e62079840579a7e47a355ae92f60eb74daaf156fb1e84ba164e63f"
+dependencies = [
+ "strum_macros",
+]
+
+[[package]]
+name = "strum_macros"
+version = "0.24.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e385be0d24f186b4ce2f9982191e7101bb737312ad61c1f2f984f34bcf85d59"
+dependencies = [
+ "heck",
+ "proc-macro2",
+ "quote",
+ "rustversion",
+ "syn 1.0.109",
 ]
 
 [[package]]

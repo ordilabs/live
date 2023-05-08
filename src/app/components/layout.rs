@@ -1,6 +1,8 @@
 use crate::app::components::{ThemeToggle, ThemeToggleProps};
 use leptos::*;
 use leptos_router::*;
+use std::str::FromStr;
+use strum::IntoEnumIterator;
 
 use crate::app::providers::*;
 
@@ -68,6 +70,10 @@ pub fn Footer(cx: Scope) -> impl IntoView {
     ..
   } = use_context::<StreamContext>(cx).expect("Failed to get StreamContext");
 
+  let I18nContext {
+    locale: locale_rw, ..
+  } = use_context::<I18nContext>(cx).expect("Failed to get I18nContext");
+
   let current = move || match time.get() {
     None => String::from("--"),
     Some(v) => match v.duration_since(std::time::SystemTime::UNIX_EPOCH) {
@@ -123,6 +129,22 @@ pub fn Footer(cx: Scope) -> impl IntoView {
                 ></path>
               </svg>
             </a>
+            <select on:change=move |ev| {
+                let v = event_target_value(&ev);
+                let l = Locale::from_str(&v).unwrap();
+                locale_rw.set(l);
+            }>
+              {Locale::iter()
+                  .map(|locale| {
+                      let value_str: &'static str = locale.as_str();
+                      view! { cx,
+                        <option value=value_str selected=locale == locale_rw.get()>
+                          {locale.as_str()}
+                        </option>
+                      }
+                  })
+                  .collect::<Vec<_>>()}
+            </select>
           </div>
         </div>
       </div>
