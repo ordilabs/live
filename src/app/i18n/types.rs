@@ -1,8 +1,11 @@
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use strum::{EnumIter, EnumString};
 
 #[allow(dead_code)]
-#[derive(Clone, EnumIter, EnumString, Debug, PartialEq, Eq, Default)]
+#[derive(
+  Clone, EnumIter, EnumString, Debug, PartialEq, Eq, Default, Serialize, Deserialize, Copy,
+)]
 pub enum Locale {
   #[default]
   EN,
@@ -11,6 +14,7 @@ pub enum Locale {
   HI,
 }
 
+#[allow(dead_code)]
 impl Locale {
   pub fn as_str(&self) -> &'static str {
     match self {
