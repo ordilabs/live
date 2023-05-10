@@ -1,7 +1,9 @@
 pub mod inscription;
+pub mod locale;
 pub mod theme;
 
 pub use inscription::*;
+pub use locale::*;
 pub use theme::*;
 
 use cfg_if::cfg_if;
@@ -14,5 +16,6 @@ cfg_if! {
     pub fn register_server_functions() {
       _ = inscription::GetInscriptionDetails::register();
       _ = theme::SetDarkTheme::register();
+      _ = locale::SetLocale::register();
     }
 }}
