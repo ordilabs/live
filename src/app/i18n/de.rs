@@ -1,11 +1,11 @@
-use crate::app::providers::i18n::{Translation, TK};
-
 use common_macros::hash_map;
+
+use super::types::{Translation, T};
 
 #[allow(dead_code)]
 pub fn translation() -> Translation {
   hash_map!(
-      TK::Hello => "Hallo",
-      TK::World => "Welt",
+      T::HomeTitle => "Erwartete Inschriften",
+      T::ForkGH => "Fork bei GitHub",
   )
 }

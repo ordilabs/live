@@ -1,4 +1,5 @@
 use crate::app::components::*;
+use crate::app::i18n::T;
 use crate::app::providers::*;
 use leptos::*;
 
@@ -14,9 +15,9 @@ pub fn Home(cx: Scope) -> impl IntoView {
   view! { cx,
     <div class="content py-8">
       <div class="flex">
-        <h1 class="flex-1 text-2xl font-bold text-gray-900 dark:text-gray-100">
-          "Live unconfirmed inscriptions " {i18n.t(cx, TK::Hello)}
-        </h1>
+        <h1 class="flex items-center text-2xl font-bold text-gray-900 dark:text-gray-100
+        before:mr-2 before:block before:w-6 before:h-6 before:border-4 before:rounded-full before:border-red-500 mr-2
+        ">{i18n.t(cx, T::HomeTitle)}</h1>
       </div>
       <div class="text-xs text-gray-900 dark:text-gray-100 empty:after:content-['\u{200b}'] empty:after:inline-block">
         {info}

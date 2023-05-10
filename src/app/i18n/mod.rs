@@ -1,14 +1,18 @@
-use crate::app::providers::i18n::Locale;
-
-use super::providers::Translation;
-
 mod de;
 mod en;
+mod hi;
+mod zn;
+
+mod types;
+
+pub use types::*;
 
 #[allow(dead_code)]
-pub fn locale_data(l: Locale) -> Translation {
+pub fn translation(l: Locale) -> Translation {
   match l {
     Locale::DE => de::translation(),
     Locale::EN => en::translation(),
+    Locale::ZN => zn::translation(),
+    Locale::HI => hi::translation(),
   }
 }

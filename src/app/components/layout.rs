@@ -1,4 +1,5 @@
 use crate::app::components::{ThemeToggle, ThemeToggleProps};
+use crate::app::i18n::{Locale, T};
 use leptos::*;
 use leptos_router::*;
 use std::str::FromStr;
@@ -8,6 +9,8 @@ use crate::app::providers::*;
 
 #[component]
 pub fn Header(cx: Scope) -> impl IntoView {
+  let i18n = use_context::<I18nContext>(cx).expect("Failed to get I18nContext");
+
   view! { cx,
     <header class="w-full">
       <nav class="bg-gray-800">
@@ -49,7 +52,7 @@ pub fn Header(cx: Scope) -> impl IntoView {
                       clip-rule="evenodd"
                     ></path>
                   </svg>
-                  "Fork on GitHub"
+                  {i18n.t(cx, T::ForkGH)}
                 </a>
               </div>
               <ThemeToggle/>
@@ -129,16 +132,19 @@ pub fn Footer(cx: Scope) -> impl IntoView {
                 ></path>
               </svg>
             </a>
-            <select on:change=move |ev| {
-                let v = event_target_value(&ev);
-                let l = Locale::from_str(&v).unwrap();
-                locale_rw.set(l);
-            }>
+            <select
+              class="focus:ring-0 border-0 background text-gray-400 bg-white dark:bg-slate-800"
+              on:change=move |ev| {
+                  let v = event_target_value(&ev);
+                  let l = Locale::from_str(&v).unwrap();
+                  locale_rw.set(l);
+              }
+            >
               {Locale::iter()
                   .map(|locale| {
-                      let value_str: &'static str = locale.as_str();
+                      let value: &'static str = locale.as_str();
                       view! { cx,
-                        <option value=value_str selected=locale == locale_rw.get()>
+                        <option value=value selected=locale == locale_rw.get()>
                           {locale.as_str()}
                         </option>
                       }
