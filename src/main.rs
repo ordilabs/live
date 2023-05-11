@@ -1,5 +1,7 @@
 use cfg_if::cfg_if;
 
+pub mod types;
+
 cfg_if! { if #[cfg(feature = "ssr")] {
     use crate::app::*;
     use leptos::*;
@@ -95,6 +97,8 @@ async fn sse_handler(
   TypedHeader(user_agent): TypedHeader<headers::UserAgent>,
   State(core): State<BitcoinCore>,
 ) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {
+  use crate::types::LiveEvent;
+
   tracing::debug!("`{}` connected", user_agent.as_str());
 
   let initial_block_count = core.get_block_count().await;

@@ -40,7 +40,7 @@ fn initial_locale(cx: Scope) -> Locale {
 type SetLocaleAction = Action<SetLocale, Result<Locale, ServerFnError>>;
 
 #[allow(dead_code)]
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub(crate) struct I18nContext {
   pub locale: Signal<Locale>,
   pub set_locale_action: SetLocaleAction,

@@ -31,6 +31,20 @@ impl Locale {
 pub enum T {
   HomeTitle,
   ForkGH,
+  Audio,
+  Audios,
+  Video,
+  Videos,
+  Pdf,
+  Pdfs,
+  Unknown,
+  Unknowns,
+  Image,
+  Images,
+  Text,
+  Texts,
+  Iframe,
+  Iframes,
 }
 
 pub type Translation = HashMap<T, &'static str>;

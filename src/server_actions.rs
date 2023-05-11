@@ -1,4 +1,4 @@
-use crate::app::{MempoolAllInfo, MempoolInfo};
+use crate::types::{LiveEvent, MempoolAllInfo, MempoolInfo};
 
 use super::*;
 use std::collections::HashMap;
@@ -141,7 +141,6 @@ pub(crate) async fn tick_bitcoin_core(
     .iter()
     .map(|(media, count)| {
       let bytes = media_bytes.get(media).unwrap_or(&0).to_owned();
-      // format!("{:?}: {} ({:.1} KiB)", media, count, bytes as f64 / 1024.)
       MempoolInfo {
         media: media.clone(),
         size: bytes,
@@ -149,6 +148,22 @@ pub(crate) async fn tick_bitcoin_core(
       }
     })
     .collect();
+  // TODO(sectore) For debugging only - will be removed in future
+  // mempool_info.push(MempoolInfo {
+  //   media: Media::Audio,
+  //   size: 350000,
+  //   count: 3,
+  // });
+  // mempool_info.push(MempoolInfo {
+  //   media: Media::Pdf,
+  //   size: 50000,
+  //   count: 11,
+  // });
+  // mempool_info.push(MempoolInfo {
+  //   media: Media::Iframe,
+  //   size: 5000,
+  //   count: 45,
+  // });
   let event = LiveEvent::MempoolInfo(mempool_info);
   _ = EVENT_CHANNEL.send(&event).await;
 

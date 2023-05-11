@@ -5,7 +5,7 @@ use leptos::*;
 
 use std::time::SystemTime;
 
-use crate::app::MempoolAllInfo;
+use crate::types::MempoolAllInfo;
 
 #[derive(Clone)]
 pub(crate) struct StreamContext {
