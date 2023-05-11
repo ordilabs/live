@@ -94,9 +94,8 @@ ssr = [
   "leptos/ssr",
   "leptos_axum",
 ]
-default = []
-# default = ["csr"]
-# csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr"]
+default = ["csr"]
+csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr"]
 hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
 
 [package.metadata.cargo-all-features]
