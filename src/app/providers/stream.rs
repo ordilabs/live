@@ -5,10 +5,12 @@ use leptos::*;
 
 use std::time::SystemTime;
 
+use crate::app::MempoolAllInfo;
+
 #[derive(Clone)]
 pub(crate) struct StreamContext {
   pub inscription: ReadSignal<Option<String>>,
-  pub info: ReadSignal<Option<String>>,
+  pub info: ReadSignal<Option<MempoolAllInfo>>,
   pub block: ReadSignal<Option<u64>>,
   pub time: ReadSignal<Option<SystemTime>>,
 }
@@ -50,7 +52,7 @@ pub fn provide_stream_context(cx: Scope) {
             .as_string()
             .expect("expected string value");
 
-          serde_json::from_str::<String>(s.as_str()).expect("expected String value")
+          serde_json::from_str::<MempoolAllInfo>(s.as_str()).unwrap_or(Vec::new())
         }),
       );
 
@@ -94,7 +96,7 @@ pub fn provide_stream_context(cx: Scope) {
     #[cfg(feature = "ssr")]
     let context = StreamContext {
       inscription: create_signal(cx, None::<String>).0,
-      info: create_signal(cx, None::<String>).0,
+      info: create_signal(cx, None::<MempoolAllInfo>).0,
       block: create_signal(cx, None::<u64>).0,
       time: create_signal(cx, None::<SystemTime>).0,
     };

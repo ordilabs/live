@@ -1,6 +1,7 @@
 use crate::app::components::*;
 use crate::app::i18n::T;
 use crate::app::providers::*;
+use crate::app::MempoolInfo;
 use leptos::*;
 
 #[component]
@@ -9,6 +10,8 @@ pub fn Home(cx: Scope) -> impl IntoView {
     info, inscription, ..
   } = use_context::<StreamContext>(cx).expect("Failed to get StreamContext");
   let i18n = use_context::<I18nContext>(cx).expect("Failed to get I18nContext");
+
+  let infos = move || info().unwrap_or(Vec::new());
 
   let initial_inscriptions: Vec<_> = (0..6).map(|n| format!("punk_{}.webp", n)).collect();
 
@@ -20,7 +23,13 @@ pub fn Home(cx: Scope) -> impl IntoView {
         ">{i18n.t(cx, T::HomeTitle)}</h1>
       </div>
       <div class="text-xs text-gray-900 dark:text-gray-100 empty:after:content-['\u{200b}'] empty:after:inline-block">
-        {info}
+        <For
+          each=move || { infos().into_iter().enumerate() }
+          key=|i| *i
+          view=move |cx, (_, MempoolInfo { media, count, size })| {
+              view! { cx, <p>{format!("{:?}: {} ({:.1} KiB)", media, count, size as f64 / 1024.)}</p> }
+          }
+        />
       </div>
       <LiveGrid initial_inscriptions inscription_id=inscription/>
     </div>

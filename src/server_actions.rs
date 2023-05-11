@@ -1,3 +1,5 @@
+use crate::app::{MempoolAllInfo, MempoolInfo};
+
 use super::*;
 use std::collections::HashMap;
 extern crate rand;
@@ -135,15 +137,19 @@ pub(crate) async fn tick_bitcoin_core(
     *media_bytes.entry(media).or_insert(0) += bytes;
   }
 
-  let mut mempool_info: Vec<_> = media_counts
+  let mempool_info: MempoolAllInfo = media_counts
     .iter()
-    .map(|(key, count)| {
-      let bytes = media_bytes.get(key).unwrap_or(&0).to_owned();
-      format!("{:?}: {} ({:.1} KiB)", key, count, bytes as f64 / 1024.)
+    .map(|(media, count)| {
+      let bytes = media_bytes.get(media).unwrap_or(&0).to_owned();
+      // format!("{:?}: {} ({:.1} KiB)", media, count, bytes as f64 / 1024.)
+      MempoolInfo {
+        media: media.clone(),
+        size: bytes,
+        count: count.to_owned(),
+      }
     })
     .collect();
-  mempool_info.sort();
-  let event = LiveEvent::MempoolInfo(mempool_info.join(" | "));
+  let event = LiveEvent::MempoolInfo(mempool_info);
   _ = EVENT_CHANNEL.send(&event).await;
 
   if broadcast.len() > 4 {
