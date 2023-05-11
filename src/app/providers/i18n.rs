@@ -61,13 +61,14 @@ impl I18nContext {
       if let Some(val) = translation(l).get(&key) {
         val.to_string()
       } else {
-        debug_warn!("(i18n::t) key not found: {:?}", key);
+        debug_warn!("(i18n::t) key not found: {:?}", &key);
         format!("{:?}", key)
       }
     })
   }
 }
 
+#[allow(dead_code)]
 pub fn provide_i18n_context(cx: Scope) {
   if use_context::<I18nContext>(cx).is_none() {
     let initial = initial_locale(cx);
