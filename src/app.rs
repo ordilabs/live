@@ -71,6 +71,13 @@ pub fn App(cx: Scope) -> impl IntoView {
 
   view! { cx,
     <Router>
+      <Body class=move || {
+          let theme = match theme_ctx.is_dark.get() {
+              true => "dark",
+              false => "",
+          };
+          format!("h-screen {theme}")
+      }/>
       <Meta name="twitter:card" content="summary_large_image"/>
       <Meta name="twitter:site" content="@Ordilabs_org"/>
       <Meta name="twitter:title" content="Ordinals Live"/>
@@ -81,30 +88,28 @@ pub fn App(cx: Scope) -> impl IntoView {
       <Meta name="twitter:image" content="https://live.ordilabs.org/ordilabs-logo-name-white.png"/>
       <Link rel="shortcut icon" href="/favicon.png"/>
       <Stylesheet id="leptos" href="/pkg/ordilabs_live.css"/>
-      <body class:dark=move || theme_ctx.is_dark.get() class="h-screen">
-        <div class="flex h-full flex-1 flex-col overflow-hidden bg-white dark:bg-slate-800">
-          <Header/>
-          <div class="flex flex-1 items-stretch overflow-hidden">
-            <main class="flex-1 overflow-y-auto">
-              <Routes>
-                <Route
-                  path="/"
-                  view=|cx| {
-                      view! { cx, <Home/> }
-                  }
-                />
-                <Route
-                  path="inscription/:id"
-                  view=|cx| {
-                      view! { cx, <Inscription/> }
-                  }
-                />
-              </Routes>
-            </main>
-          </div>
-          <Footer/>
+      <div class="flex h-full flex-1 flex-col overflow-hidden bg-white dark:bg-slate-800">
+        <Header/>
+        <div class="flex flex-1 items-stretch overflow-hidden">
+          <main class="flex-1 overflow-y-auto">
+            <Routes>
+              <Route
+                path="/"
+                view=|cx| {
+                    view! { cx, <Home/> }
+                }
+              />
+              <Route
+                path="inscription/:id"
+                view=|cx| {
+                    view! { cx, <Inscription/> }
+                }
+              />
+            </Routes>
+          </main>
         </div>
-      </body>
+        <Footer/>
+      </div>
     </Router>
   }
 }
