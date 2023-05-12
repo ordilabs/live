@@ -1,0 +1,6 @@
+[book]
+authors = ["FelixWeis"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Ordi Labs Handbook"
