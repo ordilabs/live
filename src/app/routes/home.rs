@@ -1,7 +1,7 @@
 use crate::app::components::*;
 use crate::app::i18n::T;
 use crate::app::providers::*;
-use crate::types::MempoolInfo;
+use crate::types::MempoolAllInfo;
 use leptos::*;
 use ord_labs::Media;
 
@@ -12,7 +12,7 @@ pub fn Home(cx: Scope) -> impl IntoView {
   } = use_context::<StreamContext>(cx).expect("Failed to get StreamContext");
   let i18n = use_context::<I18nContext>(cx).expect("Failed to get I18nContext");
 
-  let infos = move || info().unwrap_or(Vec::new());
+  let infos = create_memo::<MempoolAllInfo>(cx, move |_| info().unwrap_or(Vec::new()));
 
   let initial_inscriptions: Vec<_> = (0..6).map(|n| format!("punk_{}.webp", n)).collect();
 
@@ -90,30 +90,28 @@ pub fn Home(cx: Scope) -> impl IntoView {
         before:mr-2 before:block before:w-6 before:h-6 before:border-4 before:rounded-full before:border-red-500 mr-2 mb-4
         ">{i18n.clone().t(cx, T::HomeTitle)}</h1>
       </div>
-      <div class="flex flex-wrap text-base text-gray-600 dark:text-gray-100 empty:after:content-['\u{200b}'] empty:after:inline-block empty:after:h-6">
+      <div class="flex flex-wrap text-base text-gray-600 dark:text-gray-100">
         <Show
           when=move || info().is_some()
-          fallback=|cx| {
-              view! { cx,
-                <div class="pl-2 py-1">
-                  <IconLoader/>
-                </div>
-              }
-          }
+          fallback=|cx| view! {cx, <div class="pl-2 py-1"><IconLoader/></div>}
         >
-          <For
-            each=move || { infos().into_iter().enumerate() }
-            key=|i| *i
-            view=move |cx, (_, MempoolInfo { media, count, size })| {
+          <div class="empty:after:content-['\u{200b}'] empty:after:inline-block empty:after:h-6">
+            <For
+              each=infos
+              key=|m| format!{"{:?}-{}", &m.media, m.count}
+              view=move |cx, m| {
+                let icon = move || get_icon(cx, &m.media);
+                let count = move || format!("{}", m.count);
+                let label = move || i18n.clone().t(cx, get_label(&m.media, m.count));
+                let size = move || format!("({:.1} kB)", m.size as f64 / 1024.0);
                 view! { cx,
                   <div class="flex items-center pl-2 pr-4">
-                    {get_icon(cx, &media)} " " {format!("{count}")} " "
-                    {i18n.clone().t(cx, get_label(&media, count))} " "
-                    {format!("({:.1} kB)", size as f64 / 1024.0)}
+                    {icon()}" "{count()}" "{label()}" "{size()}
                   </div>
                 }
-            }
-          />
+              }
+            />
+          </div>
         </Show>
       </div>
       <LiveGrid initial_inscriptions inscription_id=inscription/>
