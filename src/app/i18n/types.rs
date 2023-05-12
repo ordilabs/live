@@ -12,7 +12,7 @@ pub enum Locale {
   #[default]
   En,
   De,
-  // Chinese (Simplify)
+  // Chinese (Simplified)
   ZnHans,
   // Chinese (Traditional)
   ZnHant,
