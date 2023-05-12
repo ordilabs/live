@@ -1,27 +1,33 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use strum::{EnumIter, EnumString};
+use strum::{AsRefStr, EnumIter, EnumString};
 
 #[allow(dead_code)]
 #[derive(
-  Clone, EnumIter, EnumString, Debug, PartialEq, Eq, Default, Serialize, Deserialize, Copy,
+  Clone, EnumIter, AsRefStr, EnumString, Debug, PartialEq, Eq, Default, Serialize, Deserialize, Copy,
 )]
+#[strum(serialize_all = "kebab-case")]
+#[serde(rename_all = "kebab-case")]
 pub enum Locale {
   #[default]
-  EN,
-  DE,
-  ZN,
-  HI,
+  En,
+  De,
+  // Chinese (Simplify)
+  ZnHans,
+  // Chinese (Traditional)
+  ZnHant,
+  Hi,
 }
 
 #[allow(dead_code)]
 impl Locale {
-  pub fn as_str(&self) -> &'static str {
+  pub fn to_label(&self) -> &'static str {
     match self {
-      Locale::EN => "EN",
-      Locale::DE => "DE",
-      Locale::ZN => "ZN",
-      Locale::HI => "HI",
+      Locale::En => "EN",
+      Locale::De => "DE",
+      Locale::ZnHans => "简体",
+      Locale::ZnHant => "繁體",
+      Locale::Hi => "HI",
     }
   }
 }

@@ -81,11 +81,14 @@ pub fn Footer(cx: Scope) -> impl IntoView {
                 onchange="this.form.requestSubmit()"
               >
                 {Locale::iter()
+                    // Disabled HI temporary (we do need all translation before re-enabling again)
+                    .filter(|l| *l != Locale::Hi)
                     .map(|l| {
-                        let value: &'static str = l.as_str();
-                        view! { cx,
+                      let value = l.as_ref();
+                      let label = l.to_label();
+                      view! { cx,
                           <option key=value value=value selected=l == locale()>
-                            {value}
+                          {format!{"{label}"}}
                           </option>
                         }
                     })

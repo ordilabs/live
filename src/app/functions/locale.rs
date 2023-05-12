@@ -10,7 +10,7 @@ pub async fn set_locale(
   use axum::http::header::{HeaderMap, HeaderValue, SET_COOKIE};
   use leptos_axum::{ResponseOptions, ResponseParts};
 
-  let locale_str = locale.as_str();
+  let locale_str = locale.as_ref();
   let response =
     use_context::<ResponseOptions>(cx).expect("to have leptos_axum::ResponseOptions provided");
   let mut response_parts = ResponseParts::default();

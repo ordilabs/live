@@ -90,7 +90,7 @@ pub fn Home(cx: Scope) -> impl IntoView {
         before:mr-2 before:block before:w-6 before:h-6 before:border-4 before:rounded-full before:border-red-500 mr-2 mb-4
         ">{i18n.clone().t(cx, T::HomeTitle)}</h1>
       </div>
-      <div class="flex flex-wrap text-base text-gray-600 dark:text-gray-100">
+      <div class="flex flex-wrap text-base text-gray-600 dark:text-gray-100 empty:after:content-['\u{200b}'] empty:after:inline-block empty:after:h-6">
         <Show
           when=move || info().is_some()
           fallback=|cx| {
