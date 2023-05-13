@@ -1,5 +1,7 @@
 use cfg_if::cfg_if;
 
+pub mod types;
+
 cfg_if! { if #[cfg(feature = "ssr")] {
     use crate::app::*;
     use leptos::*;
@@ -95,6 +97,8 @@ async fn sse_handler(
   TypedHeader(user_agent): TypedHeader<headers::UserAgent>,
   State(core): State<BitcoinCore>,
 ) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {
+  use crate::types::LiveEvent;
+
   tracing::debug!("`{}` connected", user_agent.as_str());
 
   let initial_block_count = core.get_block_count().await;
@@ -177,12 +181,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 #[cfg(feature = "ssr")]
 // #[tracing::instrument]
 async fn spawn_app() {
-  use axum::{routing::get, Router};
   use axum_otel_metrics::HttpMetricsLayerBuilder;
   use tower_http::services::ServeDir;
   let metrics = HttpMetricsLayerBuilder::new().build();
 
-  crate::app::register_server_functions();
+  crate::app::functions::register_server_functions();
 
   // Setting this to None means we'll be using cargo-leptos and its env vars.
   // when not using cargo-leptos None must be replaced with Some("Cargo.toml")
