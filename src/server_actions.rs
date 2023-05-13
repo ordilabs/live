@@ -1,5 +1,8 @@
+use crate::types::{LiveEvent, MempoolAllInfo, MempoolInfo};
+
 use super::*;
 use std::collections::HashMap;
+use std::mem;
 extern crate rand;
 
 use rand::seq::IteratorRandom;
@@ -81,7 +84,14 @@ pub(crate) async fn tick_bitcoin_core(
   let tick_retain = std::time::Instant::now();
   if ordipool.len() > mpr.len() {
     let txid: Vec<_> = mpr.iter().map(|entry| &entry.txid).collect();
-    ordipool.retain(|key, _| txid.contains(&key));
+
+    let mut new_ordipool: HashMap<String, Option<Inscription>> = HashMap::with_capacity(txid.len());
+    for txid in txid.iter() {
+      let txid = txid.to_string();
+      new_ordipool.insert(txid.clone(), ordipool.get(&txid).unwrap().clone());
+    }
+
+    mem::swap(ordipool, &mut new_ordipool);
   }
   let duration_retain = std::time::Instant::now() - tick_retain;
 
@@ -135,15 +145,34 @@ pub(crate) async fn tick_bitcoin_core(
     *media_bytes.entry(media).or_insert(0) += bytes;
   }
 
-  let mut mempool_info: Vec<_> = media_counts
+  let mempool_info: MempoolAllInfo = media_counts
     .iter()
-    .map(|(key, count)| {
-      let bytes = media_bytes.get(key).unwrap_or(&0).to_owned();
-      format!("{:?}: {} ({:.1} KiB)", key, count, bytes as f64 / 1024.)
+    .map(|(media, count)| {
+      let bytes = media_bytes.get(media).unwrap_or(&0).to_owned();
+      MempoolInfo {
+        media: media.clone(),
+        size: bytes,
+        count: count.to_owned(),
+      }
     })
     .collect();
-  mempool_info.sort();
-  let event = LiveEvent::MempoolInfo(mempool_info.join(" | "));
+  // TODO(sectore) For debugging only - will be removed in future
+  // mempool_info.push(MempoolInfo {
+  //   media: Media::Audio,
+  //   size: 350000,
+  //   count: 3,
+  // });
+  // mempool_info.push(MempoolInfo {
+  //   media: Media::Pdf,
+  //   size: 50000,
+  //   count: 11,
+  // });
+  // mempool_info.push(MempoolInfo {
+  //   media: Media::Iframe,
+  //   size: 5000,
+  //   count: 45,
+  // });
+  let event = LiveEvent::MempoolInfo(mempool_info);
   _ = EVENT_CHANNEL.send(&event).await;
 
   if broadcast.len() > 4 {

@@ -82,10 +82,15 @@ pub fn Footer(cx: Scope) -> impl IntoView {
               >
                 {Locale::iter()
                     .map(|l| {
-                        let value: &'static str = l.as_str();
+                        let value = l.as_ref();
+                        let label = l.to_label();
                         view! { cx,
                           <option key=value value=value selected=l == locale()>
-                            {value}
+                            {
+                                format! {
+                                    "{label}"
+                                }
+                            }
                           </option>
                         }
                     })
