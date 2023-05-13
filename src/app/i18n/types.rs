@@ -27,7 +27,7 @@ impl Locale {
       Locale::De => "DE",
       Locale::ZnHans => "简体",
       Locale::ZnHant => "繁體",
-      Locale::Hi => "HI",
+      Locale::Hi => "हिंदी",
     }
   }
 }
