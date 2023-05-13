@@ -6,6 +6,7 @@ pub mod backend;
 pub use leptos::*;
 pub mod error_template;
 pub mod errors;
+pub mod types;
 
 // Needs to be in lib.rs AFAIK because wasm-bindgen needs us to be compiling a lib. I may be wrong.
 cfg_if! {

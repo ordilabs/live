@@ -13,22 +13,13 @@ mod providers;
 mod routes;
 
 #[cfg(feature = "ssr")]
+use crate::types::LiveEvent;
+
+#[cfg(feature = "ssr")]
 use broadcaster::BroadcastChannel;
 
 #[cfg(feature = "ssr")]
-#[derive(Clone, Debug)]
-pub enum LiveEvent {
-  NewInscription(String),
-  RandomInscription(String),
-  MempoolInfo(String),
-  BlockCount(u64),
-  // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
-  ServerTime(std::time::SystemTime),
-}
-
-#[cfg(feature = "ssr")]
 lazy_static::lazy_static! {
-    pub static ref COUNT_CHANNEL: BroadcastChannel<i32> = BroadcastChannel::new();
     pub static ref INSCRIPTION_CHANNEL: BroadcastChannel<String> = BroadcastChannel::new();
     pub static ref EVENT_CHANNEL: BroadcastChannel<LiveEvent> = BroadcastChannel::new();
 }
