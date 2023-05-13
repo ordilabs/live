@@ -14,7 +14,7 @@ pub fn translation() -> Translation {
     T::Image => "छवि",
     T::Images => "छवियाँ",
     T::Pdf => "PDF",
-    T::Pdfs => "PDF's",
+    T::Pdfs => "PDFs",
     T::Unknown => "अज्ञात",
     T::Unknowns => "अज्ञात",
     T::Text => "पाठ",
