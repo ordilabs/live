@@ -81,7 +81,6 @@ pub fn Footer(cx: Scope) -> impl IntoView {
                 onchange="this.form.requestSubmit()"
               >
                 {Locale::iter()
-                    .filter(|l| *l != Locale::Hi)
                     .map(|l| {
                         let value = l.as_ref();
                         let label = l.to_label();
