@@ -93,22 +93,32 @@ pub fn Home(cx: Scope) -> impl IntoView {
       <div class="flex flex-wrap text-base text-gray-600 dark:text-gray-100">
         <Show
           when=move || info().is_some()
-          fallback=|cx| view! {cx, <div class="pl-2 py-1"><IconLoader/></div>}
+          fallback=|cx| {
+              view! { cx,
+                <div class="pl-2 py-1">
+                  <IconLoader/>
+                </div>
+              }
+          }
         >
           <div class="empty:after:content-['\u{200b}'] empty:after:inline-block empty:after:h-6">
             <For
               each=infos
-              key=|m| format!{"{:?}-{}", &m.media, m.count}
+              key=|m| {
+                  format! {
+                      "{:?}-{}", & m.media, m.count
+                  }
+              }
               view=move |cx, m| {
-                let icon = move || get_icon(cx, &m.media);
-                let count = move || format!("{}", m.count);
-                let label = move || i18n.clone().t(cx, get_label(&m.media, m.count));
-                let size = move || format!("({:.1} kB)", m.size as f64 / 1024.0);
-                view! { cx,
-                  <div class="flex items-center pl-2 pr-4">
-                    {icon()}" "{count()}" "{label()}" "{size()}
-                  </div>
-                }
+                  let icon = move || get_icon(cx, &m.media);
+                  let count = move || format!("{}", m.count);
+                  let label = move || i18n.clone().t(cx, get_label(&m.media, m.count));
+                  let size = move || format!("({:.1} kB)", m.size as f64 / 1024.0);
+                  view! { cx,
+                    <div class="flex items-center pl-2 pr-4">
+                      {icon()} " " {count()} " " {label()} " " {size()}
+                    </div>
+                  }
               }
             />
           </div>

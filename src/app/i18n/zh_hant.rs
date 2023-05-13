@@ -2,7 +2,7 @@ use common_macros::hash_map;
 
 use super::types::{Translation, T};
 
-// Chinese (Traditional)
+// 繁體中文 (Traditional Chinese)
 pub fn translation() -> Translation {
   hash_map!(
     T::HomeTitle => "預期的銘文",

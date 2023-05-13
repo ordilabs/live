@@ -2,7 +2,7 @@ use common_macros::hash_map;
 
 use super::types::{Translation, T};
 
-#[allow(dead_code)]
+// English
 pub fn translation() -> Translation {
   hash_map!(
     T::HomeTitle => "Anticipated inscriptions",
