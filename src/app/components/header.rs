@@ -1,9 +1,7 @@
 use crate::app::components::{ThemeToggle, ThemeToggleProps};
-use crate::app::i18n::T;
+use crate::app::i18n::{I18nContext, T};
 use leptos::*;
 use leptos_router::*;
-
-use crate::app::providers::*;
 
 #[component]
 pub fn Header(cx: Scope) -> impl IntoView {

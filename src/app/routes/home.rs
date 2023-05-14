@@ -1,5 +1,5 @@
 use crate::app::components::*;
-use crate::app::i18n::T;
+use crate::app::i18n::{I18nContext, T};
 use crate::app::providers::*;
 use crate::types::MempoolAllInfo;
 use leptos::*;

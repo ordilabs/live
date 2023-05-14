@@ -1,7 +1,7 @@
-use crate::app::functions::SetLocale;
 use leptos::*;
 
-use crate::app::i18n::{translation, Locale, T};
+use crate::app::functions::SetLocale;
+use crate::app::i18n::{I18nContext, Locale};
 
 #[allow(dead_code)]
 #[cfg(not(feature = "ssr"))]
@@ -35,37 +35,6 @@ fn initial_locale(cx: Scope) -> Locale {
         .and_then(|c| Locale::from_str(&c.value()).ok());
     })
     .unwrap_or_default()
-}
-
-type SetLocaleAction = Action<SetLocale, Result<Locale, ServerFnError>>;
-
-#[allow(dead_code)]
-#[derive(Clone, Copy)]
-pub(crate) struct I18nContext {
-  pub locale: Signal<Locale>,
-  pub set_locale_action: SetLocaleAction,
-}
-
-#[allow(dead_code)]
-impl I18nContext {
-  pub fn new(locale: Signal<Locale>, set_locale_action: SetLocaleAction) -> Self {
-    Self {
-      locale,
-      set_locale_action,
-    }
-  }
-
-  pub fn t(self, cx: Scope, key: T) -> Memo<String> {
-    create_memo(cx, move |_| {
-      let l = self.locale.get();
-      if let Some(val) = translation(l).get(&key) {
-        val.to_string()
-      } else {
-        debug_warn!("(i18n::t) key not found: {:?}", &key);
-        format!("{:?}", key)
-      }
-    })
-  }
 }
 
 #[allow(dead_code)]

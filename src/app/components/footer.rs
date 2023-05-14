@@ -1,4 +1,4 @@
-use crate::app::i18n::Locale;
+use crate::app::i18n::{I18nContext, Locale};
 use leptos::*;
 use leptos_router::*;
 use strum::IntoEnumIterator;
