@@ -85,12 +85,12 @@ pub fn Home(cx: Scope) -> impl IntoView {
 
   view! { cx,
     <div class="content py-8">
-      <div class="flex">
+      <div class="flex justify-center md:justify-start">
         <h1 class="flex items-center text-2xl font-bold text-gray-900 dark:text-gray-100
         before:mr-2 before:block before:w-6 before:h-6 before:border-4 before:rounded-full before:border-red-500 mr-2 mb-4
         ">{i18n.clone().t(cx, T::HomeTitle)}</h1>
       </div>
-      <div class="flex flex-wrap text-base text-gray-600 dark:text-gray-100">
+      <div class="text-base text-gray-600 dark:text-gray-100">
         <Show
           when=move || info().is_some()
           fallback=|cx| {
@@ -101,7 +101,7 @@ pub fn Home(cx: Scope) -> impl IntoView {
               }
           }
         >
-          <div class="empty:after:content-['\u{200b}'] empty:after:inline-block empty:after:h-6">
+          <div class="flex md:flex-wrap justify-center md:justify-start empty:after:content-['\u{200b}'] empty:after:inline-block empty:after:h-6">
             <For
               each=infos
               key=|m| {
