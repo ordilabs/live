@@ -54,3 +54,5 @@ pub enum T {
 }
 
 pub type Translation = HashMap<T, &'static str>;
+
+pub type TranslationArgs = HashMap<&'static str, String>;

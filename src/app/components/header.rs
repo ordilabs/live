@@ -1,12 +1,11 @@
 use crate::app::components::{ThemeToggle, ThemeToggleProps};
-use crate::app::i18n::{I18nContext, T};
+use crate::app::i18n::T;
+use crate::t;
 use leptos::*;
 use leptos_router::*;
 
 #[component]
 pub fn Header(cx: Scope) -> impl IntoView {
-  let i18n = use_context::<I18nContext>(cx).expect("Failed to get I18nContext");
-
   view! { cx,
     <header class="w-full">
       <nav class="bg-gray-800">
@@ -48,7 +47,7 @@ pub fn Header(cx: Scope) -> impl IntoView {
                       clip-rule="evenodd"
                     ></path>
                   </svg>
-                  {i18n.t(cx, T::ForkGH)}
+                  {t!(cx, T::ForkGH)}
                 </a>
               </div>
               <ThemeToggle/>

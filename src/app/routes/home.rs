@@ -1,5 +1,5 @@
 use crate::app::components::*;
-use crate::app::i18n::{I18nContext, T};
+use crate::app::i18n::T;
 use crate::app::providers::*;
 use crate::types::MempoolAllInfo;
 use leptos::*;
@@ -10,7 +10,6 @@ pub fn Home(cx: Scope) -> impl IntoView {
   let StreamContext {
     info, inscription, ..
   } = use_context::<StreamContext>(cx).expect("Failed to get StreamContext");
-  let i18n = use_context::<I18nContext>(cx).expect("Failed to get I18nContext");
 
   let infos = create_memo::<MempoolAllInfo>(cx, move |_| info().unwrap_or(Vec::new()));
 
@@ -88,7 +87,7 @@ pub fn Home(cx: Scope) -> impl IntoView {
       <div class="flex">
         <h1 class="flex items-center text-2xl font-bold text-gray-900 dark:text-gray-100
         before:mr-2 before:block before:w-6 before:h-6 before:border-4 before:rounded-full before:border-red-500 mr-2 mb-4
-        ">{i18n.clone().t(cx, T::HomeTitle)}</h1>
+        ">{t!(cx, T::HomeTitle)}</h1>
       </div>
       <div class="flex flex-wrap text-base text-gray-600 dark:text-gray-100">
         <Show
@@ -112,7 +111,10 @@ pub fn Home(cx: Scope) -> impl IntoView {
               view=move |cx, m| {
                   let icon = move || get_icon(cx, &m.media);
                   let count = move || format!("{}", m.count);
-                  let label = move || i18n.clone().t(cx, get_label(&m.media, m.count));
+                  let label = move || {
+                      let l = get_label(&m.media, m.count);
+                      t!(cx, l)
+                  };
                   let size = move || format!("({:.1} kB)", m.size as f64 / 1024.0);
                   view! { cx,
                     <div class="flex items-center pl-2 pr-4">
