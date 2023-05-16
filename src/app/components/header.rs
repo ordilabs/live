@@ -1,4 +1,4 @@
-use crate::app::components::{ThemeToggle, ThemeToggleProps};
+use crate::app::components::ThemeToggle;
 use crate::app::i18n::T;
 use crate::t;
 use leptos::*;

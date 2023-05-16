@@ -6,7 +6,7 @@ cfg_if! {
     use leptos::*;
 
     #[server(GetInscriptionDetails, "/api")]
-    pub async fn get_inscription_details(id: String) -> Result<i32, ServerFnError> {
+    pub async fn get_inscription_details(_id: String) -> Result<i32, ServerFnError> {
         Ok(42)
     }
   }

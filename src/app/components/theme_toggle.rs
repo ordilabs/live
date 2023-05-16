@@ -1,13 +1,13 @@
 use crate::app::providers::ThemeContext;
 use leptos::*;
-use leptos_router::{ActionForm, ActionFormProps};
+use leptos_router::ActionForm;
 
 #[component]
 pub fn ThemeToggle(cx: Scope) -> impl IntoView {
   let ThemeContext {
     set_dark_action,
     is_dark,
-  } = use_context::<ThemeContext>(cx).expect("Failed to get ThemeContext");
+  } = expect_context::<ThemeContext>(cx);
 
   view! { cx,
     <ActionForm action=set_dark_action>

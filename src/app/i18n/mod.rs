@@ -8,7 +8,7 @@ mod zh_hant;
 mod types;
 
 pub use context::*;
-use leptos::{use_context, Memo, Scope};
+use leptos::{expect_context, Memo, Scope};
 pub use types::*;
 
 #[allow(dead_code)]
@@ -24,13 +24,13 @@ pub fn translation(l: Locale) -> Translation {
 
 #[allow(dead_code)]
 pub fn t_macro(cx: Scope, t: T) -> Memo<String> {
-  let i18n: I18nContext = use_context::<I18nContext>(cx).expect("Failed to get I18nContext");
+  let i18n: I18nContext = expect_context::<I18nContext>(cx);
   i18n.translate(cx, t, None)
 }
 
 #[allow(dead_code)]
 pub fn t_macro_with_args(cx: Scope, t: T, args: TranslationArgs) -> Memo<String> {
-  let i18n: I18nContext = use_context::<I18nContext>(cx).expect("Failed to get I18nContext");
+  let i18n: I18nContext = expect_context::<I18nContext>(cx);
   i18n.translate(cx, t, Some(args))
 }
 
