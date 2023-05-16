@@ -8,6 +8,7 @@ use leptos_router::*;
 
 mod components;
 pub mod functions;
+#[macro_use]
 pub mod i18n;
 mod providers;
 mod routes;
