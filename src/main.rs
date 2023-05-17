@@ -124,11 +124,6 @@ async fn sse_handler(
       let s = serde_json::to_string(&data).unwrap();
       Ok(Event::default().event("block").data(&s.as_str()))
     }
-    // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
-    LiveEvent::ServerTime(data) => {
-      let s = serde_json::to_string(&data).unwrap();
-      Ok(Event::default().event("time").data(&s.as_str()))
-    }
   });
 
   Sse::new(stream).keep_alive(

@@ -32,6 +32,4 @@ pub enum LiveEvent {
   RandomInscription(String),
   MempoolInfo(MempoolAllInfo),
   BlockCount(u64),
-  // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
-  ServerTime(std::time::SystemTime),
 }

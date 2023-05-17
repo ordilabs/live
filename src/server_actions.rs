@@ -29,11 +29,6 @@ pub(crate) async fn tick_bitcoin_core(
   let block_count = backend.get_block_count().await;
   tracing::info!(?block_count);
 
-  // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
-  let t = std::time::SystemTime::now();
-  let event = LiveEvent::ServerTime(t);
-  _ = EVENT_CHANNEL.send(&event).await;
-
   let event = LiveEvent::BlockCount(block_count);
   _ = EVENT_CHANNEL.send(&event).await;
 
