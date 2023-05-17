@@ -6,7 +6,6 @@ cfg_if! { if #[cfg(feature = "ssr")] {
     use crate::app::*;
     use leptos::*;
     mod backend;
-    use backend::Backend;
     extern crate ord_labs;
     use ord_labs::Inscription;
     use std::collections::HashMap;
@@ -234,32 +233,16 @@ async fn spawn_app() {
 // #[tracing::instrument]
 pub async fn spawn_server_ticks() {
   let mut ordipool: HashMap<String, Option<Inscription>> = HashMap::new();
-  let backend = std::env::var("BACKEND")
-    .unwrap_or("bitcoin_core".to_string())
-    .to_lowercase();
-  //let backend_str = backend.as_str();
-  let backend_space = backend::Space::new();
-  let backend_bitcoin_core = backend::BitcoinCore::new();
+
+  let backend = backend::BitcoinCore::new();
 
   // todo: print more relevant config stuff
-  tracing::info!(?backend_bitcoin_core);
+  tracing::info!(?backend);
 
   let mut interval = tokio::time::interval(std::time::Duration::from_millis(3142));
   loop {
     interval.tick().await;
-    //log!("tick2");
-    //runs += 1;
-    //let punk = format!("punk_{}.webp", &runs);
-    //INSCRIPTION_CHANNEL.send(&punk).await.unwrap();
-    if backend == "space" {
-      server_actions::tick_space(&backend_space, &mut ordipool).await;
-    } else if backend == "bitcoin_core" {
-      server_actions::tick_bitcoin_core(&backend_bitcoin_core, &mut ordipool).await;
-    } else {
-      panic!("Unknown backend");
-    }
-    //server_actions::tick(&backend, &mut ordipool).await;
-    // do something
+    server_actions::tick_bitcoin_core(&backend, &mut ordipool).await;
   }
 }
 

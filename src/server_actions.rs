@@ -8,7 +8,7 @@ use rand::seq::IteratorRandom;
 
 use ord_labs::{Inscription, Media};
 
-use backend::{Backend, BitcoinCore, Space};
+use backend::BitcoinCore;
 use serde::*;
 
 use axum::http::{header, HeaderMap, StatusCode};
@@ -18,37 +18,6 @@ use axum::{extract::Path, response::IntoResponse};
 #[derive(Deserialize)]
 pub struct Content {
   pub inscription_id: String,
-}
-
-pub(crate) async fn tick_space(
-  backend: &Space,
-  ordipool: &mut HashMap<String, Option<Inscription>>,
-) {
-  let mpr = backend.recent().await.ok();
-
-  let mut mpr_len = 0;
-  match mpr {
-    Some(mpr) => {
-      mpr_len = mpr.len();
-      for entry in mpr {
-        let txid = entry.txid;
-        if ordipool.contains_key(&txid) {
-          continue;
-        }
-        let maybe_inscription = backend.maybe_inscription(&txid).await.unwrap();
-        if maybe_inscription.is_some() {
-          let event = LiveEvent::RandomInscription(format!("{}i0", &txid));
-          _ = EVENT_CHANNEL.send(&event).await;
-        }
-        _ = ordipool.entry(txid.clone()).or_insert(maybe_inscription);
-
-        //dbg!("broadcasting {}", &txid);
-      }
-    }
-    _ => {}
-  }
-
-  log!("tick space, {}", &mpr_len);
 }
 
 // #[tracing::instrument]

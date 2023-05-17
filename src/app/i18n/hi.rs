@@ -21,5 +21,18 @@ pub fn translation() -> Translation {
     T::Texts => "पाठ",
     T::Iframe => "आईफ्रेम",
     T::Iframes => "आईफ्रेम",
+    T::Id => "पहचान",
+    T::Address => "पता",
+    T::OutputValue => "आउटपुट मूल्य",
+    T::Sat => "सैट",
+    T::ContentLength => "कन्टेन्ट लंबाई",
+    T::ContentType => "कन्टेन्ट प्रकार",
+    T::TimeStamp => "समय छाप",
+    T::GenesisHeight => "जन्म ऊंचाई",
+    T::GenesisFee => "जन्म शुल्क",
+    T::GenesisTx => "जन्म लेनदेन",
+    T::Location => "स्थान",
+    T::Output => "आउटपुट",
+    T::Offset => "ऑफ़सेट",
   )
 }
