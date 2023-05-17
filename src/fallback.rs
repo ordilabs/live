@@ -13,7 +13,7 @@ use tower::ServiceExt;
 use tower_http::services::ServeDir;
 use std::sync::Arc;
 use leptos::{LeptosOptions, view};
-use crate::app::{App, AppProps};
+use crate::app::{App};
 
 }}
 

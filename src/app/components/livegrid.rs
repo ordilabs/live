@@ -45,7 +45,7 @@ pub fn LiveGrid(
       return;
     }
 
-    let next_value = next.clone().unwrap();
+    let next_value = next.unwrap();
 
     let item_id = next_item_id() % max_item_id;
     next_item_id.update_value(|id| *id += 1);

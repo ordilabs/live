@@ -25,7 +25,7 @@ pub fn replace(trans: String, args: &TranslationArgs) -> String {
     // Replace `${<k>}` -> `v`
     trans = trans.replace(&format!("{{${}}}", k), v);
   }
-  trans.to_owned()
+  trans
 }
 
 #[allow(dead_code)]
@@ -44,7 +44,7 @@ impl I18nContext {
         if let Some(args) = &args {
           trans = replace(trans.clone(), args);
         }
-        trans.to_string()
+        trans
       }
       None => {
         debug_warn!("(i18n::t) key not found: {:?}", &t);

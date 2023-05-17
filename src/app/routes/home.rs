@@ -9,7 +9,7 @@ use ord_labs::Media;
 pub fn Home(cx: Scope) -> impl IntoView {
   let StreamContext {
     info, inscription, ..
-  } = use_context::<StreamContext>(cx).expect("Failed to get StreamContext");
+  } = expect_context::<StreamContext>(cx);
 
   let infos = create_memo::<MempoolAllInfo>(cx, move |_| info().unwrap_or(Vec::new()));
 

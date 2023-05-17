@@ -11,8 +11,7 @@ pub async fn set_locale(
   use leptos_axum::{ResponseOptions, ResponseParts};
 
   let locale_str = locale.as_ref();
-  let response =
-    use_context::<ResponseOptions>(cx).expect("to have leptos_axum::ResponseOptions provided");
+  let response = expect_context::<ResponseOptions>(cx);
   let mut response_parts = ResponseParts::default();
   let mut headers = HeaderMap::new();
   headers.insert(

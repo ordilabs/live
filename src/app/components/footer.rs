@@ -12,12 +12,12 @@ pub fn Footer(cx: Scope) -> impl IntoView {
     // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
     time,
     ..
-  } = use_context::<StreamContext>(cx).expect("Failed to get StreamContext");
+  } = expect_context::<StreamContext>(cx);
 
   let I18nContext {
     locale,
     set_locale_action,
-  } = use_context::<I18nContext>(cx).expect("Failed to get I18nContext");
+  } = expect_context::<I18nContext>(cx);
 
   let current = move || match time.get() {
     None => String::from("--"),
@@ -82,10 +82,10 @@ pub fn Footer(cx: Scope) -> impl IntoView {
               >
                 {Locale::iter()
                     .map(|l| {
-                        let value = l.as_ref();
+                        let value = l.as_ref().to_string();
                         let label = l.to_label();
                         view! { cx,
-                          <option key=value value=value selected=l == locale()>
+                          <option key=&value value=value selected=l == locale()>
                             {
                                 format! {
                                     "{label}"

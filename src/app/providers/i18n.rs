@@ -13,9 +13,8 @@ fn initial_locale(_cx: Scope) -> Locale {
   let cookies = doc.cookie().unwrap_or_default();
 
   for cookie in cookies.split("; ") {
-    let trim_by = format!("locale=");
-    if let Some(value) = cookie.strip_prefix(trim_by.as_str()) {
-      return Locale::from_str(&value).unwrap_or_default();
+    if let Some(value) = cookie.strip_prefix("locale=") {
+      return Locale::from_str(value).unwrap_or_default();
     }
   }
 
