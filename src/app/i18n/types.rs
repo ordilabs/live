@@ -51,6 +51,19 @@ pub enum T {
   Texts,
   Iframe,
   Iframes,
+  Id,
+  Address,
+  OutputValue,
+  Sat,
+  ContentLength,
+  ContentType,
+  TimeStamp,
+  GenesisHeight,
+  GenesisFee,
+  GenesisTx,
+  Location,
+  Output,
+  Offset,
 }
 
 pub type Translation = HashMap<T, &'static str>;

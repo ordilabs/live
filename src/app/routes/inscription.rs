@@ -1,5 +1,6 @@
 use crate::app::components::preview::*;
 
+use crate::app::i18n::T;
 use leptos::*;
 use leptos_router::*;
 
@@ -77,57 +78,57 @@ pub fn Inscription(cx: Scope) -> impl IntoView {
                       </button>
                     </div>
                     <Container>
-                      <Title>"id"</Title>
+                      <Title>{t!(cx, T::Id)}</Title>
                       <Label>{&id()}</Label>
                     </Container>
                     {if isDev {
                         view! { cx,
                           <Container>
-                            <Title>"address"</Title>
+                            <Title>{t!(cx, T::Address)}</Title>
                             <Label>"bc1pz4kvfpurqc2hwgrq0nwtfve2lfxvdpfcdpzc6ujchyr3ztj6gd9sfr6ayf"</Label>
                           </Container>
                           <Container>
-                            <Title>"output value"</Title>
+                            <Title>{t!(cx, T::OutputValue)}</Title>
                             <Label>"10000"</Label>
                           </Container>
                           <Container>
-                            <Title>"sat"</Title>
+                            <Title>{t!(cx, T::Sat)}</Title>
                             <Label>"1252201400444387"</Label>
                           </Container>
                           <Container>
-                            <Title>"content length"</Title>
+                            <Title>{t!(cx, T::ContentLength)}</Title>
                             <Label>"793 bytes"</Label>
                           </Container>
                           <Container>
-                            <Title>"content type"</Title>
+                            <Title>{t!(cx, T::ContentType)}</Title>
                             <Label>"image/png"</Label>
                           </Container>
                           <Container>
-                            <Title>"time stamp"</Title>
+                            <Title>{t!(cx, T::TimeStamp)}</Title>
                             <Label>"2022-12-14 20:32:00 UTC"</Label>
                           </Container>
                           <Container>
-                            <Title>"genesis height"</Title>
+                            <Title>{t!(cx, T::GenesisHeight)}</Title>
                             <Label>"767430"</Label>
                           </Container>
                           <Container>
-                            <Title>"genesis fee"</Title>
+                            <Title>{t!(cx, T::GenesisFee)}</Title>
                             <Label>"322"</Label>
                           </Container>
                           <Container>
-                            <Title>"genesis transaction"</Title>
+                            <Title>{t!(cx, T::GenesisTx)}</Title>
                             <Label>"6fb976ab49dcec017f1e201e84395983204ae1a7c2abf7ced0a85d692e442799"</Label>
                           </Container>
                           <Container>
-                            <Title>"location"</Title>
+                            <Title>{t!(cx, T::Location)}</Title>
                             <Label>"bc4c30829a9564c0d58e6287195622b53ced54a25711d1b86be7cd3a70ef61ed:0:0"</Label>
                           </Container>
                           <Container>
-                            <Title>"output"</Title>
+                            <Title>{t!(cx, T::Output)}</Title>
                             <Label>"bc4c30829a9564c0d58e6287195622b53ced54a25711d1b86be7cd3a70ef61ed:0"</Label>
                           </Container>
                           <Container>
-                            <Title>"offset"</Title>
+                            <Title>{t!(cx, T::Offset)}</Title>
                             <Label>"0"</Label>
                           </Container>
                         }

@@ -21,5 +21,18 @@ pub fn translation() -> Translation {
     T::Texts => "Texte",
     T::Iframe => "IFrame",
     T::Iframes => "IFrames",
+    T::Id => "Id",
+    T::Address => "Addresse",
+    T::OutputValue => "Ausgangswert",
+    T::Sat => "Sat",
+    T::ContentLength => "Contentlänge",
+    T::ContentType => "Contenttyp",
+    T::TimeStamp => "Zeitstempel",
+    T::GenesisHeight => "Genesishöhe",
+    T::GenesisFee => "Genesisgebühr",
+    T::GenesisTx => "Genesistransaktion",
+    T::Location => "Ort",
+    T::Output => "Ausgang",
+    T::Offset => "Offset",
   )
 }
