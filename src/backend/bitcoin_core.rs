@@ -13,15 +13,14 @@ use anyhow::Result;
 use bitcoincore_rpc::*;
 use bitcoincore_rpc_json::*;
 
-#[derive(Debug, Clone)]
-pub struct BitcoinCore {
-  auth: bitcoincore_rpc::Auth,
-  root: String,
-  //client: bitcoincore_rpc::Client,
+// `Client` is just a wrapper around of `bitcoincore_rpc::Client`
+// Needed to provide a (custom) `Clone` trait for `bitcoincore_rpc::Client`
+#[derive(Debug)]
+struct Client {
+  client: bitcoincore_rpc::Client,
 }
 
-//#[async_trait]
-impl BitcoinCore {
+impl Client {
   pub fn new() -> Self {
     let core_address = var("CORE_ADDRESS").unwrap_or("127.0.0.1".to_owned());
     let core_port = var("CORE_PORT").unwrap_or("8332".to_owned());
@@ -43,15 +42,36 @@ impl BitcoinCore {
       }
     };
 
+    let client = bitcoincore_rpc::Client::new(&core_url, auth.clone()).unwrap();
+    Client { client }
+  }
+}
+
+impl Clone for Client {
+  fn clone(&self) -> Self {
+    Client::new()
+  }
+}
+
+#[derive(Debug, Clone)]
+pub struct BitcoinCore {
+  client: Client,
+}
+
+//#[async_trait]
+impl BitcoinCore {
+  pub fn new() -> Self {
     BitcoinCore {
-      root: core_url,
-      auth,
+      client: Client::new(),
     }
   }
 
+  fn get_client(&self) -> &bitcoincore_rpc::Client {
+    &self.client.client
+  }
+
   pub async fn get_block_count(&self) -> u64 {
-    let client = bitcoincore_rpc::Client::new(&self.root, self.auth.clone()).unwrap();
-    client.get_block_count().unwrap()
+    self.get_client().get_block_count().unwrap()
   }
 
   pub async fn _get_latest_inscriptions(&self) -> Vec<Inscription> {
@@ -75,8 +95,7 @@ impl BitcoinCore {
   }
 
   pub async fn recent(&self) -> Result<MempoolRecent> {
-    let client = bitcoincore_rpc::Client::new(&self.root, self.auth.clone()).unwrap();
-    let grm = client.get_raw_mempool()?;
+    let grm = self.get_client().get_raw_mempool()?;
 
     let mpr = grm
       .iter()
@@ -95,10 +114,9 @@ impl BitcoinCore {
   }
 
   pub async fn maybe_inscription(&self, txid: &str) -> Result<Option<Inscription>> {
-    let client = bitcoincore_rpc::Client::new(&self.root, self.auth.clone()).unwrap();
     let txid = txid.parse::<bitcoincore_rpc::bitcoin::Txid>().unwrap();
 
-    let transaction = client.get_raw_transaction(&txid, None)?;
+    let transaction = self.get_client().get_raw_transaction(&txid, None)?;
     let maybe_inscription = Inscription::from_transaction(&transaction);
     Ok(maybe_inscription)
   }
@@ -108,14 +126,13 @@ impl BitcoinCore {
     txid: &str,
     index: usize,
   ) -> Result<Option<Inscription>> {
-    let client = bitcoincore_rpc::Client::new(&self.root, self.auth.clone()).unwrap();
     //let txid = bitcoin::Txid::from_hex(txid).unwrap();
     let txid = txid.parse::<bitcoincore_rpc::bitcoin::Txid>().unwrap();
 
     // let hex = client.get_raw_transaction(&txid, None)?;
     // let data = hex::decode(&hex)?;
     // let transaction: Transaction = bitcoin::consensus::deserialize(&data)?;
-    let transaction = client.get_raw_transaction(&txid, None)?;
+    let transaction = self.get_client().get_raw_transaction(&txid, None)?;
     //dbg!(&transaction);
     let v = Inscription::from_transaction_vec(&transaction);
     if v.len() < index {
@@ -131,8 +148,9 @@ impl BitcoinCore {
     let rules = [GetBlockTemplateRules::SegWit];
     let capabilities = [];
 
-    let client = bitcoincore_rpc::Client::new(&self.root, self.auth.clone()).unwrap();
-    let gtr = client.get_block_template(mode, &rules, &capabilities)?;
+    let gtr = self
+      .get_client()
+      .get_block_template(mode, &rules, &capabilities)?;
 
     let mpr = gtr
       .transactions
