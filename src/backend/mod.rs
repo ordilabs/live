@@ -1,14 +1,11 @@
 extern crate async_trait;
 extern crate ord_labs;
 extern crate serde;
-//extern crate b
 
 pub use async_trait::async_trait;
 pub use bitcoin::Transaction;
 pub use ord_labs::{Inscription, Media};
 use serde::Deserialize;
-pub mod space;
-pub use space::Space;
 pub mod bitcoin_core;
 pub use bitcoin_core::BitcoinCore;
 
