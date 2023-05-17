@@ -71,6 +71,6 @@ macro_rules! t {
         $(
             args.insert($key, $value);
         )+
-        crate::app::i18n::t_macro_with_args($cx, $t, args)
+        $crate::app::i18n::t_macro_with_args($cx, $t, args)
     }};
 }

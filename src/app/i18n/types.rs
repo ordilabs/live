@@ -21,7 +21,7 @@ pub enum Locale {
 
 #[allow(dead_code)]
 impl Locale {
-  pub fn to_label(&self) -> &'static str {
+  pub fn to_label(self) -> &'static str {
     match self {
       Locale::En => "EN",
       Locale::De => "DE",
