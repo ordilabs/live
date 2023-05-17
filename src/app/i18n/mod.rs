@@ -61,7 +61,7 @@ pub fn t_macro_with_args(cx: Scope, t: T, args: TranslationArgs) -> Memo<String>
 macro_rules! t {
     // NO arguments
     ($cx:expr, $t:path) => {
-        crate::app::i18n::t_macro($cx, $t)
+        $crate::app::i18n::t_macro($cx, $t)
     };
     // WITH ARGs
     ($cx:expr, $t:path, {

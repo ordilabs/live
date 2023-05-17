@@ -161,7 +161,7 @@ pub fn Inscription(cx: Scope) -> impl IntoView {
         "Back"
       </A>
       <Show
-        when=move || fullscreen()
+        when=fullscreen
         fallback=|_| {
             view! { cx, <></> }
         }
