@@ -160,15 +160,21 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     .spawn(spawn_process_metrics())
     .unwrap();
 
-  let task_server_ticks = tokio::task::Builder::new()
-    .name("server_ticks")
-    .spawn(spawn_server_ticks())
+  let task_inscription_ticks = tokio::task::Builder::new()
+    .name("inscription_ticks")
+    .spawn(spawn_inscription_ticks())
+    .unwrap();
+
+  let task_blockinfo_ticks = tokio::task::Builder::new()
+    .name("blockinfo_ticks")
+    .spawn(spawn_blockinfo_ticks())
     .unwrap();
 
   spawn_app().await;
 
   let result = tokio::try_join! {
-      task_server_ticks,
+      task_inscription_ticks,
+      task_blockinfo_ticks,
       task_process_metrics,
       //task_leptos
   };
@@ -231,7 +237,7 @@ async fn spawn_app() {
 
 #[cfg(feature = "ssr")]
 // #[tracing::instrument]
-pub async fn spawn_server_ticks() {
+pub async fn spawn_inscription_ticks() {
   let mut ordipool: HashMap<String, Option<Inscription>> = HashMap::new();
 
   let backend = backend::BitcoinCore::new();
@@ -242,7 +248,20 @@ pub async fn spawn_server_ticks() {
   let mut interval = tokio::time::interval(std::time::Duration::from_millis(3142));
   loop {
     interval.tick().await;
-    server_actions::tick_bitcoin_core(&backend, &mut ordipool).await;
+    server_actions::tick_inscriptions(&backend, &mut ordipool).await;
+  }
+}
+
+#[cfg(feature = "ssr")]
+// #[tracing::instrument]
+pub async fn spawn_blockinfo_ticks() {
+  let backend = backend::BitcoinCore::new();
+
+  let mut interval = tokio::time::interval(std::time::Duration::from_millis(5000));
+
+  loop {
+    interval.tick().await;
+    server_actions::tick_blockinfo(&backend).await;
   }
 }
 
