@@ -21,7 +21,7 @@ pub struct Content {
 }
 
 // #[tracing::instrument]
-pub(crate) async fn tick_bitcoin_core(
+pub(crate) async fn tick_inscriptions(
   backend: &BitcoinCore,
   ordipool: &mut HashMap<String, Option<Inscription>>,
 ) {
@@ -34,8 +34,6 @@ pub(crate) async fn tick_bitcoin_core(
 
   let tick_start = std::time::Instant::now();
 
-  // TODO(@sectore) Disable `recent` call temporarily - it breaks on mainnet
-  // let mpr: MempoolRecent = Vec::default();
   let mpr = backend.recent().await.ok();
   let mpr = mpr.unwrap_or_default();
 
@@ -173,6 +171,15 @@ pub(crate) async fn tick_bitcoin_core(
     buf.as_str(),
     buf2.as_str(),
   );
+}
+
+pub(crate) async fn tick_blockinfo(backend: &BitcoinCore) {
+  // Current block
+  let block_count = backend.get_block_count().await;
+  tracing::info!(?block_count);
+
+  let event = LiveEvent::BlockCount(block_count);
+  _ = EVENT_CHANNEL.send(&event).await;
 }
 
 pub(crate) async fn content(
