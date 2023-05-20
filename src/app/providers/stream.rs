@@ -3,8 +3,6 @@ use std::*;
 
 use leptos::*;
 
-use std::time::SystemTime;
-
 use crate::types::MempoolAllInfo;
 
 #[derive(Clone)]
@@ -12,7 +10,6 @@ pub(crate) struct StreamContext {
   pub inscription: ReadSignal<Option<String>>,
   pub info: ReadSignal<Option<MempoolAllInfo>>,
   pub block: ReadSignal<Option<u64>>,
-  pub time: ReadSignal<Option<SystemTime>>,
 }
 
 pub fn provide_stream_context(cx: Scope) {
@@ -69,27 +66,12 @@ pub fn provide_stream_context(cx: Scope) {
         }),
       );
 
-      // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
-      let time = create_signal_from_stream(
-        cx,
-        source.subscribe("time").unwrap().map(|value| {
-          let s = value
-            .expect("no message event")
-            .1
-            .data()
-            .as_string()
-            .expect("expected string value");
-          serde_json::from_str::<SystemTime>(s.as_str()).expect("expected SystemTime value")
-        }),
-      );
-
       on_cleanup(cx, move || source.close());
 
       StreamContext {
         inscription,
         info,
         block,
-        time,
       }
     };
 
@@ -98,7 +80,6 @@ pub fn provide_stream_context(cx: Scope) {
       inscription: create_signal(cx, None::<String>).0,
       info: create_signal(cx, None::<MempoolAllInfo>).0,
       block: create_signal(cx, None::<u64>).0,
-      time: create_signal(cx, None::<SystemTime>).0,
     };
 
     provide_context(cx, context);

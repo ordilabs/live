@@ -1,3 +1,4 @@
+use crate::app::components::IconLoader;
 use crate::app::i18n::{I18nContext, Locale};
 use leptos::*;
 use leptos_router::*;
@@ -7,25 +8,12 @@ use crate::app::providers::*;
 
 #[component]
 pub fn Footer(cx: Scope) -> impl IntoView {
-  let StreamContext {
-    block,
-    // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
-    time,
-    ..
-  } = expect_context::<StreamContext>(cx);
+  let StreamContext { block, .. } = expect_context::<StreamContext>(cx);
 
   let I18nContext {
     locale,
     set_locale_action,
   } = expect_context::<I18nContext>(cx);
-
-  let current = move || match time.get() {
-    None => String::from("--"),
-    Some(v) => match v.duration_since(std::time::SystemTime::UNIX_EPOCH) {
-      Err(_) => String::from("invalid"),
-      Ok(v) => format!("{}", v.as_secs()),
-    },
-  };
 
   view! { cx,
     <footer class="bg-white dark:bg-slate-800">
@@ -46,9 +34,18 @@ pub fn Footer(cx: Scope) -> impl IntoView {
               d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
             ></path>
           </svg>
-          {block}
-          " | "
-          {current}
+          <Show
+            when=move || block().is_some()
+            fallback=|cx| {
+                view! { cx,
+                  <div class="pl-1 py-1">
+                    <IconLoader/>
+                  </div>
+                }
+            }
+          >
+            {block}
+          </Show>
         </div>
         <div class="md:flex md:items-center my-2 md:my-0">
           <div class="flex justify-center space-x-4">

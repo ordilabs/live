@@ -25,6 +25,13 @@ pub(crate) async fn tick_inscriptions(
   backend: &BitcoinCore,
   ordipool: &mut HashMap<String, Option<Inscription>>,
 ) {
+  // Current block
+  let block_count = backend.get_block_count().await;
+  tracing::info!(?block_count);
+
+  let event = LiveEvent::BlockCount(block_count);
+  _ = EVENT_CHANNEL.send(&event).await;
+
   let tick_start = std::time::Instant::now();
 
   let mpr = backend.recent().await.ok();
@@ -172,11 +179,6 @@ pub(crate) async fn tick_blockinfo(backend: &BitcoinCore) {
   tracing::info!(?block_count);
 
   let event = LiveEvent::BlockCount(block_count);
-  _ = EVENT_CHANNEL.send(&event).await;
-
-  // TODO (@sectore) Remove it - just for testing serialization/deserialization LiveEvents (see #100)
-  let t = std::time::SystemTime::now();
-  let event = LiveEvent::ServerTime(t);
   _ = EVENT_CHANNEL.send(&event).await;
 }
 
