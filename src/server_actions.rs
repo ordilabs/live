@@ -25,13 +25,6 @@ pub(crate) async fn tick_inscriptions(
   backend: &BitcoinCore,
   ordipool: &mut HashMap<String, Option<Inscription>>,
 ) {
-  // Current block
-  let block_count = backend.get_block_count().await;
-  tracing::info!(?block_count);
-
-  let event = LiveEvent::BlockCount(block_count);
-  _ = EVENT_CHANNEL.send(&event).await;
-
   let tick_start = std::time::Instant::now();
 
   let mpr = backend.recent().await.ok();
