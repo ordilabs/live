@@ -21,6 +21,7 @@ pub fn Home(cx: Scope) -> impl IntoView {
 
   let (infos_map, set_infos_map) = create_signal::<MempoolInfoTotal>(
     cx,
+    // initial data - all media info are "empty" (zero size, zero count) by default
     std::collections::HashMap::from([
       (Audio, MempoolInfoData { count: 0, size: 0 }),
       (Iframe, MempoolInfoData { count: 0, size: 0 }),
@@ -32,33 +33,20 @@ pub fn Home(cx: Scope) -> impl IntoView {
     ]),
   );
 
-  // let infoos = move |_| {};
-
+  // Update media map with data coming from "info" stream
   create_effect(cx, move |_| {
-    let is = info().unwrap_or(Vec::new());
+    let infos = info().unwrap_or(Vec::new());
     let mut map = infos_map();
 
-    for info in &is {
-      match map.get(&info.media) {
-        Some(value) => {
-          map.insert(
-            info.media,
-            MempoolInfoData {
-              count: value.count + info.count,
-              size: value.size + info.size,
-            },
-          );
-        }
-        None => {
-          map.insert(
-            info.media,
-            MempoolInfoData {
-              count: info.count,
-              size: info.size,
-            },
-          );
-        }
-      };
+    // Update map with data coming from `infos` stream
+    for info in &infos {
+      map.insert(
+        info.media,
+        MempoolInfoData {
+          count: info.count,
+          size: info.size,
+        },
+      );
     }
 
     set_infos_map(map);
@@ -151,7 +139,7 @@ pub fn Home(cx: Scope) -> impl IntoView {
               }
           }
         >
-          <div class="flex md:flex-wrap justify-center md:justify-start empty:after:content-['\u{200b}'] empty:after:inline-block empty:after:h-6">
+          <div class="flex flex-col md:flex-row items-center md:items-start justify-center md:justify-start empty:after:content-['\u{200b}'] empty:after:inline-block empty:after:h-6">
             <For
               each=infos_map
               key=|(media, info)| {
@@ -159,22 +147,24 @@ pub fn Home(cx: Scope) -> impl IntoView {
                       "{:?}-{}", & media, & info.count
                   }
               }
-              view=move |cx, (media, info)| {
-                  let icon = move || get_icon(cx, &media);
-                  let count = move || format!("{}", & info.count);
+              view=move |cx, v| {
+                  let icon = move || get_icon(cx, &v.0);
+                  let count = move || format!("{}", & v.1.count);
                   let label = move || {
-                      let l = get_label(&media, info.count);
+                      let l = get_label(&v.0, v.1.count);
                       t!(cx, l)
                   };
-                  let size = move || format!("({:.1} kB)", info.size as f64 / 1024.0);
+                  let size = move || format!("({:.1} kB)", v.1.size as f64 / 1024.0);
                   view! { cx,
                     <Show
-                      when=move || { info.count > 0 }
+                      when=move || { &v.1.count > &0 }
                       fallback=|_| {
                           view! { cx, <></> }
                       }
                     >
-                      <div class="flex items-center pr-4">{icon()} " " {count()} " " {label()} " " {size()}</div>
+                      <div class="flex flex-nowrap items-center pr-6">
+                        {icon()} " " {count()} " " {label()} " " {size()}
+                      </div>
                     </Show>
                   }
               }
