@@ -1,9 +1,17 @@
 use crate::app::components::*;
 use crate::app::i18n::T;
 use crate::app::providers::*;
-use crate::types::MempoolAllInfo;
 use leptos::*;
 use ord_labs::Media;
+use ord_labs::Media::*;
+
+#[derive(Eq, Hash, PartialEq, Clone)]
+struct MempoolInfoData {
+  pub count: usize,
+  pub size: usize,
+}
+
+type MempoolInfoTotal = std::collections::HashMap<Media, MempoolInfoData>;
 
 #[component]
 pub fn Home(cx: Scope) -> impl IntoView {
@@ -11,7 +19,50 @@ pub fn Home(cx: Scope) -> impl IntoView {
     info, inscription, ..
   } = expect_context::<StreamContext>(cx);
 
-  let infos = create_memo::<MempoolAllInfo>(cx, move |_| info().unwrap_or(Vec::new()));
+  let (infos_map, set_infos_map) = create_signal::<MempoolInfoTotal>(
+    cx,
+    std::collections::HashMap::from([
+      (Audio, MempoolInfoData { count: 0, size: 0 }),
+      (Iframe, MempoolInfoData { count: 0, size: 0 }),
+      (Image, MempoolInfoData { count: 0, size: 0 }),
+      (Pdf, MempoolInfoData { count: 0, size: 0 }),
+      (Text, MempoolInfoData { count: 0, size: 0 }),
+      (Unknown, MempoolInfoData { count: 0, size: 0 }),
+      (Video, MempoolInfoData { count: 0, size: 0 }),
+    ]),
+  );
+
+  // let infoos = move |_| {};
+
+  create_effect(cx, move |_| {
+    let is = info().unwrap_or(Vec::new());
+    let mut map = infos_map();
+
+    for info in &is {
+      match map.get(&info.media) {
+        Some(value) => {
+          map.insert(
+            info.media,
+            MempoolInfoData {
+              count: value.count + info.count,
+              size: value.size + info.size,
+            },
+          );
+        }
+        None => {
+          map.insert(
+            info.media,
+            MempoolInfoData {
+              count: info.count,
+              size: info.size,
+            },
+          );
+        }
+      };
+    }
+
+    set_infos_map(map);
+  });
 
   let initial_inscriptions: Vec<_> = (0..6).map(|n| format!("punk_{}.webp", n)).collect();
 
@@ -102,24 +153,29 @@ pub fn Home(cx: Scope) -> impl IntoView {
         >
           <div class="flex md:flex-wrap justify-center md:justify-start empty:after:content-['\u{200b}'] empty:after:inline-block empty:after:h-6">
             <For
-              each=infos
-              key=|m| {
+              each=infos_map
+              key=|(media, info)| {
                   format! {
-                      "{:?}-{}", & m.media, m.count
+                      "{:?}-{}", & media, & info.count
                   }
               }
-              view=move |cx, m| {
-                  let icon = move || get_icon(cx, &m.media);
-                  let count = move || format!("{}", m.count);
+              view=move |cx, (media, info)| {
+                  let icon = move || get_icon(cx, &media);
+                  let count = move || format!("{}", & info.count);
                   let label = move || {
-                      let l = get_label(&m.media, m.count);
+                      let l = get_label(&media, info.count);
                       t!(cx, l)
                   };
-                  let size = move || format!("({:.1} kB)", m.size as f64 / 1024.0);
+                  let size = move || format!("({:.1} kB)", info.size as f64 / 1024.0);
                   view! { cx,
-                    <div class="flex items-center pl-2 pr-4">
-                      {icon()} " " {count()} " " {label()} " " {size()}
-                    </div>
+                    <Show
+                      when=move || { info.count > 0 }
+                      fallback=|_| {
+                          view! { cx, <></> }
+                      }
+                    >
+                      <div class="flex items-center pr-4">{icon()} " " {count()} " " {label()} " " {size()}</div>
+                    </Show>
                   }
               }
             />
