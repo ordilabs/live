@@ -139,7 +139,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
   // load the .env file located in CWD or its parents in sequence.
   dotenv::dotenv().ok();
 
-  let console_layer = console_subscriber::spawn();
+  let conf = get_configuration(None).await.unwrap();
+  let leptos_site_addr = conf.leptos_options.site_addr;
+
+  let mut console_addr = leptos_site_addr;
+  console_addr.set_port(leptos_site_addr.port().checked_add(6).unwrap());
+
+  let console_layer = console_subscriber::ConsoleLayer::builder()
+    .retention(std::time::Duration::from_secs(60))
+    .server_addr(console_addr)
+    .build()
+    .0;
+
   tracing_subscriber::registry()
     .with(console_layer)
     .with(
@@ -150,9 +161,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     .with(tracing_subscriber::fmt::layer())
     .init();
 
+  tracing::info!("spawning console_subscriber at {}", console_addr);
+
+  let mut metrics_addr = leptos_site_addr;
+  metrics_addr.set_port(leptos_site_addr.port().checked_add(9).unwrap());
+
+  tracing::info!("spawning process_metrics at {}", metrics_addr);
   let task_process_metrics = tokio::task::Builder::new()
     .name("process_metrics")
-    .spawn(spawn_process_metrics())
+    .spawn(spawn_process_metrics(metrics_addr))
     .unwrap();
 
   let task_inscription_ticks = tokio::task::Builder::new()
@@ -222,7 +239,7 @@ async fn spawn_app() {
     .layer(TraceLayer::new_for_http())
     .merge(Router::new());
 
-  tracing::debug!("listening on {}", leptos_options.site_addr);
+  tracing::info!("spawning app at {}", leptos_options.site_addr);
   axum::Server::bind(&leptos_options.site_addr)
     .serve(app.into_make_service())
     .await
@@ -261,7 +278,7 @@ pub async fn spawn_blockinfo_ticks() {
 
 #[cfg(feature = "ssr")]
 // #[tracing::instrument]
-pub async fn spawn_process_metrics() {
+pub async fn spawn_process_metrics(addr: std::net::SocketAddr) {
   use metrics_exporter_prometheus::PrometheusBuilder;
   use metrics_process::Collector;
 
@@ -273,8 +290,6 @@ pub async fn spawn_process_metrics() {
   let collector = Collector::default();
   // Call `describe()` method to register help string.
   collector.describe();
-
-  let addr = "127.0.0.1:9100".parse().unwrap();
 
   let app = Router::new().route(
     "/metrics",
