@@ -36,7 +36,7 @@ leptos_meta = { version = "0.3.0", default-features = false }
 leptos_router = { version = "0.3.0", default-features = false }
 log = "0.4"
 metrics-exporter-prometheus = { version = "0.12.1", optional = true }
-metrics-process = { version = "1.0.10", optional = true }
+metrics-process = { version = "1.0.11", optional = true }
 mime = { version = "0.3.17", optional = true }
 num-format = { version = "0.4.4", optional = true }
 ord-labs = { version = "0.1.0", git = "https://github.com/ordilabs/ord-labs.git", branch = "main", features = [
