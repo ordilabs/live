@@ -34,7 +34,7 @@ cfg_if! { if #[cfg(feature = "ssr")] {
         extract::TypedHeader,
         response::sse::{Event, Sse},
     };
-    use futures::stream::{self, Stream};
+    use futures::stream;
     use std::{convert::Infallible, time::Duration};
     use tokio_stream::StreamExt as _;
     use tower_http::trace::TraceLayer;
@@ -95,7 +95,7 @@ async fn custom_handler(
 async fn sse_handler(
   TypedHeader(user_agent): TypedHeader<headers::UserAgent>,
   State(core): State<BitcoinCore>,
-) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {
+) -> Response {
   use crate::types::LiveEvent;
 
   tracing::debug!("`{}` connected", user_agent.as_str());
@@ -114,23 +114,29 @@ async fn sse_handler(
     // It will be deserialized at frontend using `serde_json::from_str` (similar to `JSON.parse` in JS) - see implementation in `App.rs -> App`
     LiveEvent::NewInscription(data) | LiveEvent::RandomInscription(data) => {
       let s = serde_json::to_string(&data).unwrap();
-      Ok(Event::default().event("inscription").data(&s.as_str()))
+      // type anotation once. was infered from function signature before -> Sse<impl Stream<Item = Result<Event, Infallible>>>
+      let event: Result<Event, Infallible> = Ok(Event::default().event("inscription").data(s));
+      event
     }
     LiveEvent::MempoolInfo(data) => {
       let s = serde_json::to_string(&data).unwrap();
-      Ok(Event::default().event("info").data(&s.as_str()))
+      Ok(Event::default().event("info").data(s))
     }
     LiveEvent::BlockCount(data) => {
       let s = serde_json::to_string(&data).unwrap();
-      Ok(Event::default().event("block").data(&s.as_str()))
+      Ok(Event::default().event("block").data(s))
     }
   });
 
-  Sse::new(stream).keep_alive(
+  let sse = Sse::new(stream).keep_alive(
     axum::response::sse::KeepAlive::new()
       .interval(Duration::from_secs(1))
       .text("keep-alive-text"),
-  )
+  );
+
+  // additional header is required to signal to nginx to disable buffering/caching
+  // see also https://serverfault.com/questions/801628/
+  ([("X-Accel-Buffering", "no")], sse).into_response()
 }
 
 #[cfg(feature = "ssr")]
