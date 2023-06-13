@@ -34,7 +34,7 @@ cfg_if! { if #[cfg(feature = "ssr")] {
         extract::TypedHeader,
         response::sse::{Event, Sse},
     };
-    use futures::stream::{self, Stream};
+    use futures::stream;
     use std::{convert::Infallible, time::Duration};
     use tokio_stream::StreamExt as _;
     use tower_http::trace::TraceLayer;
@@ -95,7 +95,7 @@ async fn custom_handler(
 async fn sse_handler(
   TypedHeader(user_agent): TypedHeader<headers::UserAgent>,
   State(core): State<BitcoinCore>,
-) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {
+) -> Response {
   use crate::types::LiveEvent;
 
   tracing::debug!("`{}` connected", user_agent.as_str());
@@ -114,23 +114,29 @@ async fn sse_handler(
     // It will be deserialized at frontend using `serde_json::from_str` (similar to `JSON.parse` in JS) - see implementation in `App.rs -> App`
     LiveEvent::NewInscription(data) | LiveEvent::RandomInscription(data) => {
       let s = serde_json::to_string(&data).unwrap();
-      Ok(Event::default().event("inscription").data(&s.as_str()))
+      // type anotation once. was infered from function signature before -> Sse<impl Stream<Item = Result<Event, Infallible>>>
+      let event: Result<Event, Infallible> = Ok(Event::default().event("inscription").data(s));
+      event
     }
     LiveEvent::MempoolInfo(data) => {
       let s = serde_json::to_string(&data).unwrap();
-      Ok(Event::default().event("info").data(&s.as_str()))
+      Ok(Event::default().event("info").data(s))
     }
     LiveEvent::BlockCount(data) => {
       let s = serde_json::to_string(&data).unwrap();
-      Ok(Event::default().event("block").data(&s.as_str()))
+      Ok(Event::default().event("block").data(s))
     }
   });
 
-  Sse::new(stream).keep_alive(
+  let sse = Sse::new(stream).keep_alive(
     axum::response::sse::KeepAlive::new()
       .interval(Duration::from_secs(1))
       .text("keep-alive-text"),
-  )
+  );
+
+  // additional header is required to signal to nginx to disable buffering/caching
+  // see also https://serverfault.com/questions/801628/
+  ([("X-Accel-Buffering", "no")], sse).into_response()
 }
 
 #[cfg(feature = "ssr")]
@@ -139,7 +145,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
   // load the .env file located in CWD or its parents in sequence.
   dotenv::dotenv().ok();
 
-  let console_layer = console_subscriber::spawn();
+  let conf = get_configuration(None).await.unwrap();
+  let leptos_site_addr = conf.leptos_options.site_addr;
+
+  let mut console_addr = leptos_site_addr;
+  console_addr.set_port(leptos_site_addr.port().checked_add(6).unwrap());
+
+  let console_layer = console_subscriber::ConsoleLayer::builder()
+    .retention(std::time::Duration::from_secs(60))
+    .server_addr(console_addr)
+    .build()
+    .0;
+
   tracing_subscriber::registry()
     .with(console_layer)
     .with(
@@ -150,9 +167,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     .with(tracing_subscriber::fmt::layer())
     .init();
 
+  tracing::info!("spawning console_subscriber at {}", console_addr);
+
+  let mut metrics_addr = leptos_site_addr;
+  metrics_addr.set_port(leptos_site_addr.port().checked_add(9).unwrap());
+
+  tracing::info!("spawning process_metrics at {}", metrics_addr);
   let task_process_metrics = tokio::task::Builder::new()
     .name("process_metrics")
-    .spawn(spawn_process_metrics())
+    .spawn(spawn_process_metrics(metrics_addr))
     .unwrap();
 
   let task_inscription_ticks = tokio::task::Builder::new()
@@ -222,7 +245,7 @@ async fn spawn_app() {
     .layer(TraceLayer::new_for_http())
     .merge(Router::new());
 
-  tracing::debug!("listening on {}", leptos_options.site_addr);
+  tracing::info!("spawning app at {}", leptos_options.site_addr);
   axum::Server::bind(&leptos_options.site_addr)
     .serve(app.into_make_service())
     .await
@@ -261,7 +284,7 @@ pub async fn spawn_blockinfo_ticks() {
 
 #[cfg(feature = "ssr")]
 // #[tracing::instrument]
-pub async fn spawn_process_metrics() {
+pub async fn spawn_process_metrics(addr: std::net::SocketAddr) {
   use metrics_exporter_prometheus::PrometheusBuilder;
   use metrics_process::Collector;
 
@@ -273,8 +296,6 @@ pub async fn spawn_process_metrics() {
   let collector = Collector::default();
   // Call `describe()` method to register help string.
   collector.describe();
-
-  let addr = "127.0.0.1:9100".parse().unwrap();
 
   let app = Router::new().route(
     "/metrics",
