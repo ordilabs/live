@@ -1,6 +1,7 @@
 use crate::app::components::*;
 use crate::app::i18n::T;
 use crate::app::providers::*;
+use crate::types::{compare_media, MempoolAllInfo};
 use leptos::*;
 use ord_labs::Media;
 use ord_labs::Media::*;
@@ -18,6 +19,15 @@ pub fn Home(cx: Scope) -> impl IntoView {
   let StreamContext {
     info, inscription, ..
   } = expect_context::<StreamContext>(cx);
+
+  let infos = create_memo::<MempoolAllInfo>(cx, move |_| {
+    // get infos
+    let mut info_list = info().unwrap_or(Vec::new());
+    // sort infos by media
+    info_list.sort_by(|a, b| compare_media(&a.media, &b.media));
+    // before returning
+    info_list
+  });
 
   let (infos_map, set_infos_map) = create_signal::<MempoolInfoTotal>(
     cx,
@@ -141,29 +151,29 @@ pub fn Home(cx: Scope) -> impl IntoView {
         >
           <div class="flex flex-col md:flex-row items-center md:items-start justify-center md:justify-start empty:after:content-['\u{200b}'] empty:after:inline-block empty:after:h-6">
             <For
-              each=infos_map
-              key=|(media, info)| {
+              each=infos
+              key=|info| {
                   format! {
-                      "{:?}-{}", & media, & info.count
+                      "{:?}-{}", &info.media, & info.count
                   }
               }
-              view=move |cx, v| {
-                  let icon = move || get_icon(cx, &v.0);
-                  let count = move || format!("{}", & v.1.count);
+              view=move |cx, info| {
+                  let icon = move || get_icon(cx, &info.media);
+                  let count = move || format!("{}", & info.count);
                   let label = move || {
-                      let l = get_label(&v.0, v.1.count);
+                      let l = get_label(&info.media, info.count);
                       t!(cx, l)
                   };
-                  let size = move || format!("({:.1} kB)", v.1.size as f64 / 1024.0);
+                  let size = move || format!("({:.1} kB)", info.size as f64 / 1024.0);
                   view! { cx,
                     <Show
-                      when=move || { &v.1.count > &0 }
+                      when=move || { info.count > 0 }
                       fallback=|_| {
                           view! { cx, <></> }
                       }
                     >
-                      <div class="flex flex-nowrap items-center pr-6">
-                        {icon()} " " {count()} " " {label()} " " {size()}
+                      <div class="flex items-center md:pr-6 md:pb-0 pb-2 last:pb-0">
+                        {icon()}" "<span class="whitespace-nowrap">{count()} " " {label()} " " {size()}</span>
                       </div>
                     </Show>
                   }
