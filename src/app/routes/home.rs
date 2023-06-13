@@ -154,7 +154,7 @@ pub fn Home(cx: Scope) -> impl IntoView {
               each=infos
               key=|info| {
                   format! {
-                      "{:?}-{}", &info.media, & info.count
+                      "{:?}-{}", & info.media, & info.count
                   }
               }
               view=move |cx, info| {
@@ -173,7 +173,7 @@ pub fn Home(cx: Scope) -> impl IntoView {
                       }
                     >
                       <div class="flex items-center md:pr-6 md:pb-0 pb-2 last:pb-0">
-                        {icon()}" "<span class="whitespace-nowrap">{count()} " " {label()} " " {size()}</span>
+                        {icon()} " " <span class="whitespace-nowrap">{count()} " " {label()} " " {size()}</span>
                       </div>
                     </Show>
                   }
