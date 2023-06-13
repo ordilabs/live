@@ -4,15 +4,6 @@ use crate::app::providers::*;
 use crate::types::{compare_media, MempoolAllInfo};
 use leptos::*;
 use ord_labs::Media;
-use ord_labs::Media::*;
-
-#[derive(Eq, Hash, PartialEq, Clone)]
-struct MempoolInfoData {
-  pub count: usize,
-  pub size: usize,
-}
-
-type MempoolInfoTotal = std::collections::HashMap<Media, MempoolInfoData>;
 
 #[component]
 pub fn Home(cx: Scope) -> impl IntoView {
@@ -27,39 +18,6 @@ pub fn Home(cx: Scope) -> impl IntoView {
     info_list.sort_by(|a, b| compare_media(&a.media, &b.media));
     // before returning
     info_list
-  });
-
-  let (infos_map, set_infos_map) = create_signal::<MempoolInfoTotal>(
-    cx,
-    // initial data - all media info are "empty" (zero size, zero count) by default
-    std::collections::HashMap::from([
-      (Audio, MempoolInfoData { count: 0, size: 0 }),
-      (Iframe, MempoolInfoData { count: 0, size: 0 }),
-      (Image, MempoolInfoData { count: 0, size: 0 }),
-      (Pdf, MempoolInfoData { count: 0, size: 0 }),
-      (Text, MempoolInfoData { count: 0, size: 0 }),
-      (Unknown, MempoolInfoData { count: 0, size: 0 }),
-      (Video, MempoolInfoData { count: 0, size: 0 }),
-    ]),
-  );
-
-  // Update media map with data coming from "info" stream
-  create_effect(cx, move |_| {
-    let infos = info().unwrap_or(Vec::new());
-    let mut map = infos_map();
-
-    // Update map with data coming from `infos` stream
-    for info in &infos {
-      map.insert(
-        info.media,
-        MempoolInfoData {
-          count: info.count,
-          size: info.size,
-        },
-      );
-    }
-
-    set_infos_map(map);
   });
 
   let initial_inscriptions: Vec<_> = (0..6).map(|n| format!("punk_{}.webp", n)).collect();
