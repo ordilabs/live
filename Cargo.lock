@@ -1630,9 +1630,9 @@ dependencies = [
 
 [[package]]
 name = "leptos_router"
-version = "0.3.0"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2d0ea7e26694aa16e468603782f4bb47df7948ce24611b71946b6db7bcb0237c"
+checksum = "ba4293fc132a75fdcf893b138e7689951bb86044c1ae6d6b553df747a1f6f59b"
 dependencies = [
  "cached",
  "cfg-if 1.0.0",
