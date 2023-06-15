@@ -1,3 +1,5 @@
+use std::cmp::Ordering;
+
 use ord_labs::Media;
 use serde::{Deserialize, Serialize};
 
@@ -13,6 +15,24 @@ enum MediaDef {
   Text,
   Unknown,
   Video,
+}
+
+// Custom ordering - it overrides original `Ord` of Media
+pub fn compare_media(a: &Media, b: &Media) -> Ordering {
+  media_value(a).cmp(&media_value(b))
+}
+
+// Custom value of Media - it is used for custom ordering
+pub fn media_value(&m: &Media) -> usize {
+  match m {
+    Media::Image => 0,
+    Media::Text => 1,
+    Media::Audio => 2,
+    Media::Video => 3,
+    Media::Pdf => 4,
+    Media::Iframe => 5,
+    Media::Unknown => 6,
+  }
 }
 
 #[derive(Eq, Hash, PartialEq, Clone, Debug, Serialize, Deserialize, Copy)]

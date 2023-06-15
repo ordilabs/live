@@ -1,7 +1,7 @@
 use crate::app::components::*;
 use crate::app::i18n::T;
 use crate::app::providers::*;
-use crate::types::MempoolAllInfo;
+use crate::types::{compare_media, MempoolAllInfo};
 use leptos::*;
 use ord_labs::Media;
 
@@ -11,7 +11,14 @@ pub fn Home(cx: Scope) -> impl IntoView {
     info, inscription, ..
   } = expect_context::<StreamContext>(cx);
 
-  let infos = create_memo::<MempoolAllInfo>(cx, move |_| info().unwrap_or(Vec::new()));
+  let infos = create_memo::<MempoolAllInfo>(cx, move |_| {
+    // get infos
+    let mut info_list = info().unwrap_or(Vec::new());
+    // sort infos by media
+    info_list.sort_by(|a, b| compare_media(&a.media, &b.media));
+    // before returning
+    info_list
+  });
 
   let initial_inscriptions: Vec<_> = (0..6).map(|n| format!("punk_{}.webp", n)).collect();
 
@@ -100,26 +107,33 @@ pub fn Home(cx: Scope) -> impl IntoView {
               }
           }
         >
-          <div class="flex md:flex-wrap justify-center md:justify-start empty:after:content-['\u{200b}'] empty:after:inline-block empty:after:h-6">
+          <div class="flex flex-col md:flex-row items-center md:items-start justify-center md:justify-start empty:after:content-['\u{200b}'] empty:after:inline-block empty:after:h-6">
             <For
               each=infos
-              key=|m| {
+              key=|info| {
                   format! {
-                      "{:?}-{}", & m.media, m.count
+                      "{:?}-{}", & info.media, & info.count
                   }
               }
-              view=move |cx, m| {
-                  let icon = move || get_icon(cx, &m.media);
-                  let count = move || format!("{}", m.count);
+              view=move |cx, info| {
+                  let icon = move || get_icon(cx, &info.media);
+                  let count = move || format!("{}", & info.count);
                   let label = move || {
-                      let l = get_label(&m.media, m.count);
+                      let l = get_label(&info.media, info.count);
                       t!(cx, l)
                   };
-                  let size = move || format!("({:.1} kB)", m.size as f64 / 1024.0);
+                  let size = move || format!("({:.1} kB)", info.size as f64 / 1024.0);
                   view! { cx,
-                    <div class="flex items-center pl-2 pr-4">
-                      {icon()} " " {count()} " " {label()} " " {size()}
-                    </div>
+                    <Show
+                      when=move || { info.count > 0 }
+                      fallback=|_| {
+                          view! { cx, <></> }
+                      }
+                    >
+                      <div class="flex items-center md:pr-6 md:pb-0 pb-2 last:pb-0">
+                        {icon()} " " <span class="whitespace-nowrap">{count()} " " {label()} " " {size()}</span>
+                      </div>
+                    </Show>
                   }
               }
             />
