@@ -83,11 +83,7 @@ pub fn Footer(cx: Scope) -> impl IntoView {
                         let label = l.to_label();
                         view! { cx,
                           <option key=&value value=value selected=l == locale()>
-                            {
-                                format! {
-                                    "{label}"
-                                }
-                            }
+                            {label}
                           </option>
                         }
                     })
