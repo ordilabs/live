@@ -10,6 +10,7 @@ We use Docker to containerize all micro-services and you `just` need to run a fe
 
 - [Rust ^1.68](https://rustup.rs/)
 - [nodejs ^18.15](https://nodejs.org/en)
+- [Typescript](https://www.typescriptlang.org/)
 - [just](https://just.systems/man/en/)
 - git
 - fast internet, decent cpu
