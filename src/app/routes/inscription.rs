@@ -30,7 +30,7 @@ pub fn Label(cx: Scope, children: Children) -> impl IntoView {
 #[component]
 pub fn Inscription(cx: Scope) -> impl IntoView {
   let params = use_params_map(cx);
-  let id = move || params().get("id").cloned().unwrap_or_default();
+  let id = move || params.get().get("id").cloned().unwrap_or_default();
   let hash = id.derive_signal(cx);
   let (fullscreen, set_fullscreen) = create_signal(cx, false);
 
@@ -161,7 +161,7 @@ pub fn Inscription(cx: Scope) -> impl IntoView {
         "Back"
       </A>
       <Show
-        when=fullscreen
+        when=move || fullscreen.get()
         fallback=|_| {
             view! { cx, <></> }
         }

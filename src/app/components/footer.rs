@@ -35,7 +35,7 @@ pub fn Footer(cx: Scope) -> impl IntoView {
             ></path>
           </svg>
           <Show
-            when=move || block().is_some()
+            when=move || block.get().is_some()
             fallback=|cx| {
                 view! { cx,
                   <div class="pl-1 py-1">
@@ -82,7 +82,7 @@ pub fn Footer(cx: Scope) -> impl IntoView {
                         let value = l.as_ref().to_string();
                         let label = l.to_label();
                         view! { cx,
-                          <option key=&value value=value selected=l == locale()>
+                          <option key=&value value=value selected=l == locale.get()>
                             {label}
                           </option>
                         }

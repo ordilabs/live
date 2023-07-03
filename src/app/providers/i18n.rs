@@ -46,7 +46,7 @@ pub fn provide_i18n_context(cx: Scope) {
     let value = set_locale_action.value();
 
     let locale = Signal::derive(cx, move || {
-      match (input(), value()) {
+      match (input.get(), value.get()) {
         // use current input optimistically
         (Some(submission), _) => submission.locale,
         // or previous value confirmed by server

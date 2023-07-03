@@ -13,7 +13,6 @@ use serde::*;
 
 use axum::http::{header, HeaderMap, StatusCode};
 use axum::{extract::Path, response::IntoResponse};
-//use std::io::Read::read_to_end;
 
 #[derive(Deserialize)]
 pub struct Content {

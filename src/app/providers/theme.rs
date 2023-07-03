@@ -47,7 +47,7 @@ pub fn provide_theme_context(cx: Scope) {
     let value = set_dark_action.value();
 
     let is_dark = Signal::derive(cx, move || {
-      match (input(), value()) {
+      match (input.get(), value.get()) {
         // use current input optimistically
         (Some(submission), _) => submission.is_dark,
         // or previous value confirmed by server

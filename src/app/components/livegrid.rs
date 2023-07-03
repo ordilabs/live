@@ -39,7 +39,7 @@ pub fn LiveGrid(
   let items = store_value::<Items>(cx, initial_items);
 
   create_effect(cx, move |_| {
-    let next = inscription_id();
+    let next = inscription_id.get();
 
     if next.is_none() || next == Some("".to_string()) {
       return;
@@ -47,7 +47,7 @@ pub fn LiveGrid(
 
     let next_value = next.unwrap();
 
-    let item_id = next_item_id() % max_item_id;
+    let item_id = next_item_id.get_value() % max_item_id;
     next_item_id.update_value(|id| *id += 1);
 
     items.update_value(|items| {
@@ -66,7 +66,7 @@ pub fn LiveGrid(
         class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8"
       >
         <For
-          each=items
+          each=move || items.get_value()
           key=|item| item.key
           view=move |cx, item: Item| {
               view! { cx,
@@ -74,7 +74,7 @@ pub fn LiveGrid(
                   <A href=move || format!("/inscription/{}", item.hash.get())>
                     <Preview
                       class="ring-2 ring-red-500 rounded-lg aspect-w-10 aspect-h-10"
-                      hash=item.hash.derive_signal(cx)
+                      hash=Signal::from(item.hash)
                     />
                   </A>
                 </li>
