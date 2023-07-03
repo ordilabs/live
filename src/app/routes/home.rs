@@ -13,7 +13,7 @@ pub fn Home(cx: Scope) -> impl IntoView {
 
   let infos = create_memo::<MempoolAllInfo>(cx, move |_| {
     // get infos
-    let mut info_list = info().unwrap_or(Vec::new());
+    let mut info_list = info.get().unwrap_or(Vec::new());
     // sort infos by media
     info_list.sort_by(|a, b| compare_media(&a.media, &b.media));
     // before returning
@@ -98,7 +98,7 @@ pub fn Home(cx: Scope) -> impl IntoView {
       </div>
       <div class="text-base text-gray-600 dark:text-gray-100">
         <Show
-          when=move || info().is_some()
+          when=move || info.get().is_some()
           fallback=|cx| {
               view! { cx,
                 <div class="pl-2 py-1">
@@ -109,7 +109,7 @@ pub fn Home(cx: Scope) -> impl IntoView {
         >
           <div class="flex flex-col md:flex-row items-center md:items-start justify-center md:justify-start empty:after:content-['\u{200b}'] empty:after:inline-block empty:after:h-6">
             <For
-              each=infos
+              each=move || infos.get()
               key=|info| {
                   format! {
                       "{:?}-{}", & info.media, & info.count

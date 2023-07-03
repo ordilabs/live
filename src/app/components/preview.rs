@@ -6,7 +6,7 @@ pub fn Preview(
   hash: Signal<String>,
   #[prop(optional)] class: &'static str,
 ) -> impl IntoView {
-  let preview_url = move || format!("/preview/{}", hash());
+  let preview_url = move || format!("/preview/{}", hash.get());
 
   view! { cx,
     <div class=format!("block w-full overflow-hidden bg-gray-100 {class}")>

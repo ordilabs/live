@@ -207,12 +207,11 @@ async fn spawn_app() {
   use tower_http::services::ServeDir;
   let metrics = HttpMetricsLayerBuilder::new().build();
 
-  crate::app::functions::register_server_functions();
-
   // Setting this to None means we'll be using cargo-leptos and its env vars.
   // when not using cargo-leptos None must be replaced with Some("Cargo.toml")
   let conf = get_configuration(None).await.unwrap();
   let leptos_options = conf.leptos_options;
+  let addr = &leptos_options.site_addr;
   let routes = generate_route_list(|cx| view! { cx, <App/> }).await;
 
   let state = AppState {
@@ -236,17 +235,17 @@ async fn spawn_app() {
     .with_state(state)
     // related: axum-prometheus
     //.route("/metrics", get(|| async move { metric_handle.render() }))
-    .leptos_routes(leptos_options.clone(), routes, |cx| view! { cx, <App/> })
+    .leptos_routes(&leptos_options, routes, |cx| view! { cx, <App/> })
     // punks_*.webp fallback
     .nest_service("/punks", ServeDir::new("./tmp/punks"))
     .fallback(fallback::file_and_error_handler)
-    .layer(Extension(Arc::new(leptos_options.clone())))
+    .with_state(leptos_options.clone())
     .layer(metrics)
     .layer(TraceLayer::new_for_http())
     .merge(Router::new());
 
-  tracing::info!("spawning app at {}", leptos_options.site_addr);
-  axum::Server::bind(&leptos_options.site_addr)
+  tracing::info!("spawning app at {}", &addr);
+  axum::Server::bind(&addr)
     .serve(app.into_make_service())
     .await
     .unwrap();
