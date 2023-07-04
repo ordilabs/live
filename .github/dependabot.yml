@@ -1,10 +1,16 @@
 version: 2
 updates:
-  - package-ecosystem: github-actions
-    directory: /
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
-      interval: daily
-  - package-ecosystem: cargo
-    directory: /
+      interval: "weekly"
+    ignore:
+      - dependency-name: "*"
+        update-types: [version-update:semver-patch]
+  - package-ecosystem: "cargo"
+    directory: "/"
     schedule:
-      interval: daily
+      interval: "weekly"
+    ignore:
+      - dependency-name: "*"
+        update-types: [version-update:semver-patch]
