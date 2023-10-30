@@ -30,7 +30,7 @@ headers = { version = "0.3.8", optional = true }
 hex = { version = "0.4.3", optional = true }
 http = "0.2.9"
 lazy_static = "1"
-leptos = { version = "0.4.1", feaures = ["nightly", "csr"] }
+leptos = { version = "0.5.2", feaures = ["nightly", "csr"] }
 leptos_axum = { version = "0.4.1", optional = true }
 leptos_meta = { version = "0.4.1", feaures = ["nightly", "csr"] }
 leptos_router = { version = "0.4.1", feaures = ["nightly", "csr"] }
